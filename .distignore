@@ -1,0 +1,41 @@
+# ---- VCS / verktyg ----
+.git
+.gitignore
+.gitattributes
+.github/
+.vscode/
+.editorconfig
+
+# ---- Node/Composer ----
+node_modules/
+vendor/
+package-lock.json
+pnpm-lock.yaml
+yarn.lock
+composer.lock
+
+# ---- Bygg/konfig ----
+webpack.*
+rollup.*
+vite.*
+.eslintrc*
+.stylelintrc*
+.browserslistrc
+
+# ---- Källor & tester (ej distribution) ----
+assets-src/
+tests/
+cypress/
+coverage/
+
+# ---- Artefakter & tillfälligt ----
+*.map
+*.log
+*.zip
+*.txt~
+Thumbs.db
+.DS_Store
+
+# ---- Dokumentation (behåll readme.txt för wp.org) ----
+*.md
+*.MD

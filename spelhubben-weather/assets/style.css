@@ -1,0 +1,106 @@
+/* Grund */
+.sv-vader{
+  --svv-scale: 1;
+  --svv-gap: calc(10px * var(--svv-scale));
+  --svv-radius: calc(12px * var(--svv-scale));
+  --svv-padY: calc(14px * var(--svv-scale));
+  --svv-padX: calc(18px * var(--svv-scale));
+
+  box-sizing: border-box;
+  display:block;
+  width:100%;
+  max-width:100%;
+
+  border:1px solid #e6e6e6;
+  border-radius: var(--svv-radius);
+  padding: var(--svv-padY) var(--svv-padX);
+  box-shadow:0 2px 8px rgba(0,0,0,.04);
+  background:#fff;
+}
+
+.svv-ort{font-weight:600;margin-bottom:calc(6px * var(--svv-scale));}
+.svv-row{display:flex;align-items:center;gap:var(--svv-gap);margin:calc(6px * var(--svv-scale)) 0;}
+.svv-col{display:flex;flex-direction:column;gap:calc(6px * var(--svv-scale));}
+.svv-meta,.svv-extra{display:flex;gap:calc(12px * var(--svv-scale));flex-wrap:wrap}
+.svv-desc,.svv-wind,.svv-precip,.svv-cloud{overflow-wrap:anywhere}
+
+.svv-icon{width:calc(40px * var(--svv-scale));height:calc(40px * var(--svv-scale));flex:0 0 auto}
+.svv-temp{font-size:calc(28px * var(--svv-scale));line-height:1;font-weight:600}
+
+.svv-badge{border:1px solid #eee;border-radius:999px;padding:0 .5em;font-size:calc(12px * var(--svv-scale));}
+
+/* --- Layoutvarianter --- */
+
+/* INLINE: kompakt, inte fullbredd */
+.svv-layout-inline{
+  display:inline-flex;          /* överskuggar display:block */
+  align-items:center;
+  width:auto;                   /* nyckeln – dra inte ut i 100% */
+  max-width:100%;
+  padding: calc(6px * var(--svv-scale)) calc(10px * var(--svv-scale));
+  border-radius:999px;
+}
+.svv-layout-inline .svv-ort,
+.svv-layout-inline .svv-meta,
+.svv-layout-inline .svv-map,
+.svv-layout-inline .svv-forecast,
+.svv-layout-inline .svv-map-attrib,
+.svv-layout-inline .svv-map-link{ display:none !important; }
+.svv-row-inline{ gap: calc(8px * var(--svv-scale)); }
+
+/* COMPACT */
+.svv-layout-compact .svv-map{ margin-top: calc(8px * var(--svv-scale)); }
+.svv-layout-compact .svv-icon{ width:calc(32px * var(--svv-scale)); height:calc(32px * var(--svv-scale)); }
+.svv-layout-compact .svv-temp{ font-size:calc(24px * var(--svv-scale)); }
+
+/* DETAILED */
+.svv-layout-detailed .svv-icon{ width:calc(44px * var(--svv-scale)); height:calc(44px * var(--svv-scale)); }
+.svv-layout-detailed .svv-temp{ font-size:calc(30px * var(--svv-scale)); }
+
+/* Karta */
+.svv-map{width:100%;border:1px solid #e6e6e6;border-radius:var(--svv-radius);overflow:hidden;margin-top:calc(10px * var(--svv-scale))}
+.svv-map-attrib{margin-top:calc(6px * var(--svv-scale));font-size:calc(12px * var(--svv-scale));opacity:.8}
+.svv-map-attrib a{text-decoration:none}
+.svv-map-link{margin-top:calc(2px * var(--svv-scale));font-size:calc(13px * var(--svv-scale))}
+.leaflet-control-attribution{display:none !important;}
+
+/* Diskreta animationer */
+.svv-anim .svv-icon { animation: svv-pulse 2.5s ease-in-out infinite; }
+@keyframes svv-pulse { 0%,100%{ transform:scale(1); opacity:1 } 50%{ transform:scale(1.04); opacity:.9 } }
+.svv-anim .svv-temp { animation: svv-fadein .6s ease both; }
+@keyframes svv-fadein { from{ opacity:0; transform:translateY(4px) } to{ opacity:1; transform:translateY(0) } }
+
+/* Prognos – auto-fit i smala ytor */
+.svv-forecast{
+  display:grid;
+  grid-template-columns: repeat(auto-fit, minmax(96px, 1fr)); /* minskat från 110px */
+  gap:calc(10px * var(--svv-scale));
+  margin-top:calc(12px * var(--svv-scale));
+}
+.svv-daycard{
+  border:1px solid #e9e9e9;
+  border-radius: var(--svv-radius);
+  padding:calc(10px * var(--svv-scale));
+  background:#fff;
+  box-shadow:0 2px 8px rgba(0,0,0,.03);
+  transition: transform .2s ease, box-shadow .2s ease;
+}
+.svv-anim .svv-daycard:hover{ transform:translateY(-2px); box-shadow:0 6px 18px rgba(0,0,0,.06); }
+.svv-daylabel{ font-weight:600; margin-bottom:calc(6px * var(--svv-scale)); }
+.svv-dayicon{ width:calc(36px * var(--svv-scale)); height:calc(36px * var(--svv-scale)); display:block; margin:calc(2px * var(--svv-scale)) 0; }
+.svv-daytemps{ display:flex; gap:calc(8px * var(--svv-scale)); align-items:center; margin:calc(4px * var(--svv-scale)) 0; }
+.svv-tmax{ font-weight:600 }
+.svv-tmin{ opacity:.7 }
+.svv-daydesc{ font-size:calc(12px * var(--svv-scale)); opacity:.8 }
+
+/* Extra snävt: tvinga 2 kolumner om det blir för kompakt */
+@media (max-width: 320px){
+  .svv-forecast{ grid-template-columns: repeat(2, minmax(0,1fr)); }
+}
+
+/* Beteende i widgets/sidebars */
+.widget .sv-vader{ width:100%; max-width:100%; }
+.widget .sv-vader.svv-layout-inline{ width:auto; } /* inline ska inte sträckas i sidokolumn */
+/* Dölj Leaflet-markörer överallt i våra kartor */
+.sv-vader .leaflet-marker-icon,
+.sv-vader .leaflet-marker-shadow { display:none !important; }

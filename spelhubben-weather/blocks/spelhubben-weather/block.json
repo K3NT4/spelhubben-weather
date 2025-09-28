@@ -1,0 +1,26 @@
+{
+  "apiVersion": 2,
+  "name": "spelhubben/weather",
+  "title": "Spelhubben Weather",
+  "category": "widgets",
+  "icon": "cloud",
+  "description": "Current weather and optional daily forecast with map, subtle animations, and multiple layouts.",
+  "keywords": ["weather", "forecast", "map"],
+  "textdomain": "spelhubben-weather",
+  "supports": { "html": false },
+  "attributes": {
+    "ort":        { "type": "string", "default": "Stockholm" },
+    "place":      { "type": "string", "default": "" },
+    "lat":        { "type": "string", "default": "" },
+    "lon":        { "type": "string", "default": "" },
+    "show":       { "type": "string", "default": "temp,wind,icon" },
+    "layout":     { "type": "string", "default": "card" },
+    "map":        { "type": "boolean", "default": false },
+    "mapHeight":  { "type": "number",  "default": 240 },
+    "animate":    { "type": "boolean", "default": true },
+    "forecast":   { "type": "string",  "default": "none" },
+    "days":       { "type": "number",  "default": 5 }
+  },
+  "editorScript": "file:./index.js",
+  "style": "sv-vader-style"
+}
