@@ -19,7 +19,9 @@
     "mapHeight":  { "type": "number",  "default": 240 },
     "animate":    { "type": "boolean", "default": true },
     "forecast":   { "type": "string",  "default": "none" },
-    "days":       { "type": "number",  "default": 5 }
+    "days":       { "type": "number",  "default": 5 },
+    "units":      { "type": "string",  "default": "metric" },
+    "date_format":{ "type": "string",  "default": "D j/n" }
   },
   "editorScript": "file:./index.js",
   "style": "sv-vader-style"
