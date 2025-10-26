@@ -2,11 +2,6 @@
 // includes/providers.php - Weather data providers and normalization functions
 if (!defined('ABSPATH')) exit;
 
-/**
- * Normalized result (SI):
- * [ 'temp' => float|null, 'wind' => float|null, 'precip' => float|null, 'cloud' => int|null (0-100), 'code' => int|null, 'desc' => string ]
- */
-
 if (!function_exists('svp_openmeteo_current')) {
     function svp_openmeteo_current($lat, $lon, $locale = 'en') {
         $url = add_query_arg([
@@ -111,6 +106,63 @@ if (!function_exists('svp_yr_current')) {
             'code'   => null,
             'desc'   => null,
         ];
+    }
+}
+
+/**
+ * NEW: FMI (Finnish Meteorological Institute) via WFS timevaluepair
+ * Uses bbox around point to pick nearest station.
+ * Parameters:
+ *  - t2m (°C), ws_10min (m/s), r_1h (mm), n_man (cloud oktas 0..8)
+ */
+if (!function_exists('svp_fmi_current')) {
+    function svp_fmi_current($lat, $lon) {
+        $lat = floatval($lat); $lon = floatval($lon);
+        if (!$lat && !$lon) return null;
+
+        $d = 0.06; // ~ ca 6–7 km
+        $bbox = ($lon - $d) . ',' . ($lat - $d) . ',' . ($lon + $d) . ',' . ($lat + $d) . ',epsg:4326';
+
+        $url = add_query_arg([
+            'service'        => 'WFS',
+            'version'        => '2.0.0',
+            'request'        => 'getFeature',
+            'storedquery_id' => 'fmi::observations::weather::timevaluepair',
+            'parameters'     => 't2m,ws_10min,r_1h,n_man',
+            'bbox'           => $bbox,
+        ], 'https://opendata.fmi.fi/wfs');
+
+        $res = wp_remote_get($url, ['timeout'=>14,'user-agent'=>'Spelhubben-Weather/1.0 (FMI WFS)']);
+        if (is_wp_error($res) || wp_remote_retrieve_response_code($res) !== 200) return null;
+
+        $xml = wp_remote_retrieve_body($res);
+        if (!is_string($xml) || $xml==='') return null;
+
+        $sx = @simplexml_load_string($xml);
+        if (!$sx) return null;
+        $sx->registerXPathNamespace('wml2','http://www.opengis.net/waterml/2.0');
+        $sx->registerXPathNamespace('gml', 'http://www.opengis.net/gml/3.2');
+
+        $out = ['temp'=>null,'wind'=>null,'precip'=>null,'cloud'=>null,'code'=>null,'desc'=>null];
+        $series = $sx->xpath('//wml2:MeasurementTimeseries');
+        if (is_array($series)) {
+            foreach ($series as $ts) {
+                $attrs = $ts->attributes('gml', true);
+                $gid   = isset($attrs['id']) ? strtolower((string)$attrs['id']) : '';
+                $vals  = $ts->xpath('.//wml2:point/wml2:MeasurementTVP/wml2:value');
+                if (!$vals || !count($vals)) continue;
+                $val = (string)$vals[count($vals)-1];
+
+                if (strpos($gid,'t2m')!==false)          $out['temp']   = is_numeric($val)?(float)$val:null;
+                elseif (strpos($gid,'ws_10min')!==false) $out['wind']   = is_numeric($val)?(float)$val:null;
+                elseif (strpos($gid,'r_1h')!==false)     $out['precip'] = is_numeric($val)?(float)$val:null;
+                elseif (strpos($gid,'n_man')!==false) {
+                    $oktas = is_numeric($val)?(float)$val:null;
+                    $out['cloud'] = ($oktas!==null) ? (int)round(($oktas/8)*100) : null;
+                }
+            }
+        }
+        return ($out['temp']===null && $out['wind']===null && $out['precip']===null && $out['cloud']===null) ? null : $out;
     }
 }
 

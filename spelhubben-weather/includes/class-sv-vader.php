@@ -48,6 +48,11 @@ class SV_Vader_API {
 			$yr = svp_yr_current($lat, $lon, $yr_contact);
 			if ($yr) $samples[] = $yr;
 		}
+        // NEW: FMI
+        if (in_array('fmi', $providers, true)) {
+            $fmi = svp_fmi_current($lat, $lon);
+            if ($fmi) $samples[] = $fmi;
+        }
 
 		if (empty($samples)) {
 			return new WP_Error('sv_vader_no_sources', __('Could not fetch weather data from the selected providers.', 'spelhubben-weather'));
@@ -134,17 +139,17 @@ class SV_Vader_API {
 	private function svg_data_uri($type) {
 		// (unchanged inline SVGs)
 		$svg = '';
-		if ($type === 'sun') {
-			$svg = '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64"><g fill="#111"><circle cx="32" cy="32" r="12"/><g opacity=".9"><rect x="31" y="2" width="2" height="10"/><rect x="31" y="52" width="2" height="10"/><rect x="2" y="31" width="10" height="2"/><rect x="52" y="31" width="10" height="2"/><rect x="10.3" y="10.3" width="2" height="10" transform="rotate(-45 11.3 15.3)"/><rect x="51.7" y="43.7" width="2" height="10" transform="rotate(-45 52.7 48.7)"/><rect x="43.7" y="10.3" width="10" height="2" transform="rotate(45 48.7 11.3)"/><rect x="10.3" y="51.7" width="10" height="2" transform="rotate(45 15.3 52.7)"/></g></g></svg>';
-		} elseif ($type === 'cloud') {
-			$svg = '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64"><path fill="#111" d="M22 48h24a10 10 0 0 0 0-20 14 14 0 0 0-27.3-3.8A12 12 0 0 0 22 48z"/></svg>';
-		} elseif ($type === 'rain') {
-			$svg = '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64"><path fill="#111" d="M22 40h24a10 10 0 0 0 0-20 14 14 0 0 0-27.3-3.8A12 12 0 0 0 22 40z"/><g fill="#111" opacity=".9"><path d="M22 46l-2 6"/><path d="M30 46l-2 6"/><path d="M38 46l-2 6"/><path d="M46 46l-2 6"/></g></svg>';
-		} elseif ($type === 'snow') {
-			$svg = '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64"><path fill="#111" d="M22 40h24a10 10 0 0 0 0-20 14 14 0 0 0-27.3-3.8A12 12 0 0 0 22 40z"/><g fill="#111" opacity=".9"><circle cx="24" cy="48" r="2"/><circle cx="32" cy="48" r="2"/><circle cx="40" cy="48" r="2"/></g></svg>';
-		} else {
-			$svg = '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64"><path fill="#111" d="M22 40h24a10 10 0 0 0 0-20 14 14 0 0 0-27.3-3.8A12 12 0 0 0 22 40z"/><path fill="#111" d="M32 42l-6 12h6l-2 8 8-14h-6l2-6z"/></svg>';
-		}
+        if ($type === 'sun') {
+            $svg = '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64"><g fill="#111"><circle cx="32" cy="32" r="12"/><g opacity=".9"><rect x="31" y="2" width="2" height="10"/><rect x="31" y="52" width="2" height="10"/><rect x="2" y="31" width="10" height="2"/><rect x="52" y="31" width="10" height="2"/><rect x="10.3" y="10.3" width="2" height="10" transform="rotate(-45 11.3 15.3)"/><rect x="51.7" y="43.7" width="2" height="10" transform="rotate(-45 52.7 48.7)"/><rect x="43.7" y="10.3" width="10" height="2" transform="rotate(45 48.7 11.3)"/><rect x="10.3" y="51.7" width="10" height="2" transform="rotate(45 15.3 52.7)"/></g></g></svg>';
+        } elseif ($type === 'cloud') {
+            $svg = '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64"><path fill="#111" d="M22 48h24a10 10 0 0 0 0-20 14 14 0 0 0-27.3-3.8A12 12 0 0 0 22 48z"/></svg>';
+        } elseif ($type === 'rain') {
+            $svg = '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64"><path fill="#111" d="M22 40h24a10 10 0 0 0 0-20 14 14 0 0 0-27.3-3.8A12 12 0 0 0 22 40z"/><g fill="#111" opacity=".9"><path d="M22 46l-2 6"/><path d="M30 46l-2 6"/><path d="M38 46l-2 6"/><path d="M46 46l-2 6"/></g></svg>';
+        } elseif ($type === 'snow') {
+            $svg = '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64"><path fill="#111" d="M22 40h24a10 10 0 0 0 0-20 14 14 0 0 0-27.3-3.8A12 12 0 0 0 22 40z"/><g fill="#111" opacity=".9"><circle cx="24" cy="48" r="2"/><circle cx="32" cy="48" r="2"/><circle cx="40" cy="48" r="2"/></g></svg>';
+        } else {
+            $svg = '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64"><path fill="#111" d="M22 40h24a10 10 0 0 0 0-20 14 14 0 0 0-27.3-3.8A12 12 0 0 0 22 40z"/><path fill="#111" d="M32 42l-6 12h6l-2 8 8-14h-6l2-6z"/></svg>';
+        }
 		return 'data:image/svg+xml;utf8,' . rawurlencode($svg);
 	}
 }

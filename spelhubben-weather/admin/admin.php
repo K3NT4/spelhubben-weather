@@ -235,9 +235,15 @@ function sv_vader_field_providers() {
 		esc_html__( 'Yr (MET Norway)', 'spelhubben-weather' )
 	);
 	printf(
-		'<label><input type="checkbox" name="sv_vader_options[prov_metno_nowcast]" value="1" %s/> %s</label>',
+		'<label><input type="checkbox" name="sv_vader_options[prov_metno_nowcast]" value="1" %s/> %s</label><br>',
 		checked( 1, ! empty( $o['prov_metno_nowcast'] ), false ),
 		esc_html__( 'MET Norway Nowcast', 'spelhubben-weather' )
+	);
+    // NEW: FMI
+	printf(
+		'<label><input type="checkbox" name="sv_vader_options[prov_fmi]" value="1" %s/> %s</label>',
+		checked( 1, ! empty( $o['prov_fmi'] ), false ),
+		esc_html__( 'FMI (Finland, Open Data)', 'spelhubben-weather' )
 	);
 }
 

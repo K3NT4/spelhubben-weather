@@ -23,6 +23,7 @@ class SV_Vader_Renderer {
 				'smhi'           => $opts['prov_smhi'],
 				'yr'             => $opts['prov_yr'],
 				'metno_nowcast'  => $opts['prov_metno_nowcast'] ?? 0,
+                'fmi'            => $opts['prov_fmi'] ?? 0, // NEW
 			]))),
 			'animate'    => '1',
 			'forecast'   => 'none',
@@ -41,7 +42,7 @@ class SV_Vader_Renderer {
 		if (!in_array($layout, $allowed_layouts, true)) $layout = 'card';
 
 		$provider_list = array_filter(array_map('trim', explode(',', strtolower($a['providers']))));
-		$allowed = ['openmeteo','smhi','yr','metno_nowcast'];
+		$allowed = ['openmeteo','smhi','yr','metno_nowcast','fmi']; // NEW
 		$provider_list = array_values(array_intersect($provider_list, $allowed));
 		if (empty($provider_list)) $provider_list = ['openmeteo'];
 
@@ -60,7 +61,7 @@ class SV_Vader_Renderer {
 		$res = $api->get_current_weather($a['ort'], $a['lat'], $a['lon'], $provider_list, $opts['yr_contact']);
 		if (is_wp_error($res)) return '<em>' . esc_html($res->get_error_message()) . '</em>';
 
-		// Convert values according to selected units
+        // Convert values according to selected units
 		list($t_val, $t_sym) = svv_temp($res['temp'] ?? null, $units['temp'], 0);
 		list($w_val, $w_u)   = svv_wind($res['wind'] ?? null, $units['wind'], 0);
 		list($p_val, $p_u)   = svv_precip($res['precip'] ?? null, $units['precip'], 1);

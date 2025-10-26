@@ -20,6 +20,8 @@ if (!function_exists('sv_vader_default_options')) {
 			'prov_smhi'          => 1,
 			'prov_yr'            => 1,
 			'prov_metno_nowcast' => 1,
+            'prov_fmi'           => 1, // NEW
+
 			'yr_contact'         => 'kontakt@example.com',
 
 			// NEW: Units & formatting
@@ -69,6 +71,7 @@ if (!function_exists('sv_vader_sanitize_options')) {
 		$out['prov_smhi']          = !empty($in['prov_smhi']) ? 1 : 0;
 		$out['prov_yr']            = !empty($in['prov_yr']) ? 1 : 0;
 		$out['prov_metno_nowcast'] = !empty($in['prov_metno_nowcast']) ? 1 : 0;
+        $out['prov_fmi']           = !empty($in['prov_fmi']) ? 1 : 0; 
 
 		$out['yr_contact'] = sanitize_text_field($in['yr_contact'] ?? $def['yr_contact']);
 

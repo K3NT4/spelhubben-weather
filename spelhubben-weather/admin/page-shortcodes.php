@@ -13,7 +13,7 @@ if ( ! function_exists( 'sv_vader_render_shortcodes_page' ) ) {
 		$nx1 = '[spelhubben_weather]';
 		$nx2 = '[spelhubben_weather place="Gothenburg" layout="compact" map="1" animate="1"]';
 		$nx3 = '[spelhubben_weather lat="57.7089" lon="11.9746" place="Gothenburg" layout="inline" map="0" show="temp,icon"]';
-		$nx4 = '[spelhubben_weather place="Umeå" layout="detailed" forecast="daily" days="5" providers="smhi,yr,openmeteo" units="metric_kmh"]';
+		$nx4 = '[spelhubben_weather place="Umeå" layout="detailed" forecast="daily" days="5" providers="smhi,yr,openmeteo,fmi" units="metric_kmh"]';
 		$nx5 = '[spelhubben_weather place="Malmö" show="temp,wind" map="0" units="imperial"]';
 
 		// Legacy (behålls för referens)
