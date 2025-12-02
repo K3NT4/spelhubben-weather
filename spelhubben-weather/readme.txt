@@ -2,7 +2,7 @@
 Contributors: spelhubben
 Tags: weather, forecast, widget, shortcode, blocks
 Requires at least: 6.8
-Tested up to: 6.8
+Tested up to: 6.9
 Requires PHP: 7.4
 Stable tag: 1.7.5
 Donate link: https://www.paypal.com/donate/?hosted_button_id=CV74CEXY5XEAU
@@ -113,6 +113,7 @@ The plugin does not set cookies by itself. If you enable the map, Leaflet/OpenSt
 
 == Changelog ==
 = 1.7.5 =
+- Tested up to: 6.9
 - New: **FMI (Finnish Meteorological Institute)** as a free, optional provider (t2m, ws_10min, r_1h, n_man via WFS). Toggle in **Settings → Providers** and via `providers="…"` in block/shortcode/widget.
 - Shortcodes/Blocks: `providers` now accepts `fmi`.
 - Docs: Updated examples and FAQ to include FMI.
