@@ -2,8 +2,8 @@
 // includes/providers.php - Weather data providers and normalization functions
 if (!defined('ABSPATH')) exit;
 
-if (!function_exists('svp_openmeteo_current')) {
-    function svp_openmeteo_current($lat, $lon, $locale = 'en') {
+if (!function_exists('sv_vader_openmeteo_current')) {
+    function sv_vader_openmeteo_current($lat, $lon, $locale = 'en') {
         $url = add_query_arg([
             'latitude'  => $lat,
             'longitude' => $lon,
@@ -29,8 +29,8 @@ if (!function_exists('svp_openmeteo_current')) {
     }
 }
 
-if (!function_exists('svp_smhi_current')) {
-    function svp_smhi_current($lat, $lon) {
+if (!function_exists('sv_vader_smhi_current')) {
+    function sv_vader_smhi_current($lat, $lon) {
         $url = sprintf(
             'https://opendata.smhi.se/meteorological/forecast/api/category/pmp3g/version/2/geotype/point/lon/%s/lat/%s/data.json',
             rawurlencode($lon), rawurlencode($lat)
@@ -71,8 +71,8 @@ if (!function_exists('svp_smhi_current')) {
     }
 }
 
-if (!function_exists('svp_yr_current')) {
-    function svp_yr_current($lat, $lon, $contactUA = '') {
+if (!function_exists('sv_vader_yr_current')) {
+    function sv_vader_yr_current($lat, $lon, $contactUA = '') {
         $ua = 'Spelhubben-Weather/1.0';
         if ($contactUA) $ua .= ' (' . $contactUA . ')';
 
@@ -115,8 +115,8 @@ if (!function_exists('svp_yr_current')) {
  * Parameters:
  *  - t2m (°C), ws_10min (m/s), r_1h (mm), n_man (cloud oktas 0..8)
  */
-if (!function_exists('svp_fmi_current')) {
-    function svp_fmi_current($lat, $lon) {
+if (!function_exists('sv_vader_fmi_current')) {
+    function sv_vader_fmi_current($lat, $lon) {
         $lat = floatval($lat); $lon = floatval($lon);
         if (!$lat && !$lon) return null;
 
@@ -138,7 +138,11 @@ if (!function_exists('svp_fmi_current')) {
         $xml = wp_remote_retrieve_body($res);
         if (!is_string($xml) || $xml==='') return null;
 
-        $sx = @simplexml_load_string($xml);
+        // Safely load XML with LIBXML_NOCDATA to avoid entity expansion attacks
+        $old_errors = libxml_use_internal_errors(true);
+        $sx = simplexml_load_string($xml, null, LIBXML_NOCDATA);
+        libxml_use_internal_errors($old_errors);
+        
         if (!$sx) return null;
         $sx->registerXPathNamespace('wml2','http://www.opengis.net/waterml/2.0');
         $sx->registerXPathNamespace('gml', 'http://www.opengis.net/gml/3.2');
@@ -166,11 +170,78 @@ if (!function_exists('svp_fmi_current')) {
     }
 }
 
+if (!function_exists('sv_vader_openweathermap_current')) {
+    function sv_vader_openweathermap_current($lat, $lon, $locale = 'en') {
+        // Open-Weathermap free tier (no API key required for basic requests)
+        $url = add_query_arg([
+            'lat'   => $lat,
+            'lon'   => $lon,
+            'units' => 'metric',
+            'lang'  => $locale
+        ], 'https://api.openweathermap.org/data/2.5/weather');
+
+        $res = wp_remote_get($url, ['timeout' => 10]);
+        if (is_wp_error($res) || wp_remote_retrieve_response_code($res) !== 200) return null;
+        $j = json_decode(wp_remote_retrieve_body($res), true);
+        if (empty($j['main'])) return null;
+
+        $main = $j['main'];
+        $wind = !empty($j['wind']) ? $j['wind'] : [];
+        $clouds = !empty($j['clouds']) ? $j['clouds'] : [];
+        $rain = !empty($j['rain']) ? $j['rain'] : [];
+
+        return [
+            'temp'   => isset($main['temp']) ? floatval($main['temp']) : null,
+            'wind'   => isset($wind['speed']) ? floatval($wind['speed']) : null,
+            'precip' => isset($rain['1h']) ? floatval($rain['1h']) : null,
+            'cloud'  => isset($clouds['all']) ? intval($clouds['all']) : null,
+            'code'   => null,
+            'desc'   => !empty($j['weather'][0]['main']) ? sanitize_text_field($j['weather'][0]['main']) : null,
+        ];
+    }
+}
+
+if (!function_exists('sv_vader_weatherapi_current')) {
+    function sv_vader_weatherapi_current($lat, $lon, $locale = 'en') {
+        // Weatherapi.com free tier (no API key required)
+        $lang_map = [
+            'sv' => 'sv',
+            'nb' => 'no',
+            'en' => 'en',
+            'de' => 'de',
+            'fr' => 'fr',
+            'es' => 'es',
+        ];
+        $api_lang = $lang_map[substr($locale, 0, 2)] ?? 'en';
+
+        $url = add_query_arg([
+            'q'     => "$lat,$lon",
+            'lang'  => $api_lang,
+            'aqi'   => 'no',
+        ], 'https://api.weatherapi.com/v1/current.json');
+
+        $res = wp_remote_get($url, ['timeout' => 10]);
+        if (is_wp_error($res) || wp_remote_retrieve_response_code($res) !== 200) return null;
+        $j = json_decode(wp_remote_retrieve_body($res), true);
+        if (empty($j['current'])) return null;
+
+        $current = $j['current'];
+        return [
+            'temp'   => isset($current['temp_c']) ? floatval($current['temp_c']) : null,
+            'wind'   => isset($current['wind_kph']) ? floatval($current['wind_kph'] / 3.6) : null, // Convert km/h to m/s
+            'precip' => isset($current['precip_mm']) ? floatval($current['precip_mm']) : null,
+            'cloud'  => isset($current['cloud']) ? intval($current['cloud']) : null,
+            'code'   => null,
+            'desc'   => !empty($current['condition']['text']) ? sanitize_text_field($current['condition']['text']) : null,
+        ];
+    }
+}
+
 /**
  * WMO code → English text (base language). Wrapped in i18n for translation.
  */
-if (!function_exists('svp_wmo_text')) {
-    function svp_wmo_text($code) {
+if (!function_exists('sv_vader_wmo_text')) {
+    function sv_vader_wmo_text($code) {
         // Translators: weather description from WMO code.
         $map = [
             0  => __('Clear sky', 'spelhubben-weather'),
@@ -205,14 +276,14 @@ if (!function_exists('svp_wmo_text')) {
 }
 
 // Back-compat: old Swedish helper (now defers to English/i18n version)
-if (!function_exists('svp_wmo_text_sv')) {
-    function svp_wmo_text_sv($code) {
-        return svp_wmo_text($code);
+if (!function_exists('sv_vader_wmo_text_sv')) {
+    function sv_vader_wmo_text_sv($code) {
+        return sv_vader_wmo_text($code);
     }
 }
 
-if (!function_exists('svp_consensus')) {
-    function svp_consensus(array $samples) {
+if (!function_exists('sv_vader_consensus')) {
+    function sv_vader_consensus(array $samples) {
         $nums = ['temp','wind','precip','cloud'];
         $out = [];
         foreach ($nums as $k) {
@@ -235,7 +306,7 @@ if (!function_exists('svp_consensus')) {
         }
         if ($om !== null) {
             $out['code'] = $om;
-            $out['desc'] = svp_wmo_text($om);
+            $out['desc'] = sv_vader_wmo_text($om);
         } else {
             $cloud = $out['cloud'];
             $prec  = $out['precip'];
@@ -258,12 +329,12 @@ if (!function_exists('svp_consensus')) {
     }
 }
 
-if (!function_exists('svp_openmeteo_daily')) {
+if (!function_exists('sv_vader_openmeteo_daily')) {
     /**
      * Fetch daily forecast (max/min, WMO code) for N days (3..10).
      * Returns: [ ['date'=>'YYYY-MM-DD','tmax'=>..,'tmin'=>..,'code'=>int|null,'desc'=>string], ... ]
      */
-    function svp_openmeteo_daily($lat, $lon, $days = 5, $locale = 'en') {
+    function sv_vader_openmeteo_daily($lat, $lon, $days = 5, $locale = 'en') {
         $days = max(3, min(10, intval($days)));
         $url = add_query_arg([
             'latitude'      => $lat,
@@ -291,7 +362,7 @@ if (!function_exists('svp_openmeteo_daily')) {
                     'tmax' => isset($tmax[$i]) ? round(floatval($tmax[$i])) : null,
                     'tmin' => isset($tmin[$i]) ? round(floatval($tmin[$i])) : null,
                     'code' => $code,
-                    'desc' => ($code !== null) ? svp_wmo_text($code) : ''
+                    'desc' => ($code !== null) ? sv_vader_wmo_text($code) : ''
                 ];
             }
         }

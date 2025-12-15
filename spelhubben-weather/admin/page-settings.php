@@ -94,6 +94,16 @@ if ( ! function_exists( 'sv_vader_render_settings_page' ) ) {
 					</div>
 				</div>
 			</div><!-- /.svv-grid -->
+
+			<!-- More plugins by Spelhubben -->
+			<div style="margin-top: 30px; margin-bottom: 20px;">
+				<?php
+				if ( class_exists( 'SV_Vader_WPOrg_Plugins' ) ) {
+					$wporg = new SV_Vader_WPOrg_Plugins();
+					echo wp_kses_post( $wporg->render() );
+				}
+				?>
+			</div>
 		</div><!-- /.wrap -->
 		<?php
 	}

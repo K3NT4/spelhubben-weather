@@ -9,8 +9,8 @@ if (!defined('ABSPATH')) exit;
  *  - metric_kmh  => C,  kmh, mm
  *  - imperial    => F,  mph, in
  */
-if (!function_exists('svv_resolve_units')) {
-	function svv_resolve_units(array $in): array {
+if (!function_exists('sv_vader_resolve_units')) {
+	function sv_vader_resolve_units(array $in): array {
 		$preset = strtolower($in['units'] ?? '');
 		$map = [
 			'metric'     => ['temp'=>'C',  'wind'=>'ms',  'precip'=>'mm'],
@@ -33,8 +33,8 @@ if (!function_exists('svv_resolve_units')) {
 	}
 }
 
-if (!function_exists('svv_temp')) {
-	function svv_temp(?float $celsius, string $unit, int $dec = 0): array {
+if (!function_exists('sv_vader_temp')) {
+	function sv_vader_temp(?float $celsius, string $unit, int $dec = 0): array {
 		if ($celsius === null) return [null, $unit === 'F' ? '°F' : '°C'];
 		if ($unit === 'F') {
 			$val = $celsius * 9/5 + 32;
@@ -44,8 +44,8 @@ if (!function_exists('svv_temp')) {
 	}
 }
 
-if (!function_exists('svv_wind')) {
-	function svv_wind(?float $ms, string $unit, int $dec = 0): array {
+if (!function_exists('sv_vader_wind')) {
+	function sv_vader_wind(?float $ms, string $unit, int $dec = 0): array {
 		if ($ms === null) return [null, $unit];
 		switch ($unit) {
 			case 'kmh': $val = $ms * 3.6; break;
@@ -56,8 +56,8 @@ if (!function_exists('svv_wind')) {
 	}
 }
 
-if (!function_exists('svv_precip')) {
-	function svv_precip(?float $mm, string $unit, int $dec = 1): array {
+if (!function_exists('sv_vader_precip')) {
+	function sv_vader_precip(?float $mm, string $unit, int $dec = 1): array {
 		if ($mm === null) return [null, $unit];
 		if ($unit === 'in') {
 			$val = $mm / 25.4;
@@ -67,8 +67,8 @@ if (!function_exists('svv_precip')) {
 	}
 }
 
-if (!function_exists('svv_num')) {
-	function svv_num($v, int $decimals = 0) {
+if (!function_exists('sv_vader_num')) {
+	function sv_vader_num($v, int $decimals = 0) {
 		if ($v === null || $v === '') return '';
 		return number_format_i18n($v, $decimals);
 	}

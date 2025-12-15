@@ -13,7 +13,13 @@
   }
 
   // Helpers
-  function debounce(fn, ms){ let t; return (...a)=>{ clearTimeout(t); t=setTimeout(()=>fn.apply(null,a), ms); }; }
+  function debounce(fn, ms){
+    let timeoutId = null;
+    return function(...args) {
+      if (timeoutId) clearTimeout(timeoutId);
+      timeoutId = setTimeout(() => fn.apply(null, args), ms);
+    };
+  }
 
   // Compute a scale factor based on actual card width
   function computeScale(w){
@@ -73,6 +79,9 @@
       applyScale();
       const ro = new ResizeObserver(debounce(applyScale, 60));
       ro.observe(card);
+      
+      // Store observer reference for cleanup
+      card._svvResizeObserver = ro;
     });
   }, 50);
 
@@ -80,5 +89,31 @@
     document.addEventListener('DOMContentLoaded', attachRO);
   } else { attachRO(); }
 
-  new MutationObserver(attachRO).observe(document.documentElement, { childList:true, subtree: true });
+  // Single persistent MutationObserver instead of creating new ones
+  const mutationObserver = new MutationObserver(function(mutations){
+    // Cleanup removed cards
+    mutations.forEach(function(m){
+      if (m.removedNodes.length) {
+        m.removedNodes.forEach(function(node){
+          if (node.nodeType === 1) { // Element node
+            const cards = node.querySelectorAll ? node.querySelectorAll('.sv-vader[data-svv-ro="1"], .spelhubben-weather[data-svv-ro="1"]') : [];
+            cards.forEach(function(card){
+              if (card._svvResizeObserver) {
+                card._svvResizeObserver.disconnect();
+                delete card._svvResizeObserver;
+              }
+              if (card._svvMap) {
+                card._svvMap.remove();
+                delete card._svvMap;
+              }
+              delete card._svvObserved;
+            });
+          }
+        });
+      }
+    });
+    attachRO();
+  });
+  
+  mutationObserver.observe(document.documentElement, { childList:true, subtree: true });
 })();

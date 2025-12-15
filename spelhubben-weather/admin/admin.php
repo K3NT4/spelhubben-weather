@@ -19,6 +19,12 @@ if ( ! function_exists( 'sv_vader_admin_enqueue' ) ) {
 			return;
 		}
 
+		// Enqueue WP.org plugin showcase
+		if ( class_exists( 'SV_Vader_WPOrg_Plugins' ) ) {
+			$wporg = new SV_Vader_WPOrg_Plugins();
+			$wporg->enqueue_assets( $hook );
+		}
+
 		// Robust byggning av URL + versions-bust via filemtime
 		$plugin_file = defined( 'SV_VADER_FILE' ) ? SV_VADER_FILE : __DIR__ . '/../spelhubben-weather.php';
 		$base_url    = plugins_url( '', $plugin_file );
@@ -61,15 +67,14 @@ if ( ! function_exists( 'sv_vader_admin_enqueue' ) ) {
 			'assets' => array(
 				'css' => array(
 					trailingslashit( SV_VADER_URL ) . 'assets/style.css',
-					trailingslashit( SV_VADER_URL ) . 'assets/leaflet/leaflet.css',
+					trailingslashit( SV_VADER_URL ) . 'assets/vendor/leaflet/leaflet.css',
 				),
 				'js'  => array(
-					trailingslashit( SV_VADER_URL ) . 'assets/leaflet/leaflet.js',
-					trailingslashit( SV_VADER_URL ) . 'assets/widget.js',
+					trailingslashit( SV_VADER_URL ) . 'assets/vendor/leaflet/leaflet.js',
 					trailingslashit( SV_VADER_URL ) . 'assets/map.js',
 				),
 				'svv' => array(
-					'iconBase' => trailingslashit( SV_VADER_URL ) . 'assets/leaflet/images/',
+					'iconBase' => trailingslashit( SV_VADER_URL ) . 'assets/vendor/leaflet/images/',
 				),
 			),
 		) );
@@ -137,6 +142,7 @@ if ( ! function_exists( 'sv_vader_register_settings' ) ) {
 		add_settings_field( 'default_layout', __( 'Default layout', 'spelhubben-weather' ), 'sv_vader_field_default_layout', 'sv_vader', 'sv_vader_main' );
 		add_settings_field( 'map_default', __( 'Show map by default', 'spelhubben-weather' ), 'sv_vader_field_map_default', 'sv_vader', 'sv_vader_main' );
 		add_settings_field( 'map_height', __( 'Map height (px)', 'spelhubben-weather' ), 'sv_vader_field_map_height', 'sv_vader', 'sv_vader_main' );
+		add_settings_field( 'icon_style', __( 'Icon style', 'spelhubben-weather' ), 'sv_vader_field_icon_style', 'sv_vader', 'sv_vader_main' );
 		add_settings_field( 'providers', __( 'Data providers', 'spelhubben-weather' ), 'sv_vader_field_providers', 'sv_vader', 'sv_vader_main' );
 		add_settings_field( 'yr_contact', __( 'Yr contact/UA', 'spelhubben-weather' ), 'sv_vader_field_yr_contact', 'sv_vader', 'sv_vader_main' );
 
@@ -217,6 +223,26 @@ function sv_vader_field_map_height() {
 	);
 }
 
+function sv_vader_field_icon_style() {
+	$o = sv_vader_get_options();
+	$styles = array(
+		'classic'          => __( 'Classic', 'spelhubben-weather' ),
+		'modern-flat'      => __( 'Modern Flat', 'spelhubben-weather' ),
+		'modern-gradient'  => __( 'Modern Gradient', 'spelhubben-weather' ),
+	);
+	echo '<select name="sv_vader_options[icon_style]">';
+	foreach ( $styles as $val => $label ) {
+		printf(
+			'<option value="%s"%s>%s</option>',
+			esc_attr( $val ),
+			selected( $o['icon_style'] ?? 'classic', $val, false ),
+			esc_html( $label )
+		);
+	}
+	echo '</select>';
+	echo '<p class="description">' . esc_html__( 'Choose your preferred weather icon theme.', 'spelhubben-weather' ) . '</p>';
+}
+
 function sv_vader_field_providers() {
 	$o = sv_vader_get_options();
 	printf(
@@ -241,9 +267,19 @@ function sv_vader_field_providers() {
 	);
     // NEW: FMI
 	printf(
-		'<label><input type="checkbox" name="sv_vader_options[prov_fmi]" value="1" %s/> %s</label>',
+		'<label><input type="checkbox" name="sv_vader_options[prov_fmi]" value="1" %s/> %s</label><br>',
 		checked( 1, ! empty( $o['prov_fmi'] ), false ),
 		esc_html__( 'FMI (Finland, Open Data)', 'spelhubben-weather' )
+	);
+	printf(
+		'<label><input type="checkbox" name="sv_vader_options[prov_openweathermap]" value="1" %s/> %s</label><br>',
+		checked( 1, ! empty( $o['prov_openweathermap'] ), false ),
+		esc_html__( 'Open-Weathermap', 'spelhubben-weather' )
+	);
+	printf(
+		'<label><input type="checkbox" name="sv_vader_options[prov_weatherapi]" value="1" %s/> %s</label>',
+		checked( 1, ! empty( $o['prov_weatherapi'] ), false ),
+		esc_html__( 'Weatherapi.com', 'spelhubben-weather' )
 	);
 }
 

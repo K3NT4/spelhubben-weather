@@ -16,7 +16,7 @@ if ( ! defined( 'WP_UNINSTALL_PLUGIN' ) ) {
  * 1) Explicit option keys (single & network)
  *    Prefer API deletes to avoid raw SQL.
  */
-$option_keys = array(
+$sv_vader_option_keys = array(
     // Legacy
     'sv_vader_options',
     'widget_sv_vader_widget',
@@ -26,22 +26,22 @@ $option_keys = array(
     'widget_spelhubben_weather_widget',
 );
 
-foreach ( $option_keys as $key ) {
-    delete_option( $key );
-    delete_site_option( $key );
+foreach ( $sv_vader_option_keys as $sv_vader_key ) {
+    delete_option( $sv_vader_key );
+    delete_site_option( $sv_vader_key );
 }
 
 /**
  * 2) Known transients (if you use specific names, add them here)
  *    These are safe API calls.
  */
-$transient_keys = array(
+$sv_vader_transient_keys = array(
     'sv_vader_forecast_cache',
     'spelhubben_weather_forecast_cache',
 );
-foreach ( $transient_keys as $t ) {
-    delete_transient( $t );
-    delete_site_transient( $t );
+foreach ( $sv_vader_transient_keys as $sv_vader_t ) {
+    delete_transient( $sv_vader_t );
+    delete_site_transient( $sv_vader_t );
 }
 
 /**
@@ -58,7 +58,7 @@ foreach ( $transient_keys as $t ) {
 global $wpdb;
 
 // Raw prefixes (without %). We'll escape with esc_like() and add '%'.
-$option_prefixes = array(
+$sv_vader_option_prefixes = array(
     // Legacy
     'sv_vader_',
     'sv-vader-',
@@ -73,14 +73,14 @@ $option_prefixes = array(
 );
 
 // phpcs:disable WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
-foreach ( $option_prefixes as $raw_prefix ) {
-    $like = $wpdb->esc_like( $raw_prefix ) . '%';
+foreach ( $sv_vader_option_prefixes as $sv_vader_raw_prefix ) {
+    $sv_vader_like = $wpdb->esc_like( $sv_vader_raw_prefix ) . '%';
 
     // Allowed table-property interpolation ($wpdb->options) + prepared LIKE.
     $names = $wpdb->get_col(
         $wpdb->prepare(
             "SELECT option_name FROM {$wpdb->options} WHERE option_name LIKE %s",
-            $like
+            $sv_vader_like
         )
     );
 
@@ -93,7 +93,7 @@ foreach ( $option_prefixes as $raw_prefix ) {
 
 // Multisite: sitemeta transients/prefixes + option-like keys
 if ( is_multisite() && ! empty( $wpdb->sitemeta ) ) {
-    $site_prefixes = array(
+    $sv_vader_site_prefixes = array(
         '_site_transient_sv_vader_',
         '_site_transient_timeout_sv_vader_',
         '_site_transient_spelhubben_weather_',
@@ -105,21 +105,21 @@ if ( is_multisite() && ! empty( $wpdb->sitemeta ) ) {
         'spelhubben-weather_',
     );
 
-    foreach ( $site_prefixes as $raw_prefix ) {
-        $like = $wpdb->esc_like( $raw_prefix ) . '%';
+    foreach ( $sv_vader_site_prefixes as $sv_vader_raw_prefix ) {
+        $sv_vader_like = $wpdb->esc_like( $sv_vader_raw_prefix ) . '%';
 
         // Allowed table-property interpolation ($wpdb->sitemeta) + prepared LIKE.
-        $meta_keys = $wpdb->get_col(
+        $sv_vader_meta_keys = $wpdb->get_col(
             $wpdb->prepare(
                 "SELECT meta_key FROM {$wpdb->sitemeta} WHERE meta_key LIKE %s",
-                $like
+                $sv_vader_like
             )
         );
 
-        if ( $meta_keys ) {
-            foreach ( $meta_keys as $meta_key ) {
+        if ( $sv_vader_meta_keys ) {
+            foreach ( $sv_vader_meta_keys as $sv_vader_meta_key ) {
                 // Works for *_site_transient_* and site options keys.
-                delete_site_option( $meta_key );
+                delete_site_option( $sv_vader_meta_key );
             }
         }
     }
@@ -130,24 +130,24 @@ if ( is_multisite() && ! empty( $wpdb->sitemeta ) ) {
  * 4) Clear scheduled cron events with our prefixes (best-effort)
  */
 if ( function_exists( '_get_cron_array' ) ) {
-    $prefixes = array(
+    $sv_vader_prefixes = array(
         'sv_vader_',
         'sv-vader-',
         'spelhubben_weather_',
         'spelhubben-weather-',
     );
 
-    $crons = _get_cron_array();
-    if ( is_array( $crons ) ) {
-        foreach ( $crons as $timestamp => $hooks ) {
-            if ( ! is_array( $hooks ) ) {
+    $sv_vader_crons = _get_cron_array();
+    if ( is_array( $sv_vader_crons ) ) {
+        foreach ( $sv_vader_crons as $sv_vader_timestamp => $sv_vader_hooks ) {
+            if ( ! is_array( $sv_vader_hooks ) ) {
                 continue;
             }
-            foreach ( $hooks as $hook => $events ) {
-                foreach ( $prefixes as $pfx ) {
-                    if ( strpos( $hook, $pfx ) === 0 ) {
-                        while ( wp_next_scheduled( $hook ) ) {
-                            wp_clear_scheduled_hook( $hook );
+            foreach ( $sv_vader_hooks as $sv_vader_hook => $sv_vader_events ) {
+                foreach ( $sv_vader_prefixes as $sv_vader_pfx ) {
+                    if ( strpos( $sv_vader_hook, $sv_vader_pfx ) === 0 ) {
+                        while ( wp_next_scheduled( $sv_vader_hook ) ) {
+                            wp_clear_scheduled_hook( $sv_vader_hook );
                         }
                         break;
                     }

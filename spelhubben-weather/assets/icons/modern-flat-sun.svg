@@ -1,0 +1,17 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64">
+  <defs>
+    <style>
+      .modern-sun { fill: #F7B801; }
+      .modern-rays { fill: #F5A623; }
+    </style>
+  </defs>
+  <circle cx="32" cy="32" r="14" class="modern-sun"/>
+  <rect x="31" y="4" width="2" height="8" class="modern-rays"/>
+  <rect x="31" y="52" width="2" height="8" class="modern-rays"/>
+  <rect x="4" y="31" width="8" height="2" class="modern-rays"/>
+  <rect x="52" y="31" width="8" height="2" class="modern-rays"/>
+  <rect x="11.17" y="11.17" width="2" height="8" transform="rotate(-45 12.17 15.17)" class="modern-rays"/>
+  <rect x="50.83" y="50.83" width="2" height="8" transform="rotate(-45 51.83 54.83)" class="modern-rays"/>
+  <rect x="50.83" y="11.17" width="8" height="2" transform="rotate(45 54.83 12.17)" class="modern-rays"/>
+  <rect x="11.17" y="50.83" width="8" height="2" transform="rotate(45 15.17 51.83)" class="modern-rays"/>
+</svg>

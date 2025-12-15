@@ -33,21 +33,11 @@ class SV_Vader_Plugin {
     }
 
     /**
-     * Register legacy shortcode and the new alias.
+     * Register the main shortcode.
      */
     public function register_shortcodes() {
-        // Legacy shortcode (kept for compatibility)
-        add_shortcode('sv_vader', [$this, 'render_shortcode_proxy']);
-
-        // New shortcode alias with attribute adapter (English -> legacy Swedish keys)
+        // Only the new shortcode alias (legacy sv_vader removed in v1.8.0)
         add_shortcode('spelhubben_weather', [$this, 'render_shortcode_alias']);
-    }
-
-    /**
-     * Proxy to renderer method for legacy shortcode.
-     */
-    public function render_shortcode_proxy($atts = [], $content = null, $tag = '') {
-        return $this->renderer->render_shortcode($atts, $content, $tag);
     }
 
     /**

@@ -1,0 +1,18 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64">
+  <defs>
+    <linearGradient id="rainGrad" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" style="stop-color:#4A9FFF;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#1E6FD9;stop-opacity:1" />
+    </linearGradient>
+    <filter id="shadowRain">
+      <feDropShadow dx="0" dy="2" stdDeviation="3" flood-opacity="0.2"/>
+    </filter>
+  </defs>
+  <path d="M18 36h28a11 11 0 0 0 0-22 15 15 0 0 0-29-4A12 12 0 0 0 18 36z" fill="url(#rainGrad)" filter="url(#shadowRain)"/>
+  <g stroke="#1E6FD9" stroke-width="2" stroke-linecap="round" opacity="0.9">
+    <line x1="18" y1="42" x2="15" y2="50"/>
+    <line x1="28" y1="42" x2="25" y2="50"/>
+    <line x1="38" y1="42" x2="35" y2="50"/>
+    <line x1="48" y1="42" x2="45" y2="50"/>
+  </g>
+</svg>

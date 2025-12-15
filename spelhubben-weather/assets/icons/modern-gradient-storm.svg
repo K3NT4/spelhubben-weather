@@ -1,0 +1,13 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64">
+  <defs>
+    <linearGradient id="stormGrad" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" style="stop-color:#2C5FD9;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#1A3FA8;stop-opacity:1" />
+    </linearGradient>
+    <filter id="shadowStorm">
+      <feDropShadow dx="0" dy="2" stdDeviation="3" flood-opacity="0.25"/>
+    </filter>
+  </defs>
+  <path d="M18 36h28a11 11 0 0 0 0-22 15 15 0 0 0-29-4A12 12 0 0 0 18 36z" fill="url(#stormGrad)" filter="url(#shadowStorm)"/>
+  <path fill="#FFD700" d="M32 38l-4 10h3l-2 6 6-10h-3l2-6z" opacity="0.95"/>
+</svg>

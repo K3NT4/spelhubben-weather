@@ -2,7 +2,7 @@
 /**
  * Plugin Name: Spelhubben Weather
  * Description: Displays current weather and an optional forecast with a simple consensus across providers (Open-Meteo, SMHI, Yr/MET Norway). Supports shortcode + Gutenberg block + classic widget. Optional Leaflet map, subtle animations, daily forecast, and multiple layouts.
- * Version: 1.7.5
+ * Version: 1.8.2
  * Author: Spelhubben
  * Text Domain: spelhubben-weather
  * Domain Path: /languages
@@ -18,7 +18,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 
 // ── Constants (kept for backward compatibility).
 if ( ! defined( 'SV_VADER_VER' ) ) {
-	define( 'SV_VADER_VER', '1.7.5' );
+	define( 'SV_VADER_VER', '1.8.2' );
 }
 if ( ! defined( 'SV_VADER_DIR' ) ) {
 	define( 'SV_VADER_DIR', plugin_dir_path( __FILE__ ) );
@@ -58,19 +58,20 @@ spl_autoload_register(
 require_once SV_VADER_DIR . 'includes/i18n.php';           // Language helpers.
 require_once SV_VADER_DIR . 'includes/options.php';
 require_once SV_VADER_DIR . 'includes/format.php';         // NEW: Units & formatting helpers
+require_once SV_VADER_DIR . 'includes/class-wporg-plugins.php'; // WP.org plugin showcase
 require_once SV_VADER_DIR . 'includes/class-sv-vader.php'; // API/service layer.
 
 if ( is_admin() ) {
-	$admin = SV_VADER_DIR . 'admin/admin.php';
-	if ( file_exists( $admin ) ) {
-		require_once $admin;
+	$sv_vader_admin = SV_VADER_DIR . 'admin/admin.php';
+	if ( file_exists( $sv_vader_admin ) ) {
+		require_once $sv_vader_admin;
 	}
 }
 
 // ── Widget (namespaced or classic).
-$widget_file = SV_VADER_DIR . 'includes/Widget/class-widget.php';
-if ( file_exists( $widget_file ) ) {
-	require_once $widget_file;
+$sv_vader_widget_file = SV_VADER_DIR . 'includes/Widget/class-widget.php';
+if ( file_exists( $sv_vader_widget_file ) ) {
+	require_once $sv_vader_widget_file;
 }
 
 // ── Register widget (namespaced variant preferred).

@@ -16,27 +16,12 @@ if ( ! function_exists( 'sv_vader_render_shortcodes_page' ) ) {
 		$nx4 = '[spelhubben_weather place="Umeå" layout="detailed" forecast="daily" days="5" providers="smhi,yr,openmeteo,fmi" units="metric_kmh"]';
 		$nx5 = '[spelhubben_weather place="Malmö" show="temp,wind" map="0" units="imperial"]';
 
-		// Legacy (behålls för referens)
-		$lx1 = '[sv_vader]';
-		$lx2 = '[sv_vader ort="Göteborg" layout="compact" map="1" animate="1"]';
-		$lx3 = '[sv_vader lat="57.7089" lon="11.9746" ort="Göteborg" layout="inline" map="0" show="temp,icon"]';
-		$lx4 = '[sv_vader ort="Umeå" layout="detailed" forecast="daily" days="5" providers="smhi,yr,openmeteo"]';
-		$lx5 = '[sv_vader ort="Malmö" show="temp,wind" map="0"]';
-
 		$new_examples = array(
 			array( 'label' => __( 'Basic example', 'spelhubben-weather' ), 'code' => $nx1 ),
 			array( 'label' => __( 'Compact with map & animation', 'spelhubben-weather' ), 'code' => $nx2 ),
 			array( 'label' => __( 'Inline without map', 'spelhubben-weather' ), 'code' => $nx3 ),
 			array( 'label' => __( 'Detailed with daily forecast & km/h', 'spelhubben-weather' ), 'code' => $nx4 ),
 			array( 'label' => __( 'Only temperature + wind, imperial', 'spelhubben-weather' ), 'code' => $nx5 ),
-		);
-
-		$legacy_examples = array(
-			array( 'label' => __( 'Basic example (legacy)', 'spelhubben-weather' ), 'code' => $lx1 ),
-			array( 'label' => __( 'Compact with map & animation (legacy)', 'spelhubben-weather' ), 'code' => $lx2 ),
-			array( 'label' => __( 'Inline without map (legacy)', 'spelhubben-weather' ), 'code' => $lx3 ),
-			array( 'label' => __( 'Detailed with daily forecast & all providers (legacy)', 'spelhubben-weather' ), 'code' => $lx4 ),
-			array( 'label' => __( 'Only temperature + wind, no map (legacy)', 'spelhubben-weather' ), 'code' => $lx5 ),
 		);
 		?>
 		<div class="wrap svv-admin-wrap">
@@ -78,42 +63,16 @@ if ( ! function_exists( 'sv_vader_render_shortcodes_page' ) ) {
 									 data-code="<?php echo esc_attr( $ex['code'] ); ?>">
 									<div class="svv-codeblock-head">
 										<span><?php echo esc_html( $ex['label'] ); ?></span>
-										<div class="svv-chiprow">
-											<span class="svv-chip"><?php esc_html_e( 'new', 'spelhubben-weather' ); ?></span>
-											<button type="button" class="button button-secondary svv-copy-btn"
-													data-copy="<?php echo esc_attr( $ex['code'] ); ?>">
-												<?php esc_html_e( 'Copy', 'spelhubben-weather' ); ?>
-											</button>
-										</div>
+									<button type="button" class="button button-secondary svv-copy-btn"
+											data-copy="<?php echo esc_attr( $ex['code'] ); ?>">
+										<?php esc_html_e( 'Copy', 'spelhubben-weather' ); ?>
+									</button>
 									</div>
 									<pre class="svv-pre"><code tabindex="0"><?php echo esc_html( $ex['code'] ); ?></code></pre>
                                 </div>
 							<?php endforeach; ?>
 						</div>
 
-						<details class="svv-details" style="margin-top:14px;">
-							<summary><?php esc_html_e( 'Legacy shortcode examples (deprecated – will be removed soon)', 'spelhubben-weather' ); ?></summary>
-
-							<div class="svv-codegrid">
-								<?php foreach ( $legacy_examples as $ex ) : ?>
-									<div class="svv-codeblock svv-codeblock--light" data-svv-visible="1"
-										 data-label="<?php echo esc_attr( $ex['label'] ); ?>"
-										 data-code="<?php echo esc_attr( $ex['code'] ); ?>">
-										<div class="svv-codeblock-head">
-											<span><?php echo esc_html( $ex['label'] ); ?></span>
-											<div class="svv-chiprow">
-												<span class="svv-chip svv-chip-muted"><?php esc_html_e( 'legacy', 'spelhubben-weather' ); ?></span>
-												<button type="button" class="button button-secondary svv-copy-btn"
-														data-copy="<?php echo esc_attr( $ex['code'] ); ?>">
-													<?php esc_html_e( 'Copy', 'spelhubben-weather' ); ?>
-												</button>
-											</div>
-										</div>
-										<pre class="svv-pre"><code tabindex="0"><?php echo esc_html( $ex['code'] ); ?></code></pre>
-									</div>
-								<?php endforeach; ?>
-							</div>
-						</details>
 					</div>
 				</div>
 
