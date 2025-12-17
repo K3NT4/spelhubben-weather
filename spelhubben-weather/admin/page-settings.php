@@ -95,15 +95,35 @@ if ( ! function_exists( 'sv_vader_render_settings_page' ) ) {
 				</div>
 			</div><!-- /.svv-grid -->
 
-			<!-- More plugins by Spelhubben -->
-			<div style="margin-top: 30px; margin-bottom: 20px;">
-				<?php
-				if ( class_exists( 'SV_Vader_WPOrg_Plugins' ) ) {
-					$wporg = new SV_Vader_WPOrg_Plugins();
-					echo wp_kses_post( $wporg->render() );
-				}
-				?>
+			<!-- More plugins by Spelhubben - lazy loaded -->
+			<div id="svv-plugin-showcase" style="margin-top: 30px; margin-bottom: 20px;">
+				<p style="color: #666; font-style: italic;">
+					<?php esc_html_e( 'Loading other Spelhubben plugins…', 'spelhubben-weather' ); ?>
+				</p>
 			</div>
+			<script>
+				document.addEventListener('DOMContentLoaded', function() {
+					fetch(ajaxurl || '/wp-admin/admin-ajax.php', {
+						method: 'POST',
+						credentials: 'same-origin',
+						headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+						body: 'action=svv_load_wporg_showcase'
+					})
+					.then(r => r.json())
+					.then(data => {
+						const el = document.getElementById('svv-plugin-showcase');
+						if (el && data.success && data.data) {
+							el.innerHTML = data.data;
+						}
+					})
+					.catch(() => {
+						const el = document.getElementById('svv-plugin-showcase');
+						if (el) {
+							el.innerHTML = '<p style="color: #999;"><?php echo esc_html__( 'Could not load plugin showcase.', 'spelhubben-weather' ); ?></p>';
+						}
+					});
+				});
+			</script>
 		</div><!-- /.wrap -->
 		<?php
 	}

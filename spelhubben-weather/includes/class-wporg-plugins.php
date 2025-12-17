@@ -387,22 +387,20 @@ if ( ! class_exists( 'SV_Vader_WPOrg_Plugins' ) ) {
 			$res = wp_remote_get(
 				$url,
 				array(
-					'timeout'     => 15,
-					'redirection' => 3,
-					'user-agent'  => 'Spelhubben-Weather/1.8.0; ' . home_url( '/' ),
-				)
-			);
+				'timeout'     => 8,
+				'redirection' => 3,
+				'user-agent'  => 'Spelhubben-Weather/1.8.0; ' . home_url( '/' ),
+			)
+		);
 
-			if ( is_wp_error( $res ) ) {
-				return $res;
-			}
+		if ( is_wp_error( $res ) ) {
+			// Return empty on error - showcase will be skipped gracefully
+			return array();
+		}
 
-			$code = (int) wp_remote_retrieve_response_code( $res );
-			$body = (string) wp_remote_retrieve_body( $res );
+		$code = wp_remote_retrieve_response_code( $res );
+		$body = wp_remote_retrieve_body( $res );
 
-			if ( $code < 200 || $code >= 300 || $body === '' ) {
-				return array();
-			}
 
 			$data = json_decode( $body );
 			if ( ! is_object( $data ) || empty( $data->plugins ) || ! is_array( $data->plugins ) ) {

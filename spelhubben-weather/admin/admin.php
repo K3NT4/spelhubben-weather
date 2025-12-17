@@ -378,3 +378,20 @@ add_action( 'wp_ajax_svv_preview_shortcode', function () {
 
 	wp_send_json_success( array( 'html' => $html ) );
 } );
+
+/**
+ * Load WP.org plugin showcase via AJAX (lazy load for performance)
+ */
+add_action( 'wp_ajax_svv_load_wporg_showcase', function () {
+	if ( ! current_user_can( 'manage_options' ) ) {
+		wp_send_json_error( array( 'message' => 'forbidden' ), 403 );
+	}
+
+	if ( class_exists( 'SV_Vader_WPOrg_Plugins' ) ) {
+		$wporg = new SV_Vader_WPOrg_Plugins();
+		$html = $wporg->render();
+		wp_send_json_success( wp_kses_post( $html ) );
+	} else {
+		wp_send_json_error( array( 'message' => 'class_not_found' ), 500 );
+	}
+} );

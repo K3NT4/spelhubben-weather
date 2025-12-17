@@ -167,7 +167,9 @@ class SV_Vader_API {
 
 	private function geocode($q) {
 		$salt = sv_vader_cache_salt();
-		$geocode_cache_key = 'sv_vader_geocode_' . md5($q . $salt);
+		$api_lang = sv_vader_api_lang();
+		// Include language in cache key to avoid stale translations
+		$geocode_cache_key = 'sv_vader_geocode_' . md5($q . $api_lang . $salt);
 		
 		// Check cache first
 		$cached = get_transient($geocode_cache_key);
@@ -205,12 +207,12 @@ class SV_Vader_API {
 		$type = 'cloud';
 		// Clear sky
 		if (in_array($code, [0,1], true)) { $type = 'sun';
-		// Mostly cloudy
+		// Partly cloudy
 		} elseif (in_array($code, [2], true)) { $type = 'partly-cloudy';
-		// Overcast
-		} elseif (in_array($code, [3,45,48], true)) { $type = 'cloud';
-		// Fog/Mist
+		// Fog/Mist (no drizzle/rain, just fog)
 		} elseif (in_array($code, [45,48], true)) { $type = 'fog';
+		// Overcast
+		} elseif (in_array($code, [3], true)) { $type = 'cloud';
 		// Drizzle (light rain)
 		} elseif (in_array($code, [51,53,55], true)) { $type = 'rain';
 		// Rain

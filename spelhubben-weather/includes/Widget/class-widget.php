@@ -39,9 +39,9 @@ class SV_Vader_Widget extends WP_Widget {
         $instance = wp_parse_args((array) $instance, $defaults);
 
         $title     = isset($instance['title']) ? $instance['title'] : '';
-        $ort       = sanitize_text_field($instance['ort']);
-        $lat       = sanitize_text_field($instance['lat']);
-        $lon       = sanitize_text_field($instance['lon']);
+        $ort       = sanitize_text_field($instance['ort'] ?? '');
+        $lat       = sanitize_text_field($instance['lat'] ?? '');
+        $lon       = sanitize_text_field($instance['lon'] ?? '');
 
         $show_selected = $instance['show'];
         if (is_string($show_selected)) {

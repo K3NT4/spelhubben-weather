@@ -2,6 +2,17 @@
 // includes/providers.php - Weather data providers and normalization functions
 if (!defined('ABSPATH')) exit;
 
+/**
+ * Helper: Check if remote response is valid
+ * Returns true if response is OK and status code matches expected
+ */
+if (!function_exists('sv_vader_check_remote_response')) {
+    function sv_vader_check_remote_response($res, $expected_code = 200) {
+        if (is_wp_error($res)) return false;
+        return wp_remote_retrieve_response_code($res) === $expected_code;
+    }
+}
+
 if (!function_exists('sv_vader_openmeteo_current')) {
     function sv_vader_openmeteo_current($lat, $lon, $locale = 'en') {
         $url = add_query_arg([
@@ -13,7 +24,7 @@ if (!function_exists('sv_vader_openmeteo_current')) {
         ], 'https://api.open-meteo.com/v1/forecast');
 
         $res = wp_remote_get($url, ['timeout' => 10]);
-        if (is_wp_error($res) || wp_remote_retrieve_response_code($res) !== 200) return null;
+        if (!sv_vader_check_remote_response($res, 200)) return null;
         $j = json_decode(wp_remote_retrieve_body($res), true);
         if (empty($j['current'])) return null;
 
