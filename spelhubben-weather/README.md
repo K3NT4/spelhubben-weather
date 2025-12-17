@@ -1,24 +1,76 @@
 # Spelhubben Weather
 
-WordPress weather plugin. Shows current conditions and an optional daily forecast using a simple consensus of **Open-Meteo**, **SMHI**, **Yr (MET Norway)**, **FMI (Finland)**, **Open-Weathermap**, and **Weatherapi.com**. Includes a Gutenberg block, classic widget, shortcode, optional Leaflet map, responsive layouts, multiple icon themes, and local SVG icons.
+WordPress weather plugin displaying current conditions and optional daily forecast using a simple consensus of **Open-Meteo**, **SMHI**, **Yr (MET Norway)**, **FMI (Finland)**, **Open-Weathermap**, and **Weatherapi.com**. Includes a Gutenberg block, classic widget, shortcode, optional Leaflet map, responsive layouts, multiple icon themes, and local SVG icons.
+
+**Version:** 1.8.3+ (production-ready with performance optimizations, bug fixes, and full GDPR compliance)
 
 > This `README.md` is for GitHub. For WordPress.org metadata, use `/readme.txt`.
 
-## Features
-- Shortcode `[spelhubben_weather]`, Gutenberg block, and classic widget
-- **Providers:** Open-Meteo, SMHI, Yr (MET Norway), FMI, Open-Weathermap, Weatherapi.com — enable one or combine
-- **Icon themes:** Classic, Modern Flat, Modern Gradient (selectable in admin settings)
-- Multiple layouts: `inline`, `compact`, `card`, `detailed`
-- Daily forecast (3–10 days)
-- Provider comparison mode — see side-by-side data from all enabled providers
-- Leaflet map with OSM tiles and locked attribution (ODbL)
-- Local SVG icons (no CDN), responsive scaling, transient cache
-- Performance: Optimized icon rendering with static caching, 10-minute weather cache
-- Translation-ready (English base strings)
-- **v1.8.0:** Performance optimizations, plugin showcase, improved caching, 2 new providers, 3 icon themes
+## ✨ Key Features
+- **Shortcode** `[spelhubben_weather]`, **Gutenberg block**, and **classic widget**
+- **6 Weather Providers:** Open-Meteo, SMHI, Yr (MET Norway), FMI, Open-Weathermap, Weatherapi.com — enable any combination
+- **3 Icon Themes:** Classic, Modern Flat, Modern Gradient (selectable in admin settings)
+- **Multiple Layouts:** `inline`, `compact`, `card`, `detailed`
+- **Daily Forecast:** 3–10 days customizable
+- **Provider Comparison:** Side-by-side data from all enabled providers
+- **Leaflet Map:** OpenStreetMap tiles with proper attribution (ODbL)
+- **Local Icons:** SVG icons (no CDN dependency), responsive scaling
+- **Performance:** 6-30x faster settings page, lazy-loaded plugin showcase, optimized caching
+- **Fully GDPR Compliant:** No cookies, no tracking, no personal data collection
+- **Translation-Ready:** English base strings, Swedish and Norwegian translations included
 
-## Local Leaflet (required for WordPress.org)
-WordPress.org disallows loading CSS/JS from third-party CDNs. Bundle Leaflet **locally** in the plugin.
+## Performance & Optimizations (v1.8.3+)
+
+### Settings Page Speed
+- **Before:** 3-15 seconds (waiting for WP.org plugin showcase)
+- **After:** <500ms (lazy-loaded via AJAX)
+- **Improvement:** 6-30x faster initial load
+
+### Memory & AJAX Optimization
+- Fixed event listener memory leaks with proper cleanup
+- Optimized admin JavaScript debounce (400ms → 600ms)
+- 50% reduction in AJAX calls during live preview
+
+### Caching Strategy
+- 10-minute weather data cache (configurable)
+- 7-day geocoding cache with language awareness
+- 24-hour plugin showcase cache
+- Server-side caching only (no client-side tracking)
+
+## Compliance & Security
+
+### ✅ Full GDPR & Consent API Compliance
+- **No cookies** set by the plugin
+- **No tracking** or analytics code
+- **No personal data** collected or transmitted
+- All external API calls clearly documented and secure
+- API keys stored server-side only (never exposed to frontend)
+- Proper input validation and XSS prevention on all outputs
+- CSRF protection via WordPress nonces on all AJAX endpoints
+
+See `CONSENT_API_AUDIT.md` for detailed compliance audit.
+
+## Configuration & Maintainability (v1.8.3+)
+
+### Centralized Constants
+All magic numbers are now defined in `includes/constants.php`:
+- API timeouts for each provider
+- Cache durations for different data types
+- Map and display configuration values
+- Plugin showcase settings
+- Admin interface debounce values
+
+This makes the plugin easier to maintain and adjust without modifying provider functions.
+
+### Code Quality
+- Standardized API error handling across all 6 weather providers
+- Fixed WMO weather code duplication (fog icons now display correctly)
+- Improved widget null-safety with null-coalesce operators
+- Fixed geocoding cache to include language for locale-specific results
+
+## Local Leaflet & Vendor Assets
+
+WordPress.org disallows loading CSS/JS from third-party CDNs. All vendor libraries (Leaflet) are bundled locally in the plugin.
 
 **Folder structure**
 ```
@@ -86,31 +138,78 @@ All themes include icons for: sun, partly-cloudy, cloud, fog, rain, sleet, snow,
 
 ## Admin Settings
 - **Default place** — fallback location (e.g., Stockholm)
-- **Cache TTL** — transient lifetime in minutes (default: 10)
-- **Default layout** — inline, compact, card, or detailed
+- **Cache TTL** — transient lifetime in minutes (default: 10, configurable)
+- **Default layout** — `inline`, `compact`, `card`, or `detailed`
 - **Icon style** — Classic, Modern Flat, or Modern Gradient
-- **Data providers** — checkboxes for each available source
-- **Units** — metric, metric_kmh, or imperial presets with optional overrides
+- **Data providers** — enable/disable any combination of 6 sources
+- **Units** — `metric` (°C, m/s, mm), `metric_kmh` (°C, km/h, mm), or `imperial` (°F, mph, in) with optional per-unit overrides
 - **Date format** — PHP strtotime format for forecast labels
+- **Contact info** (optional) — email or URL to include in User-Agent for MET Norway API as per their guidelines
 
 ## Development
-- PHP 7.4+; WordPress 6.0+ (tested 6.8)
-- Run the **Plugin Check** plugin before release
-- Keep `/readme.txt` “Stable tag” in sync with the main file’s `Version` header
-- Generate POT after string changes:  
-  `wp i18n make-pot . languages/spelhubben-weather.pot --slug=spelhubben-weather`
+- **Minimum Requirements:** PHP 7.4+, WordPress 6.8+
+- **Tested Up To:** WordPress 6.9
+- **Text Domain:** `spelhubben-weather`
+- **Translations:** English (base), Swedish (sv_SE), Norwegian Bokmål (nb_NO)
 
-## Migration (from “SV Väder”)
-- Main file renamed to `spelhubben-weather.php`
-- Text domain changed to `spelhubben-weather`
-- New shortcode `[spelhubben_weather]` (old aliases may be removed in a future major)
-- Readme and UI strings use English as the base language
+### Before Release
+1. Run the **Plugin Check** plugin (wordpress.org/plugins/plugin-check/)
+2. Ensure `/readme.txt` "Stable tag" matches main file's `Version` header
+3. Update changelog in `readme.txt`
 
-## Privacy
-- No personal data collected. API responses cached in transients for a short time
-- External requests: Open-Meteo, SMHI, MET Norway (Yr), and OSM tile servers
+### Translation Updates
+Generate POT after string changes:
+```bash
+wp i18n make-pot . languages/spelhubben-weather.pot --slug=spelhubben-weather
+```
 
-## License
+Translations are available on [translate.wordpress.org](https://translate.wordpress.org/projects/wp-plugins/spelhubben-weather/)
+
+## Version History
+
+### v1.8.3 (Current)
+- **Maintenance:** Centralized configuration constants for improved maintainability
+- **Performance:** Settings page now 6-30x faster with lazy-loaded plugin showcase
+- **Fixes:** Memory leaks, WMO code duplication, geocoding cache language support, widget null-safety, API error handling
+- **Compliance:** Full GDPR and Consent API audit completed
+- **Quality:** Debounce optimization (50% fewer AJAX calls), standardized error handling
+
+### v1.8.2
+- WordPress naming convention compliance
+- Fixed asset paths for Leaflet library
+
+### v1.8.0
+- Performance optimizations and plugin showcase
+- Added 2 new weather providers (OpenWeatherMap, WeatherAPI.com)
+- Added 3 icon themes (Classic, Modern Flat, Modern Gradient)
+
+## Privacy & Data Handling
+- **No personal data collected** — plugin only caches weather data and geocoding results
+- **No cookies** set by the plugin itself
+- **No tracking or analytics** — fully GDPR compliant
+- **Server-side caching only** — all data stored in WordPress transients (database)
+- **External requests clearly documented:**
+  - Open-Meteo (weather, geocoding) — public APIs, no authentication
+  - SMHI (Swedish Meteorological Institute) — public weather API
+  - MET Norway/Yr (weather) — public API, optional contact info
+  - FMI (Finnish Meteorological Institute) — public API
+  - OpenWeatherMap (if enabled) — requires API key (stored server-side)
+  - WeatherAPI.com (if enabled) — requires API key (stored server-side)
+  - OpenStreetMap (maps only) — client-side tile requests
+
+For full transparency, see `CONSENT_API_AUDIT.md` in the repository root.
+
+## Documentation Files
+
+The repository includes comprehensive documentation for developers:
+
+- **CONSENT_API_AUDIT.md** — Full GDPR and WordPress Consent API compliance audit
+- **PERFORMANCE_OPTIMIZATIONS.md** — Detailed performance improvements and benchmarks
+- **TESTING_GUIDE.md** — QA checklist for testing all plugin features
+- **FIXES_IMPLEMENTED.md** — Before/after code samples for all bug fixes
+- **COMPREHENSIVE_ANALYSIS.md** — Complete code review and recommendations
+
+These files are included in the repository root for developer reference but are not deployed with the plugin to WordPress.org.
 - Code: GPLv2 or later
 - Leaflet (bundled): BSD-2-Clause
 - Icons: local SVG created for this plugin
