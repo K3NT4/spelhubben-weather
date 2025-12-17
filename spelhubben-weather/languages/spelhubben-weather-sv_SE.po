@@ -1,8 +1,8 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: Spelhubben Weather\n"
-"POT-Creation-Date: 2025-12-15 18:19+0100\n"
-"PO-Revision-Date: 2025-12-15 18:22+0100\n"
+"POT-Creation-Date: 2025-12-17 19:06+0100\n"
+"PO-Revision-Date: 2025-12-17 19:07+0100\n"
 "Last-Translator: \n"
 "Language-Team: \n"
 "Language: sv_SE\n"
@@ -53,186 +53,186 @@ msgid "Preview failed"
 msgstr "Förhandsgranskningen misslyckades"
 
 #. Plugin Name of the plugin/theme
-#: admin/admin.php:93 admin/admin.php:94 includes/Widget/class-widget.php:19
+#: admin/admin.php:92 admin/admin.php:93 includes/Widget/class-widget.php:19
 msgid "Spelhubben Weather"
 msgstr "Spelhubben Väder"
 
-#: admin/admin.php:105 admin/admin.php:106 includes/class-plugin.php:104
+#: admin/admin.php:104 admin/admin.php:105 includes/class-plugin.php:104
 msgid "Settings"
 msgstr "Inställningar"
 
-#: admin/admin.php:115 admin/admin.php:116
+#: admin/admin.php:114 admin/admin.php:115
 msgid "Shortcodes"
 msgstr "Kortkoder"
 
-#: admin/admin.php:138 admin/page-settings.php:44
+#: admin/admin.php:137 admin/page-settings.php:44
 msgid "Default settings"
 msgstr "Standardinställningar"
 
-#: admin/admin.php:140
+#: admin/admin.php:139
 msgid "Default place"
 msgstr "Standardplats"
 
-#: admin/admin.php:141
+#: admin/admin.php:140
 msgid "Cache TTL (minutes)"
 msgstr "Cache-TTL (minuter)"
 
-#: admin/admin.php:142
+#: admin/admin.php:141
 msgid "Default fields"
 msgstr "Standardfält"
 
-#: admin/admin.php:143
+#: admin/admin.php:142
 msgid "Default layout"
 msgstr "Standard Layout"
 
-#: admin/admin.php:144
+#: admin/admin.php:143
 msgid "Show map by default"
 msgstr "Visa karta som standard"
 
-#: admin/admin.php:145 blocks/spelhubben-weather/index.js:59
+#: admin/admin.php:144 blocks/spelhubben-weather/index.js:59
 msgid "Map height (px)"
 msgstr "Karthöjd (px)"
 
-#: admin/admin.php:146
+#: admin/admin.php:145
 msgid "Icon style"
 msgstr "Ikonstil"
 
-#: admin/admin.php:147
+#: admin/admin.php:146
 msgid "Data providers"
 msgstr "Dataleverantörer"
 
-#: admin/admin.php:148
+#: admin/admin.php:147
 msgid "Yr contact/UA"
 msgstr "Yr contact/UA"
 
-#: admin/admin.php:151 admin/page-shortcodes.php:125
+#: admin/admin.php:150 admin/page-shortcodes.php:125
 #: blocks/spelhubben-weather/index.js:68
 msgid "Units & format"
 msgstr "Enheter och format"
 
-#: admin/admin.php:152 blocks/spelhubben-weather/index.js:70
+#: admin/admin.php:151 blocks/spelhubben-weather/index.js:70
 msgid "Preset"
 msgstr "Förinställa"
 
-#: admin/admin.php:153
+#: admin/admin.php:152
 msgid "Overrides (optional)"
 msgstr "Åsidosättningar (valfritt)"
 
-#: admin/admin.php:154
+#: admin/admin.php:153
 msgid "Date format (PHP)"
 msgstr "Datumformat (PHP)"
 
-#: admin/admin.php:164 blocks/spelhubben-weather/index.js:36
+#: admin/admin.php:163 blocks/spelhubben-weather/index.js:36
 msgid "e.g. Stockholm"
 msgstr "t.ex. Stockholm"
 
-#: admin/admin.php:178
+#: admin/admin.php:177
 msgid "How long weather data is cached (transients)."
 msgstr "Hur länge väderdata cachas (transienter)."
 
-#: admin/admin.php:187
+#: admin/admin.php:186
 msgid "Comma-separated: temp,wind,icon"
 msgstr "Kommaavgränsad: temp, vind, ikon"
 
-#: admin/admin.php:193
+#: admin/admin.php:192
 msgctxt "layout label"
 msgid "Inline"
 msgstr "Inline"
 
-#: admin/admin.php:194
+#: admin/admin.php:193
 msgctxt "layout label"
 msgid "Compact"
 msgstr "Kompakt"
 
-#: admin/admin.php:195
+#: admin/admin.php:194
 msgctxt "layout label"
 msgid "Card"
 msgstr "Kort"
 
-#: admin/admin.php:196
+#: admin/admin.php:195
 msgctxt "layout label"
 msgid "Detailed"
 msgstr "Detaljer"
 
-#: admin/admin.php:215
+#: admin/admin.php:214
 msgid "Enable map as default."
 msgstr "Aktivera karta som standard."
 
-#: admin/admin.php:230
+#: admin/admin.php:229
 msgid "Classic"
 msgstr "Klassisk"
 
-#: admin/admin.php:231
+#: admin/admin.php:230
 msgid "Modern Flat"
 msgstr "Modern platt"
 
-#: admin/admin.php:232
+#: admin/admin.php:231
 msgid "Modern Gradient"
 msgstr "Modern gradient"
 
-#: admin/admin.php:244
+#: admin/admin.php:243
 msgid "Choose your preferred weather icon theme."
 msgstr "Välj ditt föredragna tema för väderikoner."
 
-#: admin/admin.php:252
+#: admin/admin.php:251
 msgid "Open-Meteo"
 msgstr "Open-Meteo"
 
-#: admin/admin.php:257
+#: admin/admin.php:256
 msgid "SMHI"
 msgstr "SMHI"
 
-#: admin/admin.php:262
+#: admin/admin.php:261
 msgid "Yr (MET Norway)"
 msgstr "Yr (MET Norway)"
 
-#: admin/admin.php:267
+#: admin/admin.php:266
 msgid "MET Norway Nowcast"
 msgstr "MET Norway Nowcast"
 
-#: admin/admin.php:273
+#: admin/admin.php:272
 msgid "FMI (Finland, Open Data)"
 msgstr "FMI (Finland, Open Data)"
 
-#: admin/admin.php:278
+#: admin/admin.php:277
 msgid "Open-Weathermap"
 msgstr "Open-Weathermap"
 
-#: admin/admin.php:283
+#: admin/admin.php:282
 msgid "Weatherapi.com"
 msgstr "Weatherapi.com"
 
-#: admin/admin.php:293
+#: admin/admin.php:292
 msgid "Recommended by MET Norway: include an email or URL in your User-Agent."
 msgstr ""
 "Rekommenderas av MET Norge: inkludera en e-postadress eller URL i din "
 "användaragent."
 
-#: admin/admin.php:299 blocks/spelhubben-weather/index.js:16
+#: admin/admin.php:298 blocks/spelhubben-weather/index.js:16
 msgid "Metric (°C, m/s, mm)"
 msgstr "Metrisk (°C, m/s, mm)"
 
-#: admin/admin.php:300 blocks/spelhubben-weather/index.js:17
+#: admin/admin.php:299 blocks/spelhubben-weather/index.js:17
 msgid "Metric (°C, km/h, mm)"
 msgstr "Metrisk (°C, km/h, mm)"
 
-#: admin/admin.php:301 blocks/spelhubben-weather/index.js:18
+#: admin/admin.php:300 blocks/spelhubben-weather/index.js:18
 msgid "Imperial (°F, mph, in)"
 msgstr "Imperial (°F, mph, in)"
 
-#: admin/admin.php:319
+#: admin/admin.php:318
 msgid "Temp unit"
 msgstr "Temp-enhet"
 
-#: admin/admin.php:324
+#: admin/admin.php:323
 msgid "Wind unit"
 msgstr "Vindenhet"
 
-#: admin/admin.php:329
+#: admin/admin.php:328
 msgid "Precip unit"
 msgstr "Nederbördsenhet"
 
-#: admin/admin.php:340
+#: admin/admin.php:339
 msgid "Used for forecast day labels."
 msgstr "Används för etiketter för prognosdagar."
 
@@ -313,6 +313,14 @@ msgstr "Prognos"
 #: admin/page-settings.php:92
 msgid "Leaflet map"
 msgstr "Broschyrkarta"
+
+#: admin/page-settings.php:101
+msgid "Loading other Spelhubben plugins…"
+msgstr "Laddar andra Spelhubben-plugins…"
+
+#: admin/page-settings.php:122
+msgid "Could not load plugin showcase."
+msgstr "Kunde inte ladda plugin-presentationen."
 
 #: admin/page-shortcodes.php:20
 msgid "Basic example"
@@ -652,7 +660,7 @@ msgstr ""
 msgid "Could not fetch weather data from the selected providers."
 msgstr "Kunde inte hämta väderdata från de valda leverantörerna."
 
-#: includes/class-sv-vader.php:188
+#: includes/class-sv-vader.php:190
 msgid "Could not find the place."
 msgstr "Kunde inte hitta platsen."
 
@@ -692,19 +700,19 @@ msgstr "Testad:"
 msgid "Unknown"
 msgstr "Okänd"
 
-#: includes/i18n.php:48 includes/providers.php:248
+#: includes/i18n.php:48 includes/providers.php:259
 msgid "Mostly clear"
 msgstr "Mestadels klart"
 
-#: includes/i18n.php:49 includes/providers.php:249 includes/providers.php:319
+#: includes/i18n.php:49 includes/providers.php:260 includes/providers.php:330
 msgid "Partly cloudy"
 msgstr "Delvis molnigt"
 
-#: includes/i18n.php:50 includes/providers.php:250 includes/providers.php:321
+#: includes/i18n.php:50 includes/providers.php:261 includes/providers.php:332
 msgid "Overcast"
 msgstr "Mulet"
 
-#: includes/i18n.php:51 includes/providers.php:251
+#: includes/i18n.php:51 includes/providers.php:262
 msgid "Fog"
 msgstr "Dimma"
 
@@ -756,7 +764,7 @@ msgstr "Måttlig snöfall"
 msgid "Heavy snowfall"
 msgstr "Kraftigt snöfall"
 
-#: includes/i18n.php:64 includes/providers.php:264
+#: includes/i18n.php:64 includes/providers.php:275
 msgid "Snow grains"
 msgstr "Snökorn"
 
@@ -780,7 +788,7 @@ msgstr "Lätta snöbyar"
 msgid "Heavy snow showers"
 msgstr "Kraftiga snöbyar"
 
-#: includes/i18n.php:70 includes/providers.php:270
+#: includes/i18n.php:70 includes/providers.php:281
 msgid "Thunderstorm"
 msgstr "Åskväder"
 
@@ -792,87 +800,87 @@ msgstr "Åska (lätt hagel)"
 msgid "Thunderstorm (heavy hail)"
 msgstr "Åska (kraftig hagel)"
 
-#: includes/providers.php:247 includes/providers.php:317
+#: includes/providers.php:258 includes/providers.php:328
 msgid "Clear sky"
 msgstr "Klar himmel"
 
-#: includes/providers.php:252
+#: includes/providers.php:263
 msgid "Depositing rime fog"
 msgstr "Avsättning av rimdimma"
 
-#: includes/providers.php:253
+#: includes/providers.php:264
 msgid "Drizzle: light"
 msgstr "Duggregn: lätt"
 
-#: includes/providers.php:254
+#: includes/providers.php:265
 msgid "Drizzle: moderate"
 msgstr "Duggregn: måttligt"
 
-#: includes/providers.php:255
+#: includes/providers.php:266
 msgid "Drizzle: dense"
 msgstr "Duggregn: tätt"
 
-#: includes/providers.php:256
+#: includes/providers.php:267
 msgid "Rain: light"
 msgstr "Regn: lätt"
 
-#: includes/providers.php:257
+#: includes/providers.php:268
 msgid "Rain: moderate"
 msgstr "Regn: måttligt"
 
-#: includes/providers.php:258
+#: includes/providers.php:269
 msgid "Rain: heavy"
 msgstr "Regn: kraftigt"
 
-#: includes/providers.php:259
+#: includes/providers.php:270
 msgid "Freezing rain: light"
 msgstr "Underkylt regn: lätt"
 
-#: includes/providers.php:260
+#: includes/providers.php:271
 msgid "Freezing rain: heavy"
 msgstr "Underkylt regn: kraftigt"
 
-#: includes/providers.php:261
+#: includes/providers.php:272
 msgid "Snowfall: light"
 msgstr "Snöfall: lätt"
 
-#: includes/providers.php:262
+#: includes/providers.php:273
 msgid "Snowfall: moderate"
 msgstr "Snöfall: måttlig"
 
-#: includes/providers.php:263
+#: includes/providers.php:274
 msgid "Snowfall: heavy"
 msgstr "Snöfall: kraftigt"
 
-#: includes/providers.php:265
+#: includes/providers.php:276
 msgid "Rain showers: slight"
 msgstr "Regnskurar: lätta"
 
-#: includes/providers.php:266
+#: includes/providers.php:277
 msgid "Rain showers: moderate"
 msgstr "Regnskurar: måttliga"
 
-#: includes/providers.php:267
+#: includes/providers.php:278
 msgid "Rain showers: violent"
 msgstr "Regnskurar: våldsamma"
 
-#: includes/providers.php:268
+#: includes/providers.php:279
 msgid "Snow showers: slight"
 msgstr "Snöbyar: lätta"
 
-#: includes/providers.php:269
+#: includes/providers.php:280
 msgid "Snow showers: heavy"
 msgstr "Snöbyar: kraftiga"
 
-#: includes/providers.php:271
+#: includes/providers.php:282
 msgid "Thunderstorm with slight hail"
 msgstr "Åska med lätt hagel"
 
-#: includes/providers.php:272
+#: includes/providers.php:283
 msgid "Thunderstorm with heavy hail"
 msgstr "Åskväder med kraftig hagel"
 
-#: includes/providers.php:314
+#: includes/providers.php:325
 msgid "Precipitation"
 msgstr "Nederbörd"
 
