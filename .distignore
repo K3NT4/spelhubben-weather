@@ -7,6 +7,7 @@
 .editorconfig
 .vs/
 Patch & Fix/
+.wordpress-org/
 
 # ---- Node/Composer ----
 node_modules/
