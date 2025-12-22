@@ -6,7 +6,7 @@
 .vscode/
 .editorconfig
 .vs/
-Patch & Fix/
+PatchFix/
 .wordpress-org/
 
 # ---- Node/Composer ----
