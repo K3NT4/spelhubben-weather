@@ -5,6 +5,8 @@
 .github/
 .vscode/
 .editorconfig
+.vs/
+Patch & Fix/
 
 # ---- Node/Composer ----
 node_modules/

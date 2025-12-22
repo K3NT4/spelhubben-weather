@@ -4,7 +4,7 @@ Tags: weather, forecast, widget, shortcode, blocks
 Requires at least: 6.8
 Tested up to: 6.9
 Requires PHP: 7.4
-Stable tag: 1.8.3
+Stable tag: 1.8.4
 Donate link: https://www.paypal.com/donate/?hosted_button_id=CV74CEXY5XEAU
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
@@ -177,7 +177,7 @@ languages/
 3. **Shortcodes page (new in 1.7.0):** searchable examples, copy buttons, and admin live preview.
 
 == Changelog ==
-= 1.8.3 =
+= 1.8.4 =
 - **Maintenance:** Added centralized configuration constants file (`includes/constants.php`) for improved code maintainability and reduced magic numbers.
 - **Performance:** Settings page now loads 6-30x faster with lazy-loaded WP.org plugin showcase via AJAX.
 - **Fix:** Fixed memory leaks from uncleanup event listeners in admin interface with proper cleanup handlers.
@@ -189,6 +189,9 @@ languages/
 - **Compliance:** Verified full WordPress Consent API and GDPR compliance—no cookies, no tracking, no personal data collection.
 - **Code Quality:** Debounce timeout optimized (400ms → 600ms) reducing AJAX traffic by 50% during live preview.
 - **Documentation:** Comprehensive audit and testing guides included for developers.
+
+= 1.8.3 =
+- Version bump for production release.
 
 = 1.8.2 =
 - **Fix:** WordPress naming convention compliance – all global functions and variables now use proper `sv_vader_` prefix.
@@ -240,6 +243,9 @@ languages/
 - Initial public release. Security hardening and improved uninstall cleanup.
 
 == Upgrade Notice ==
+= 1.8.4 =
+Maintenance release with centralized configuration constants and performance optimizations. Recommended for all users.
+
 = 1.8.0 =
 **BREAKING CHANGE:** Legacy `[sv_vader …]` shortcode has been removed. Please migrate all shortcodes to use `[spelhubben_weather …]` format. Performance update with security fixes, geocoding caching, and new plugin showcase feature. Strongly recommended.
 

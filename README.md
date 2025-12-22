@@ -2,7 +2,7 @@
 
 WordPress weather plugin displaying current conditions and optional daily forecast using a simple consensus of **Open-Meteo**, **SMHI**, **Yr (MET Norway)**, **FMI (Finland)**, **Open-Weathermap**, and **Weatherapi.com**. Includes a Gutenberg block, classic widget, shortcode, optional Leaflet map, responsive layouts, multiple icon themes, and local SVG icons.
 
-**Version:** 1.8.3+ (production-ready with performance optimizations, bug fixes, and full GDPR compliance)
+**Version:** 1.8.4 (production-ready with performance optimizations, bug fixes, and full GDPR compliance)
 
 > This `README.md` is for GitHub. For WordPress.org metadata, use `/readme.txt`.
 
@@ -19,7 +19,7 @@ WordPress weather plugin displaying current conditions and optional daily foreca
 - **Fully GDPR Compliant:** No cookies, no tracking, no personal data collection
 - **Translation-Ready:** English base strings, Swedish and Norwegian translations included
 
-## Performance & Optimizations (v1.8.3+)
+## Performance & Optimizations (v1.8.4)
 
 ### Settings Page Speed
 - **Before:** 3-15 seconds (waiting for WP.org plugin showcase)
@@ -50,7 +50,7 @@ WordPress weather plugin displaying current conditions and optional daily foreca
 
 See `CONSENT_API_AUDIT.md` for detailed compliance audit.
 
-## Configuration & Maintainability (v1.8.3+)
+## Configuration & Maintainability (v1.8.4)
 
 ### Centralized Constants
 All magic numbers are now defined in `includes/constants.php`:
@@ -167,12 +167,15 @@ Translations are available on [translate.wordpress.org](https://translate.wordpr
 
 ## Version History
 
-### v1.8.3 (Current)
+### v1.8.4 (Current)
 - **Maintenance:** Centralized configuration constants for improved maintainability
 - **Performance:** Settings page now 6-30x faster with lazy-loaded plugin showcase
 - **Fixes:** Memory leaks, WMO code duplication, geocoding cache language support, widget null-safety, API error handling
 - **Compliance:** Full GDPR and Consent API audit completed
 - **Quality:** Debounce optimization (50% fewer AJAX calls), standardized error handling
+
+### v1.8.3
+- Version bump for production release
 
 ### v1.8.2
 - WordPress naming convention compliance

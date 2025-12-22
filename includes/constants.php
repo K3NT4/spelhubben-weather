@@ -3,10 +3,10 @@
  * Plugin Configuration Constants
  * 
  * Central location for all magic numbers and configuration values.
- * Updated in v1.8.3 for improved maintainability.
+ * Updated in v1.8.4 for improved maintainability.
  * 
  * @package Spelhubben_Weather
- * @since 1.8.3
+ * @since 1.8.4
  */
 
 if ( ! defined( 'ABSPATH' ) ) {

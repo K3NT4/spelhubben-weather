@@ -4,12 +4,23 @@
 /.github/               export-ignore
 /.vscode/               export-ignore
 /.editorconfig          export-ignore
+/.vs/                   export-ignore
+/Patch & Fix/           export-ignore
+
 /.eslintrc*             export-ignore
 /.stylelintrc*          export-ignore
 /assets-src/            export-ignore
 /tests/                 export-ignore
 /cypress/               export-ignore
 /coverage/              export-ignore
+
+/node_modules/          export-ignore
+/vendor/                export-ignore
+/package-lock.json      export-ignore
+/pnpm-lock.yaml         export-ignore
+/yarn.lock              export-ignore
+/composer.lock          export-ignore
+
 *.map                   export-ignore
 *.log                   export-ignore
 *.md                    export-ignore
