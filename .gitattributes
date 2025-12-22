@@ -5,7 +5,7 @@
 /.vscode/               export-ignore
 /.editorconfig          export-ignore
 /.vs/                   export-ignore
-/Patch & Fix/           export-ignore
+/PatchFix/           export-ignore
 /.wordpress-org/        export-ignore
 
 /.eslintrc*             export-ignore
