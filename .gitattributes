@@ -6,6 +6,7 @@
 /.editorconfig          export-ignore
 /.vs/                   export-ignore
 /Patch & Fix/           export-ignore
+/.wordpress-org/        export-ignore
 
 /.eslintrc*             export-ignore
 /.stylelintrc*          export-ignore
