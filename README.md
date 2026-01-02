@@ -2,7 +2,7 @@
 
 WordPress weather plugin displaying current conditions and optional daily forecast using a simple consensus of **Open-Meteo**, **SMHI**, **Yr (MET Norway)**, **FMI (Finland)**, **Open-Weathermap**, and **Weatherapi.com**. Includes a Gutenberg block, classic widget, shortcode, optional Leaflet map, responsive layouts, multiple icon themes, and local SVG icons.
 
-**Version:** 1.8.4 (production-ready with performance optimizations, bug fixes, and full GDPR compliance)
+**Version:** 1.8.5 (production-ready with optimized asset loading, improved performance, and full GDPR compliance)
 
 > This `README.md` is for GitHub. For WordPress.org metadata, use `/readme.txt`.
 
@@ -19,7 +19,13 @@ WordPress weather plugin displaying current conditions and optional daily foreca
 - **Fully GDPR Compliant:** No cookies, no tracking, no personal data collection
 - **Translation-Ready:** English base strings, Swedish and Norwegian translations included
 
-## Performance & Optimizations (v1.8.4)
+## Performance & Optimizations (v1.8.5)
+
+### Asset Loading Optimization
+- Leaflet CSS/JS and map assets now load conditionally — only when shortcode or Gutenberg block is present
+- Eliminates unnecessary 404 errors on pages without weather widget
+- Added `.htaccess` files to ensure correct MIME types for static assets
+- Improved page load performance by reducing asset requests on non-weather pages
 
 ### Settings Page Speed
 - **Before:** 3-15 seconds (waiting for WP.org plugin showcase)
@@ -167,7 +173,13 @@ Translations are available on [translate.wordpress.org](https://translate.wordpr
 
 ## Version History
 
-### v1.8.4 (Current)
+### v1.8.5 (Current)
+- **Performance:** Conditional Leaflet asset loading — only load when shortcode or block is used
+- **Fix:** Prevent WordPress rewrite rules from interfering with static assets via `.htaccess`
+- **Fix:** Ensure correct MIME types for CSS/JS to prevent browser warnings
+- **UX:** Eliminates 404 errors on pages without weather widget
+
+### v1.8.4
 - **Maintenance:** Centralized configuration constants for improved maintainability
 - **Performance:** Settings page now 6-30x faster with lazy-loaded plugin showcase
 - **Fixes:** Memory leaks, WMO code duplication, geocoding cache language support, widget null-safety, API error handling

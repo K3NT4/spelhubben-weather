@@ -4,7 +4,7 @@ Tags: weather, forecast, widget, shortcode, blocks
 Requires at least: 6.8
 Tested up to: 6.9
 Requires PHP: 7.4
-Stable tag: 1.8.4
+Stable tag: 1.8.5
 Donate link: https://www.paypal.com/donate/?hosted_button_id=CV74CEXY5XEAU
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
@@ -177,6 +177,12 @@ languages/
 3. **Shortcodes page (new in 1.7.0):** searchable examples, copy buttons, and admin live preview.
 
 == Changelog ==
+= 1.8.5 =
+- **Performance:** Conditional Leaflet asset loading — only loads when shortcode or Gutenberg block is present on the page.
+- **Fix:** Added `.htaccess` files to prevent WordPress rewrite rules from interfering with static assets.
+- **Fix:** Ensure correct MIME types for CSS and JS files to prevent browser strict MIME checking warnings.
+- **UX:** Eliminates unnecessary 404 errors on pages without weather widget.
+
 = 1.8.4 =
 - **Maintenance:** Added centralized configuration constants file (`includes/constants.php`) for improved code maintainability and reduced magic numbers.
 - **Performance:** Settings page now loads 6-30x faster with lazy-loaded WP.org plugin showcase via AJAX.
@@ -243,6 +249,9 @@ languages/
 - Initial public release. Security hardening and improved uninstall cleanup.
 
 == Upgrade Notice ==
+= 1.8.5 =
+Performance optimization release with conditional asset loading. Fixes 404 errors and MIME type warnings for Leaflet on non-weather pages. Recommended for all users.
+
 = 1.8.4 =
 Maintenance release with centralized configuration constants and performance optimizations. Recommended for all users.
 
