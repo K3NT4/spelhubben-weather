@@ -1,0 +1,14 @@
+# Allow direct access to Leaflet library files
+<IfModule mod_rewrite.c>
+    RewriteEngine Off
+</IfModule>
+
+# Ensure correct MIME types
+<IfModule mod_mime.c>
+    AddType text/css .css
+    AddType application/javascript .js
+    AddType image/png .png
+    AddType image/gif .gif
+    AddType image/jpeg .jpg
+    AddType image/x-icon .ico
+</IfModule>

@@ -1,0 +1,28 @@
+# Allow direct access to static files in the assets directory
+<IfModule mod_rewrite.c>
+    RewriteEngine Off
+</IfModule>
+
+# Ensure these file types are served with correct MIME types
+<IfModule mod_mime.c>
+    AddType text/css .css
+    AddType application/javascript .js
+    AddType image/svg+xml .svg
+    AddType application/font-woff2 .woff2
+    AddType application/font-woff .woff
+    AddType application/vnd.ms-fontobject .eot
+    AddType application/x-font-ttf .ttf
+</IfModule>
+
+# Allow caching of static assets
+<IfModule mod_expires.c>
+    ExpiresActive On
+    ExpiresByType text/css "access plus 1 month"
+    ExpiresByType application/javascript "access plus 1 month"
+    ExpiresByType image/svg+xml "access plus 1 month"
+    ExpiresByType image/png "access plus 1 month"
+    ExpiresByType image/jpeg "access plus 1 month"
+    ExpiresByType image/gif "access plus 1 month"
+    ExpiresByType application/font-woff2 "access plus 1 month"
+    ExpiresByType application/font-woff "access plus 1 month"
+</IfModule>
