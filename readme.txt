@@ -4,7 +4,7 @@ Tags: weather, forecast, widget, shortcode, blocks
 Requires at least: 6.8
 Tested up to: 6.9
 Requires PHP: 7.4
-Stable tag: 1.8.5
+Stable tag: 1.8.6
 Donate link: https://www.paypal.com/donate/?hosted_button_id=CV74CEXY5XEAU
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
