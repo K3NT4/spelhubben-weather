@@ -15,14 +15,17 @@ Weather widget & block with optional map and daily forecast. Can combine Open-Me
 This plugin displays current weather and an optional forecast. It can aggregate data from free global weather providers (Open-Meteo, SMHI, Yr/MET Norway, FMI, Open-Weathermap, and Weatherapi.com) and compute a simple consensus. Works worldwide with excellent coverage in Europe and beyond.
 
 **Features**
-- Gutenberg block and shortcode
-- Optional Leaflet map (OpenStreetMap)
-- Daily forecast and multiple layouts (inline, compact, card, detailed)
-- Caching with transients + one-click cache clear
-- Fully translatable
-- **Included translations:** **Swedish (sv_SE), Norwegian (nb_NO), English (en_US)**
-- **New (1.7.0):** modern admin UI with a dedicated **Shortcodes** page (search, copy, “copy all”), and **live preview** inside WP-admin
-- **New (1.7.5):** **FMI (Finland, Open Data)** as an additional free provider (temperature, wind, hourly precip, cloud cover via WFS)
+- **Shortcode** `[spelhubben_weather]`, **Gutenberg block**, and **classic widget**
+- **6 Weather Providers:** Open-Meteo, SMHI, Yr (MET Norway), FMI, Open-Weathermap, Weatherapi.com — enable any combination
+- **3 Icon Themes:** Classic, Modern Flat, Modern Gradient (selectable in admin settings)
+- **Multiple Layouts:** `inline`, `compact`, `card`, `detailed`
+- **Daily Forecast:** 3–10 days customizable
+- **Provider Comparison:** Side-by-side data from all enabled providers
+- **Leaflet Map:** OpenStreetMap tiles with proper attribution (ODbL)
+- **Local Icons:** SVG icons (no CDN dependency), responsive scaling
+- **Performance:** 6-30x faster settings page, lazy-loaded plugin showcase, optimized caching
+- **Fully GDPR Compliant:** No cookies, no tracking, no personal data collection
+- **Translation-Ready:** English base strings, Swedish and Norwegian translations included
 
 *Not affiliated with Open-Meteo, SMHI, Yr/MET Norway, FMI, Leaflet, or OpenStreetMap. Names are used for descriptive purposes only. Map data © OpenStreetMap contributors (ODbL).*
 
@@ -177,6 +180,14 @@ languages/
 3. **Shortcodes page (new in 1.7.0):** searchable examples, copy buttons, and admin live preview.
 
 == Changelog ==
+= 1.8.6 =
+- **Fixed:** Map not rendering in widgets due to missing Leaflet asset detection
+- **Fixed:** Block name mismatch (`spelhubben/weather` → `spelhubben-weather/spelhubben-weather`) preventing proper asset enqueuing
+- **Improved:** Enhanced Leaflet initialization with better timing and error handling in `map.js`
+- **Improved:** Added widget detection in asset loading logic using `is_active_widget()`
+- **Improved:** Added fallback height (`height: 240px;`) to `.svv-map` CSS class for better Leaflet container sizing
+- **Improved:** Better error reporting and retry logic in map initialization with Leaflet availability checks
+
 = 1.8.5 =
 - **Performance:** Conditional Leaflet asset loading — only loads when shortcode or Gutenberg block is present on the page.
 - **Fix:** Added `.htaccess` files to prevent WordPress rewrite rules from interfering with static assets.
@@ -246,7 +257,10 @@ languages/
 - Minor fixes and readme updates.
 
 = 1.6.1 =
-- Initial public release. Security hardening and improved uninstall cleanup.
+- Init6 =
+Version bump for WordPress.org sync. No functional changes.
+
+= 1.8.ial public release. Security hardening and improved uninstall cleanup.
 
 == Upgrade Notice ==
 = 1.8.5 =
