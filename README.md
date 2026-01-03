@@ -2,9 +2,19 @@
 
 WordPress weather plugin displaying current conditions and optional daily forecast using a simple consensus of **Open-Meteo**, **SMHI**, **Yr (MET Norway)**, **FMI (Finland)**, **Open-Weathermap**, and **Weatherapi.com**. Includes a Gutenberg block, classic widget, shortcode, optional Leaflet map, responsive layouts, multiple icon themes, and local SVG icons.
 
-**Version:** 1.8.5 (production-ready with optimized asset loading, improved performance, and full GDPR compliance)
+**Version:** 1.8.6 (Map display fixes for widgets, blocks, and shortcodes; improved Leaflet initialization)
 
 > This `README.md` is for GitHub. For WordPress.org metadata, use `/readme.txt`.
+
+## Changelog
+
+### v1.8.6 (2026-01-03)
+- **Fixed:** Map not rendering in widgets due to missing Leaflet asset detection
+- **Fixed:** Block name mismatch (`spelhubben/weather` → `spelhubben-weather/spelhubben-weather`) preventing proper asset enqueuing
+- **Improved:** Enhanced Leaflet initialization with better timing and error handling in `map.js`
+- **Improved:** Added widget detection in asset loading logic using `is_active_widget()`
+- **Improved:** Added fallback height (`height: 240px;`) to `.svv-map` CSS class for better Leaflet container sizing
+- **Improved:** Better error reporting and retry logic in map initialization with Leaflet availability checks
 
 ## ✨ Key Features
 - **Shortcode** `[spelhubben_weather]`, **Gutenberg block**, and **classic widget**

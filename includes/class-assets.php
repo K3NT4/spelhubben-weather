@@ -35,20 +35,32 @@ class SV_Vader_Assets {
      * Check if Leaflet assets should be loaded on this page.
      */
     private function should_load_leaflet() {
-        global $post;
+        global $post, $wp_registered_sidebars;
 
-        if ( ! isset( $post->post_content ) ) {
-            return false;
+        // Check for shortcodes in post content
+        if ( isset( $post->post_content ) ) {
+            // Check for old shortcode (legacy)
+            if ( has_shortcode( $post->post_content, 'sv-vader' ) ) {
+                return true;
+            }
+            // Check for new shortcode
+            if ( has_shortcode( $post->post_content, 'spelhubben_weather' ) ) {
+                return true;
+            }
+            // Check for Gutenberg blocks
+            if ( has_block( 'spelhubben-weather/spelhubben-weather', $post ) ) {
+                return true;
+            }
+            if ( has_block( 'sv/vader', $post ) ) {
+                return true;
+            }
         }
 
-        // Check for shortcode
-        if ( has_shortcode( $post->post_content, 'sv-vader' ) ) {
-            return true;
-        }
-
-        // Check for Gutenberg block
-        if ( has_block( 'spelhubben-weather/spelhubben-weather', $post ) ) {
-            return true;
+        // Check if the sv_vader_widget is active in any sidebar
+        if ( function_exists( 'is_active_widget' ) ) {
+            if ( is_active_widget( false, false, 'sv_vader_widget' ) ) {
+                return true;
+            }
         }
 
         return false;

@@ -18,7 +18,7 @@
     { label: __('Imperial (°F, mph, in)', 'spelhubben-weather'), value: 'imperial' },
   ];
 
-  registerBlockType('spelhubben/weather', {
+  registerBlockType('spelhubben-weather/spelhubben-weather', {
     edit: (props) => {
       const { attributes, setAttributes } = props;
       const bp = useBlockProps();

@@ -33,21 +33,58 @@
     if (el.dataset.inited) return;
     el.dataset.inited = '1';
 
+    // Check if Leaflet is loaded
+    if (typeof L === 'undefined' || !L.map) {
+      console.warn('Leaflet not loaded yet, retrying...', el);
+      // Try again in a moment
+      setTimeout(() => {
+        delete el.dataset.inited;
+        initMap(el);
+      }, 500);
+      return;
+    }
+
     const lat  = parseFloat(el.getAttribute('data-lat'));
     const lon  = parseFloat(el.getAttribute('data-lon'));
-    if (isNaN(lat) || isNaN(lon)) return;
+    if (isNaN(lat) || isNaN(lon)) {
+      console.warn('Missing or invalid lat/lon for map', el);
+      return;
+    }
 
-    const map = L.map(el, { scrollWheelZoom:false, attributionControl:false });
-    el._svvMap = map;
+    // Ensure element has a computed height before initializing
+    const computedHeight = window.getComputedStyle(el).height;
+    if (!computedHeight || computedHeight === '0px' || computedHeight === 'auto') {
+      console.warn('Map element has no height, retrying...', el);
+      setTimeout(() => {
+        delete el.dataset.inited;
+        initMap(el);
+      }, 500);
+      return;
+    }
 
-    map.setView([lat, lon], 12);
-    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', { maxZoom:19 }).addTo(map);
+    try {
+      const map = L.map(el, { scrollWheelZoom:false, attributionControl:false });
+      el._svvMap = map;
 
-    // NOTE: No L.marker here — the pin is never placed.
-    setTimeout(()=>map.invalidateSize(), 200);
+      map.setView([lat, lon], 12);
+      L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', { maxZoom:19 }).addTo(map);
+
+      // NOTE: No L.marker here — the pin is never placed.
+      setTimeout(()=>map.invalidateSize(), 200);
+    } catch (e) {
+      console.error('Error initializing map:', e);
+      delete el.dataset.inited;
+    }
   }
 
-  function scanMaps(){ document.querySelectorAll('.svv-map').forEach(initMap); }
+  function scanMaps(){ 
+    if (typeof L === 'undefined') {
+      // Leaflet not ready, try again
+      requestAnimationFrame(scanMaps);
+      return;
+    }
+    document.querySelectorAll('.svv-map').forEach(initMap); 
+  }
 
   if (document.readyState === 'loading') {
     document.addEventListener('DOMContentLoaded', scanMaps);
