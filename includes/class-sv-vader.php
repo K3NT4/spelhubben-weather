@@ -18,11 +18,12 @@ class SV_Vader_API {
 		$lon = trim((string)$lon);
 
 		$api_lang = sv_vader_api_lang();
-		$salt     = sv_vader_cache_salt();
-
-		$cache_key = 'sv_vader_cons_' . md5(json_encode([$ort,$lat,$lon,$providers,$api_lang,$salt]));
-		$cached = get_transient($cache_key);
-		if ($cached !== false) return $cached;
+		$cache_key = 'sv_vader_cons_' . md5(json_encode([$ort,$lat,$lon,$providers,$api_lang]));
+		$cached = sv_vader_cache_get($cache_key);
+		if ($cached !== false) {
+			sv_vader_stats_hit();
+			return $cached;
+		}
 
 		if ($lat === '' || $lon === '') {
 			$coords = $this->geocode($ort);
@@ -73,7 +74,8 @@ class SV_Vader_API {
 			'lon'  => $lon,
 		], $cons);
 
-		set_transient($cache_key, $out, MINUTE_IN_SECONDS * $this->cache_minutes);
+		sv_vader_cache_set($cache_key, $out, MINUTE_IN_SECONDS * $this->cache_minutes);
+		sv_vader_stats_miss(count($providers), $out['name'] ?? $ort, $lat, $lon);
 		return $out;
 	}
 
@@ -86,11 +88,12 @@ class SV_Vader_API {
 		$lon = trim((string)$lon);
 
 		$api_lang = sv_vader_api_lang();
-		$salt     = sv_vader_cache_salt();
-
-		$cache_key = 'sv_vader_details_' . md5(json_encode([$ort,$lat,$lon,$providers,$api_lang,$salt]));
-		$cached = get_transient($cache_key);
-		if ($cached !== false) return $cached;
+		$cache_key = 'sv_vader_details_' . md5(json_encode([$ort,$lat,$lon,$providers,$api_lang]));
+		$cached = sv_vader_cache_get($cache_key);
+		if ($cached !== false) {
+			sv_vader_stats_hit();
+			return $cached;
+		}
 
 		if ($lat === '' || $lon === '') {
 			$coords = $this->geocode($ort);
@@ -136,7 +139,8 @@ class SV_Vader_API {
 			'providers' => $details,
 		];
 
-		set_transient($cache_key, $out, MINUTE_IN_SECONDS * $this->cache_minutes);
+		sv_vader_cache_set($cache_key, $out, MINUTE_IN_SECONDS * $this->cache_minutes);
+		sv_vader_stats_miss(count($providers), $name ?? $ort, $lat, $lon);
 		return $out;
 	}
 
@@ -147,32 +151,36 @@ class SV_Vader_API {
 		$days = max(3, min(10, intval($days)));
 
 		$api_lang = sv_vader_api_lang();
-		$salt     = sv_vader_cache_salt();
-
-		$cache_key = 'sv_vader_daily_' . md5(json_encode([$ort,$lat,$lon,$days,$api_lang,$salt]));
-		$cached = get_transient($cache_key);
-		if ($cached !== false) return $cached;
+		$cache_key = 'sv_vader_daily_' . md5(json_encode([$ort,$lat,$lon,$days,$api_lang]));
+		$cached = sv_vader_cache_get($cache_key);
+		if ($cached !== false) {
+			sv_vader_stats_hit();
+			return $cached;
+		}
 
 		if ($lat === '' || $lon === '') {
 			$coords = $this->geocode($ort);
 			if (is_wp_error($coords)) return [];
-			$lat = $coords['lat'];
-			$lon = $coords['lon'];
+			$lat  = $coords['lat'];
+			$lon  = $coords['lon'];
+			$name = $coords['name'];
+		} else {
+			$name = $ort;
 		}
 
 		$list = sv_vader_openmeteo_daily($lat, $lon, $days, $api_lang);
-		set_transient($cache_key, $list, MINUTE_IN_SECONDS * $this->cache_minutes);
+		sv_vader_cache_set($cache_key, $list, MINUTE_IN_SECONDS * $this->cache_minutes);
+		sv_vader_stats_miss(1, $name, $lat, $lon);
 		return $list;
 	}
 
 	private function geocode($q) {
-		$salt = sv_vader_cache_salt();
 		$api_lang = sv_vader_api_lang();
 		// Include language in cache key to avoid stale translations
-		$geocode_cache_key = 'sv_vader_geocode_' . md5($q . $api_lang . $salt);
-		
+		$geocode_cache_key = 'sv_vader_geocode_' . md5($q . $api_lang);
+
 		// Check cache first
-		$cached = get_transient($geocode_cache_key);
+		$cached = sv_vader_cache_get($geocode_cache_key);
 		if ($cached !== false) return $cached;
 
 		$url = add_query_arg([
@@ -198,7 +206,7 @@ class SV_Vader_API {
 		];
 		
 		// Cache geocoding result for 7 days
-		set_transient($geocode_cache_key, $result, DAY_IN_SECONDS * 7);
+		sv_vader_cache_set($geocode_cache_key, $result, DAY_IN_SECONDS * 7);
 		return $result;
 	}
 
@@ -276,6 +284,86 @@ class SV_Vader_API {
             $svg = '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64"><path fill="#111" d="M22 40h24a10 10 0 0 0 0-20 14 14 0 0 0-27.3-3.8A12 12 0 0 0 22 40z"/><path fill="#111" d="M32 42l-6 12h6l-2 8 8-14h-6l2-6z"/></svg>';
         }
 		return 'data:image/svg+xml;utf8,' . rawurlencode($svg);
+	}
+}
+
+// --- Stats helpers for Performance Dashboard ---
+if ( ! function_exists( 'sv_vader_stats_get' ) ) {
+	function sv_vader_stats_get() : array {
+		$raw = get_option( 'sv_vader_stats', [] );
+		$defaults = [
+			'hits'   => 0,
+			'misses' => 0,
+			'api_calls' => 0,
+			'per_day' => [], // key: Y-m-d => ['hits'=>int,'misses'=>int,'api_calls'=>int]
+			'recent' => [],  // list of ['place','lat','lon','time']
+		];
+		return wp_parse_args( $raw, $defaults );
+	}
+}
+
+if ( ! function_exists( 'sv_vader_stats_save' ) ) {
+	function sv_vader_stats_save( array $data ) : void {
+		update_option( 'sv_vader_stats', $data, false );
+	}
+}
+
+if ( ! function_exists( 'sv_vader_stats_prune_days' ) ) {
+	function sv_vader_stats_prune_days( array $per_day, int $days = 14 ) : array {
+		ksort( $per_day );
+		$keys = array_keys( $per_day );
+		if ( count( $keys ) <= $days ) return $per_day;
+		$excess = array_slice( $keys, 0, count( $keys ) - $days );
+		foreach ( $excess as $k ) {
+			unset( $per_day[ $k ] );
+		}
+		return $per_day;
+	}
+}
+
+if ( ! function_exists( 'sv_vader_stats_hit' ) ) {
+	function sv_vader_stats_hit() : void {
+		$stats = sv_vader_stats_get();
+		$today = gmdate( 'Y-m-d' );
+		$stats['hits']++;
+		if ( ! isset( $stats['per_day'][ $today ] ) ) {
+			$stats['per_day'][ $today ] = [ 'hits' => 0, 'misses' => 0, 'api_calls' => 0 ];
+		}
+		$stats['per_day'][ $today ]['hits']++;
+		$stats['per_day'] = sv_vader_stats_prune_days( $stats['per_day'] );
+		sv_vader_stats_save( $stats );
+	}
+}
+
+if ( ! function_exists( 'sv_vader_stats_miss' ) ) {
+	function sv_vader_stats_miss( int $providers_count = 0, string $place = '', string $lat = '', string $lon = '' ) : void {
+		$stats = sv_vader_stats_get();
+		$today = gmdate( 'Y-m-d' );
+		$stats['misses']++;
+		$stats['api_calls'] += max( 1, $providers_count );
+		if ( ! isset( $stats['per_day'][ $today ] ) ) {
+			$stats['per_day'][ $today ] = [ 'hits' => 0, 'misses' => 0, 'api_calls' => 0 ];
+		}
+		$stats['per_day'][ $today ]['misses']++;
+		$stats['per_day'][ $today ]['api_calls'] += max( 1, $providers_count );
+		$stats['per_day'] = sv_vader_stats_prune_days( $stats['per_day'] );
+
+		$stats['recent'] = is_array( $stats['recent'] ) ? $stats['recent'] : [];
+		array_unshift( $stats['recent'], [
+			'place' => $place,
+			'lat'   => $lat,
+			'lon'   => $lon,
+			'time'  => time(),
+		] );
+		$stats['recent'] = array_slice( $stats['recent'], 0, 5 );
+
+		sv_vader_stats_save( $stats );
+	}
+}
+
+if ( ! function_exists( 'sv_vader_stats_reset' ) ) {
+	function sv_vader_stats_reset() : void {
+		delete_option( 'sv_vader_stats' );
 	}
 }
 }

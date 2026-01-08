@@ -2,14 +2,19 @@
 /**
  * Plugin Name: Spelhubben Weather
  * Description: Displays current weather and an optional forecast with a simple consensus across providers (Open-Meteo, SMHI, Yr/MET Norway). Supports shortcode + Gutenberg block + classic widget. Optional Leaflet map, subtle animations, daily forecast, and multiple layouts.
- * Version: 1.8.6
+ * Version: 1.9.0
  * Author: Spelhubben
  * Text Domain: spelhubben-weather
  * Domain Path: /languages
  * Requires at least: 6.8
  * Requires PHP: 7.4
- * License: GPLv2 or later
- * License URI: https://www.gnu.org/licenses/gpl-2.0.html
+ * License: GPLv3 or later
+ * License URI: https://www.gnu.org/licenses/gpl-3.0.html
+ */
+/*
+ * Copyright (C) 2026 Spelhubben
+ * Licensed under the GNU General Public License v3 (or later)
+ * https://www.gnu.org/licenses/gpl-3.0.html
  */
 
 if ( ! defined( 'ABSPATH' ) ) {
@@ -18,7 +23,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 
 // ── Constants (kept for backward compatibility).
 if ( ! defined( 'SV_VADER_VER' ) ) {
-	define( 'SV_VADER_VER', '1.8.6' );
+	define( 'SV_VADER_VER', '1.9.0' );
 }
 if ( ! defined( 'SV_VADER_DIR' ) ) {
 	define( 'SV_VADER_DIR', plugin_dir_path( __FILE__ ) );
@@ -31,7 +36,7 @@ if ( ! defined( 'SV_VADER_URL' ) ) {
 if ( ! defined( 'SV_VADER_ATTRIB_HTML' ) ) {
 	define(
 		'SV_VADER_ATTRIB_HTML',
-		'© <a href="https://www.openstreetmap.org/copyright" target="_blank" rel="noopener">OpenStreetMap</a> contributors'
+		'© <a href="https://www.openstreetmap.org/copyright" target="_blank" rel="noopener noreferrer">OpenStreetMap</a> contributors'
 	);
 }
 
@@ -58,6 +63,7 @@ spl_autoload_register(
 require_once SV_VADER_DIR . 'includes/constants.php';      // Configuration constants (v1.8.3+).
 require_once SV_VADER_DIR . 'includes/i18n.php';           // Language helpers.
 require_once SV_VADER_DIR . 'includes/options.php';
+require_once SV_VADER_DIR . 'includes/cache.php';
 require_once SV_VADER_DIR . 'includes/format.php';         // Units & formatting helpers.
 require_once SV_VADER_DIR . 'includes/class-wporg-plugins.php'; // WP.org plugin showcase.
 require_once SV_VADER_DIR . 'includes/class-sv-vader.php'; // API/service layer.

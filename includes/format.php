@@ -56,6 +56,35 @@ if (!function_exists('sv_vader_wind')) {
 	}
 }
 
+if (!function_exists('sv_vader_wind_dir')) {
+	function sv_vader_wind_dir(?float $deg): string {
+		if ($deg === null) return '';
+		$cardinals = [
+			__('N', 'spelhubben-weather'),
+			__('NE', 'spelhubben-weather'),
+			__('E', 'spelhubben-weather'),
+			__('SE', 'spelhubben-weather'),
+			__('S', 'spelhubben-weather'),
+			__('SW', 'spelhubben-weather'),
+			__('W', 'spelhubben-weather'),
+			__('NW', 'spelhubben-weather'),
+			__('N', 'spelhubben-weather'),
+		];
+		return $cardinals[round($deg / 45)];
+	}
+}
+
+if (!function_exists('sv_vader_wind_dir_icon')) {
+	function sv_vader_wind_dir_icon(?float $deg): string {
+		if ($deg === null) return '';
+		return sprintf(
+			'<span class="svv-wind-dir" style="display:inline-block;transform:rotate(%ddeg);line-height:1;font-style:normal;vertical-align:middle;" title="%s">➤</span>',
+			intval($deg),
+			esc_attr(sv_vader_wind_dir($deg))
+		);
+	}
+}
+
 if (!function_exists('sv_vader_precip')) {
 	function sv_vader_precip(?float $mm, string $unit, int $dec = 1): array {
 		if ($mm === null) return [null, $unit];
@@ -71,5 +100,84 @@ if (!function_exists('sv_vader_num')) {
 	function sv_vader_num($v, int $decimals = 0) {
 		if ($v === null || $v === '') return '';
 		return number_format_i18n($v, $decimals);
+	}
+}
+
+/**
+ * Get weather alerts based on current conditions
+ */
+if (!function_exists('sv_vader_get_alerts')) {
+	function sv_vader_get_alerts(array $weather): array {
+		$alerts = [];
+		$opts   = sv_vader_get_options();
+
+		// Resolve units based on settings
+		$units = sv_vader_resolve_units($opts);
+
+		// Convert raw weather data (metric) to user-selected units for comparison
+		list($temp)   = sv_vader_temp($weather['temp'] ?? null, $units['temp'], 1);
+		list($wind)   = sv_vader_wind($weather['wind'] ?? null, $units['wind'], 1);
+		list($precip) = sv_vader_precip($weather['precip'] ?? null, $units['precip'], 1);
+
+		if ($temp !== null) {
+			if ($temp < $opts['alert_cold_extreme']) {
+				$alerts[] = [
+					'level' => 'danger',
+					'title' => __('Extreme Cold', 'spelhubben-weather'),
+					'msg'   => __('It is freezing cold outside! Dress warmly, preferably in layers, or you might turn into an icicle.', 'spelhubben-weather'),
+					'icon'  => 'thermometer-minus'
+				];
+			} elseif ($temp < $opts['alert_cold_freezing']) {
+				$alerts[] = [
+					'level' => 'warning',
+					'title' => __('Freezing Temperatures', 'spelhubben-weather'),
+					'msg'   => __('It is below freezing outside. Don\'t forget your gloves and hat!', 'spelhubben-weather'),
+					'icon'  => 'snow'
+				];
+			} elseif ($temp > $opts['alert_heat_extreme']) {
+				$alerts[] = [
+					'level' => 'danger',
+					'title' => __('Extreme Heat', 'spelhubben-weather'),
+					'msg'   => __('Phew! It is really hot. Drink plenty of water and stay in the shade if you can.', 'spelhubben-weather'),
+					'icon'  => 'thermometer-plus'
+				];
+			} elseif ($temp > $opts['alert_heat_warm']) {
+				$alerts[] = [
+					'level' => 'info',
+					'title' => __('Lovely Weather', 'spelhubben-weather'),
+					'msg'   => __('It is warm and pleasant outside. Don\'t forget the sunscreen!', 'spelhubben-weather'),
+					'icon'  => 'lightbulb'
+				];
+			}
+		}
+
+		if ($wind !== null) {
+			if ($wind > $opts['alert_wind_storm']) {
+				$alerts[] = [
+					'level' => 'danger',
+					'title' => __('Storm Warning', 'spelhubben-weather'),
+					'msg'   => __('Storm force winds detected! Stay indoors if possible and secure loose objects.', 'spelhubben-weather'),
+					'icon'  => 'wind'
+				];
+			} elseif ($wind > $opts['alert_wind_strong']) {
+				$alerts[] = [
+					'level' => 'warning',
+					'title' => __('Strong Wind', 'spelhubben-weather'),
+					'msg'   => __('It is very windy outside. Hold on to your hat!', 'spelhubben-weather'),
+					'icon'  => 'wind'
+				];
+			}
+		}
+
+		if ($precip !== null && $precip > $opts['alert_precip_heavy']) {
+			$alerts[] = [
+				'level' => 'info',
+				'title' => __('Heavy Precipitation', 'spelhubben-weather'),
+				'msg'   => __('It looks like it will rain or snow quite a bit. Don\'t forget your umbrella!', 'spelhubben-weather'),
+				'icon'  => 'rain'
+			];
+		}
+
+		return $alerts;
 	}
 }

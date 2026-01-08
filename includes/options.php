@@ -10,7 +10,7 @@ if (!function_exists('sv_vader_default_options')) {
 		return [
 			'default_ort'    => 'Stockholm',
 			'cache_minutes'  => 10,
-			'default_show'   => 'temp,wind,icon',
+			'default_show'   => 'temp,wind,wind_dir,icon',
 			'default_layout' => 'card',
 			'map_default'    => 1,
 			'map_height'     => 240,
@@ -31,6 +31,16 @@ if (!function_exists('sv_vader_default_options')) {
 
 			// NEW: cache salt (rotates when user clears cache)
 			'cache_salt'   => '1',
+
+			// Alert Thresholds
+			'alert_cold_extreme'  => -15,
+			'alert_cold_freezing' => 0,
+			'alert_heat_extreme'  => 30,
+			'alert_heat_warm'     => 25,
+			'alert_wind_storm'    => 24.5,
+			'alert_wind_strong'   => 15,
+			'alert_precip_heavy'  => 5,
+			'show_alerts'         => 1, // Default to show alerts
 		];
 	}
 }
@@ -52,11 +62,11 @@ if (!function_exists('sv_vader_sanitize_options')) {
 		$out['default_ort']    = sanitize_text_field($in['default_ort'] ?? $def['default_ort']);
 		$out['cache_minutes']  = max(1, intval($in['cache_minutes'] ?? $def['cache_minutes']));
 
-		$allowed_show = ['temp','wind','icon'];
+		$allowed_show = ['temp','wind','wind_dir','icon'];
 		$show_in = strtolower((string)($in['default_show'] ?? $def['default_show']));
 		$show_in = array_filter(array_map('trim', explode(',', $show_in)));
 		$show_in = array_values(array_unique(array_intersect($show_in, $allowed_show)));
-		$out['default_show'] = implode(',', $show_in ?: ['temp','wind','icon']);
+		$out['default_show'] = implode(',', $show_in ?: ['temp','wind','wind_dir','icon']);
 
 		$allowed_layouts = ['inline','compact','card','detailed'];
 		$layout_in = strtolower((string)($in['default_layout'] ?? $def['default_layout']));
@@ -74,7 +84,7 @@ if (!function_exists('sv_vader_sanitize_options')) {
 		$out['prov_weatherapi']     = !empty($in['prov_weatherapi']) ? 1 : 0;
 
 		// Icon style preference
-		$allowed_icon_styles = ['classic','modern-flat','modern-gradient'];
+		$allowed_icon_styles = ['classic','modern-flat','modern-gradient','modern-2026','modern-3d'];
 		$icon_style_in = strtolower((string)($in['icon_style'] ?? $def['icon_style'] ?? 'classic'));
 		$out['icon_style'] = in_array($icon_style_in, $allowed_icon_styles, true) ? $icon_style_in : 'classic';
 
@@ -95,6 +105,15 @@ if (!function_exists('sv_vader_sanitize_options')) {
 
 		// Preserve/initialize cache salt
 		$out['cache_salt'] = sanitize_text_field($in['cache_salt'] ?? $def['cache_salt']);
+
+		// Alert Thresholds
+		$out['alert_cold_extreme']  = floatval($in['alert_cold_extreme']  ?? $def['alert_cold_extreme']);
+		$out['alert_cold_freezing'] = floatval($in['alert_cold_freezing'] ?? $def['alert_cold_freezing']);
+		$out['alert_heat_extreme']  = floatval($in['alert_heat_extreme']  ?? $def['alert_heat_extreme']);
+		$out['alert_heat_warm']     = floatval($in['alert_heat_warm']     ?? $def['alert_heat_warm']);
+		$out['alert_wind_storm']    = floatval($in['alert_wind_storm']    ?? $def['alert_wind_storm']);
+		$out['alert_wind_strong']   = floatval($in['alert_wind_strong']   ?? $def['alert_wind_strong']);
+		$out['alert_precip_heavy']  = floatval($in['alert_precip_heavy']  ?? $def['alert_precip_heavy']);
 
 		return $out;
 	}

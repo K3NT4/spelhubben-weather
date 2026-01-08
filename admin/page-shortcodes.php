@@ -3,18 +3,24 @@
 if ( ! defined( 'ABSPATH' ) ) exit;
 
 /**
- * Kortkods-sida (render)
+ * Shortcodes page (render)
  */
 if ( ! function_exists( 'sv_vader_render_shortcodes_page' ) ) {
 	function sv_vader_render_shortcodes_page() {
 		if ( ! current_user_can( 'manage_options' ) ) return;
 
-		// Exempel (nya alias)
+		// Examples (new aliases)
 		$nx1 = '[spelhubben_weather]';
 		$nx2 = '[spelhubben_weather place="Gothenburg" layout="compact" map="1" animate="1"]';
 		$nx3 = '[spelhubben_weather lat="57.7089" lon="11.9746" place="Gothenburg" layout="inline" map="0" show="temp,icon"]';
 		$nx4 = '[spelhubben_weather place="Umeå" layout="detailed" forecast="daily" days="5" providers="smhi,yr,openmeteo,fmi" units="metric_kmh"]';
 		$nx5 = '[spelhubben_weather place="Malmö" show="temp,wind" map="0" units="imperial"]';
+		$nx6 = '[spelhubben_weather place="London" comparison="1"]';
+		$nx7 = '[spelhubben_weather place="Oslo" show_alerts="1"]';
+		$nx8 = '[spelhubben_weather map="1" map_height="400"]';
+		$nx9 = '[spelhubben_weather forecast="daily" days="10"]';
+		$nx10 = '[spelhubben_weather providers="smhi,yr"]';
+		$nx11 = '[spelhubben_weather place="Stockholm" show="temp,wind,wind_dir,icon"]';
 
 		$new_examples = array(
 			array( 'label' => __( 'Basic example', 'spelhubben-weather' ), 'code' => $nx1 ),
@@ -22,6 +28,12 @@ if ( ! function_exists( 'sv_vader_render_shortcodes_page' ) ) {
 			array( 'label' => __( 'Inline without map', 'spelhubben-weather' ), 'code' => $nx3 ),
 			array( 'label' => __( 'Detailed with daily forecast & km/h', 'spelhubben-weather' ), 'code' => $nx4 ),
 			array( 'label' => __( 'Only temperature + wind, imperial', 'spelhubben-weather' ), 'code' => $nx5 ),
+			array( 'label' => __( 'Show temperature, wind speed & direction', 'spelhubben-weather' ), 'code' => $nx11 ),
+			array( 'label' => __( 'Provider comparison mode', 'spelhubben-weather' ), 'code' => $nx6 ),
+			array( 'label' => __( 'With weather alerts enabled', 'spelhubben-weather' ), 'code' => $nx7 ),
+			array( 'label' => __( 'Custom map height (400px)', 'spelhubben-weather' ), 'code' => $nx8 ),
+			array( 'label' => __( 'Long forecast (10 days)', 'spelhubben-weather' ), 'code' => $nx9 ),
+			array( 'label' => __( 'Specific providers only (SMHI & Yr)', 'spelhubben-weather' ), 'code' => $nx10 ),
 		);
 		?>
 		<div class="wrap svv-admin-wrap">
@@ -101,6 +113,45 @@ if ( ! function_exists( 'sv_vader_render_shortcodes_page' ) ) {
 						</div>
 
 						<textarea class="svv-sc-preview" rows="8" spellcheck="false" aria-label="<?php echo esc_attr__( 'Shortcode preview', 'spelhubben-weather' ); ?>" placeholder="[spelhubben_weather place=&quot;…&quot;]"></textarea>
+						
+						<!-- BUILDER -->
+						<div class="svv-sc-builder" style="margin-top:16px; padding-top:16px; border-top:1px solid #eee;">
+							<h3 style="margin-top:0; font-size:14px;"><?php esc_html_e( 'Quick Builder', 'spelhubben-weather' ); ?></h3>
+							<div style="display:flex; flex-wrap:wrap; gap:15px; margin-bottom:10px;">
+								<div>
+									<strong><?php esc_html_e( 'Show fields:', 'spelhubben-weather' ); ?></strong><br>
+									<label><input type="checkbox" class="svv-b-show" value="temp" checked> <?php esc_html_e( 'Temp', 'spelhubben-weather' ); ?></label>
+									<label><input type="checkbox" class="svv-b-show" value="wind" checked> <?php esc_html_e( 'Wind', 'spelhubben-weather' ); ?></label>
+									<label><input type="checkbox" class="svv-b-show" value="wind_dir" checked> <?php esc_html_e( 'Wind Dir', 'spelhubben-weather' ); ?></label>
+									<label><input type="checkbox" class="svv-b-show" value="icon" checked> <?php esc_html_e( 'Icon', 'spelhubben-weather' ); ?></label>
+								</div>
+								<div>
+									<strong><?php esc_html_e( 'Layout:', 'spelhubben-weather' ); ?></strong><br>
+									<select class="svv-b-layout">
+										<option value="card">Card</option>
+										<option value="compact">Compact</option>
+										<option value="inline">Inline</option>
+										<option value="detailed">Detailed</option>
+									</select>
+								</div>
+								<div>
+									<strong><?php esc_html_e( 'Extras:', 'spelhubben-weather' ); ?></strong><br>
+									<label><input type="checkbox" class="svv-b-map" value="1"> <?php esc_html_e( 'Map', 'spelhubben-weather' ); ?></label>
+									<label><input type="checkbox" class="svv-b-animate" value="1" checked> <?php esc_html_e( 'Animate', 'spelhubben-weather' ); ?></label>
+								</div>
+								<div style="width:100%;">
+									<strong><?php esc_html_e( 'Providers:', 'spelhubben-weather' ); ?></strong><br>
+									<label><input type="checkbox" class="svv-b-prov" value="openmeteo" checked> Open-Meteo</label>
+									<label><input type="checkbox" class="svv-b-prov" value="smhi" checked> SMHI</label>
+									<label><input type="checkbox" class="svv-b-prov" value="yr" checked> Yr</label>
+									<label><input type="checkbox" class="svv-b-prov" value="fmi"> FMI</label>
+									<label><input type="checkbox" class="svv-b-prov" value="openweathermap"> OpenWeather</label>
+									<label><input type="checkbox" class="svv-b-prov" value="weatherapi"> WeatherAPI</label>
+								</div>
+							</div>
+							<button type="button" class="button svv-b-generate"><?php esc_html_e( 'Update Shortcode', 'spelhubben-weather' ); ?></button>
+						</div>
+
 						<div class="svv-live-preview" hidden>
   							<div class="svv-live-bar">
     							<span class="dashicons dashicons-visibility"></span>
@@ -138,7 +189,7 @@ if ( ! function_exists( 'sv_vader_render_shortcodes_page' ) ) {
 									<tr data-group="loc"><td><code>place</code></td><td><?php esc_html_e( 'Place name to geocode (used if lat/lon are missing).', 'spelhubben-weather' ); ?></td><td><code>place="Umeå"</code></td></tr>
 									<tr data-group="loc"><td><code>lat</code>, <code>lon</code></td><td><?php esc_html_e( 'Coordinates take precedence over place.', 'spelhubben-weather' ); ?></td><td><code>lat="57.7" lon="11.97"</code></td></tr>
 
-									<tr data-group="disp"><td><code>show</code></td><td><?php esc_html_e( 'Fields to display: temp,wind,icon', 'spelhubben-weather' ); ?></td><td><code>show="temp,wind"</code></td></tr>
+									<tr data-group="disp"><td><code>show</code></td><td><?php esc_html_e( 'Fields to display: temp,wind,wind_dir,icon', 'spelhubben-weather' ); ?></td><td><code>show="temp,wind,wind_dir"</code></td></tr>
 									<tr data-group="disp"><td><code>layout</code></td><td><?php esc_html_e( 'inline | compact | card | detailed', 'spelhubben-weather' ); ?></td><td><code>layout="compact"</code></td></tr>
 									<tr data-group="disp"><td><code>map</code></td><td><?php esc_html_e( '1/0 to show/hide map', 'spelhubben-weather' ); ?></td><td><code>map="1"</code></td></tr>
 									<tr data-group="disp"><td><code>map_height</code></td><td><?php esc_html_e( 'Map height in px (min 120).', 'spelhubben-weather' ); ?></td><td><code>map_height="240"</code></td></tr>

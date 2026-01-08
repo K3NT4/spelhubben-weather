@@ -4,7 +4,7 @@ if (!defined('ABSPATH')) exit;
 
 class SV_Vader_Widget extends WP_Widget {
 
-    private array $show_allowed = ['temp','wind','icon'];
+    private array $show_allowed = ['temp','wind','wind_dir','icon'];
 
     public function __construct() {
         $widget_ops = [
@@ -27,13 +27,14 @@ class SV_Vader_Widget extends WP_Widget {
             'ort'       => 'Stockholm',
             'lat'       => '',
             'lon'       => '',
-            'show'      => ['temp','wind','icon'],
+            'show'      => ['temp','wind','wind_dir','icon'],
             'layout'    => 'card',
             'map'       => 0,
             'mapHeight' => 240,
             'animate'   => 1,
             'forecast'  => 'none',
             'days'      => 5,
+            'show_alerts' => 1,
             'class'     => 'is-widget',
         ];
         $instance = wp_parse_args((array) $instance, $defaults);
@@ -54,13 +55,14 @@ class SV_Vader_Widget extends WP_Widget {
         ));
         $show_csv = implode(',', $show_selected);
 
-        $layout    = sanitize_text_field($instance['layout']);
-        $map       = !empty($instance['map']) ? 1 : 0;
-        $mapHeight = (int) $instance['mapHeight'];
-        $animate   = !empty($instance['animate']) ? 1 : 0;
-        $forecast  = in_array($instance['forecast'], ['none','daily'], true) ? $instance['forecast'] : 'none';
-        $days      = max(1, min(14, (int) $instance['days']));
-        $extra_cls = isset($instance['class']) ? sanitize_html_class($instance['class'], '') : '';
+        $layout      = sanitize_text_field($instance['layout']);
+        $map         = !empty($instance['map']) ? 1 : 0;
+        $mapHeight   = (int) $instance['mapHeight'];
+        $animate     = !empty($instance['animate']) ? 1 : 0;
+        $forecast    = in_array($instance['forecast'], ['none','daily'], true) ? $instance['forecast'] : 'none';
+        $days        = max(1, min(14, (int) $instance['days']));
+        $show_alerts = !empty($instance['show_alerts']) ? 1 : 0;
+        $extra_cls   = isset($instance['class']) ? sanitize_html_class($instance['class'], '') : '';
 
         // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- Core wrapper
         echo $args['before_widget'];
@@ -73,17 +75,18 @@ class SV_Vader_Widget extends WP_Widget {
         if (class_exists('SV_Vader_Renderer')) {
             $renderer = new SV_Vader_Renderer();
             $html = $renderer->render_shortcode([
-                'ort'        => $ort,
-                'lat'        => $lat,
-                'lon'        => $lon,
-                'show'       => $show_csv,
-                'layout'     => $layout,
-                'class'      => trim('is-widget ' . $extra_cls),
-                'map'        => $map ? '1' : '0',
-                'map_height' => (string) $mapHeight,
-                'animate'    => $animate ? '1' : '0',
-                'forecast'   => $forecast,
-                'days'       => (string) $days,
+                'ort'         => $ort,
+                'lat'         => $lat,
+                'lon'         => $lon,
+                'show'        => $show_csv,
+                'layout'      => $layout,
+                'class'       => trim('is-widget ' . $extra_cls),
+                'map'         => $map ? '1' : '0',
+                'map_height'  => (string) $mapHeight,
+                'animate'     => $animate ? '1' : '0',
+                'forecast'    => $forecast,
+                'days'        => (string) $days,
+                'show_alerts' => $show_alerts ? '1' : '0',
             ]);
 
             echo wp_kses_post($html);
@@ -102,7 +105,7 @@ class SV_Vader_Widget extends WP_Widget {
             'ort'       => 'Stockholm',
             'lat'       => '',
             'lon'       => '',
-            'show'      => ['temp','wind','icon'],
+            'show'      => ['temp','wind','wind_dir','icon'],
             'layout'    => 'card',
             'map'       => 0,
             'mapHeight' => 240,
@@ -148,10 +151,18 @@ class SV_Vader_Widget extends WP_Widget {
 
         <fieldset>
             <legend><?php esc_html_e('Show:', 'spelhubben-weather'); ?></legend>
-            <?php foreach ($this->show_allowed as $key): ?>
+            <?php 
+            $labels = [
+                'temp'     => __('Temperature', 'spelhubben-weather'),
+                'wind'     => __('Wind speed', 'spelhubben-weather'),
+                'wind_dir' => __('Wind direction', 'spelhubben-weather'),
+                'icon'     => __('Weather icon', 'spelhubben-weather'),
+            ];
+            foreach ($this->show_allowed as $key): ?>
                 <?php
                 $cb_id   = $this->get_field_id('show_' . $key);
                 $checked = in_array($key, $show_selected, true);
+                $label   = $labels[$key] ?? $key;
                 ?>
                 <p style="margin:4px 0;">
                     <input type="checkbox"
@@ -159,7 +170,7 @@ class SV_Vader_Widget extends WP_Widget {
                            name="<?php echo esc_attr($this->get_field_name('show')); ?>[]"
                            value="<?php echo esc_attr($key); ?>"
                            <?php checked($checked); ?>>
-                    <label for="<?php echo esc_attr($cb_id); ?>"><?php echo esc_html($key); ?></label>
+                    <label for="<?php echo esc_attr($cb_id); ?>"><?php echo esc_html($label); ?></label>
                 </p>
             <?php endforeach; ?>
             <p class="description" style="margin-top:6px;">
@@ -220,6 +231,12 @@ class SV_Vader_Widget extends WP_Widget {
                    value="<?php echo esc_attr((string) $instance['days']); ?>">
         </p>
         <p>
+            <input id="<?php echo esc_attr($this->get_field_id('show_alerts')); ?>"
+                   name="<?php echo esc_attr($this->get_field_name('show_alerts')); ?>"
+                   type="checkbox" value="1" <?php checked($instance['show_alerts'], 1); ?>>
+            <label for="<?php echo esc_attr($this->get_field_id('show_alerts')); ?>"><?php esc_html_e('Show weather alerts', 'spelhubben-weather'); ?></label>
+        </p>
+        <p>
             <label for="<?php echo esc_attr($this->get_field_id('class')); ?>"><?php esc_html_e('Extra CSS class:', 'spelhubben-weather'); ?></label>
             <input class="widefat"
                    id="<?php echo esc_attr($this->get_field_id('class')); ?>"
@@ -246,13 +263,14 @@ class SV_Vader_Widget extends WP_Widget {
             $instance['show'] = [];
         }
 
-        $instance['layout']    = sanitize_text_field($new_instance['layout'] ?? 'card');
-        $instance['map']       = !empty($new_instance['map']) ? 1 : 0;
-        $instance['mapHeight'] = max(120, min(800, (int) ($new_instance['mapHeight'] ?? 240)));
-        $instance['animate']   = !empty($new_instance['animate']) ? 1 : 0;
-        $instance['forecast']  = in_array($new_instance['forecast'] ?? 'none', ['none','daily'], true) ? $new_instance['forecast'] : 'none';
-        $instance['days']      = max(1, min(14, (int) ($new_instance['days'] ?? 5)));
-        $instance['class']     = sanitize_html_class($new_instance['class'] ?? '', '');
+        $instance['layout']      = sanitize_text_field($new_instance['layout'] ?? 'card');
+        $instance['map']         = !empty($new_instance['map']) ? 1 : 0;
+        $instance['mapHeight']   = max(120, min(800, (int) ($new_instance['mapHeight'] ?? 240)));
+        $instance['animate']     = !empty($new_instance['animate']) ? 1 : 0;
+        $instance['forecast']    = in_array($new_instance['forecast'] ?? 'none', ['none','daily'], true) ? $new_instance['forecast'] : 'none';
+        $instance['days']        = max(1, min(14, (int) ($new_instance['days'] ?? 5)));
+        $instance['show_alerts'] = !empty($new_instance['show_alerts']) ? 1 : 0;
+        $instance['class']       = sanitize_html_class($new_instance['class'] ?? '', '');
 
         return $instance;
     }

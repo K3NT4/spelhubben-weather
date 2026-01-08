@@ -31,6 +31,7 @@ class SV_Vader_Renderer {
 			'forecast'   => 'none',
 			'days'       => '5',
 			'comparison' => '0', // NEW: Show individual provider data
+			'show_alerts' => (string) $opts['show_alerts'],
 
 			// Units & formatting (overrides)
 			'units'        => $opts['units'],
@@ -75,6 +76,7 @@ class SV_Vader_Renderer {
         // Convert values according to selected units
 		list($t_val, $t_sym) = sv_vader_temp($res['temp'] ?? null, $units['temp'], 0);
 		list($w_val, $w_u)   = sv_vader_wind($res['wind'] ?? null, $units['wind'], 0);
+		$w_dir               = $res['wind_dir'] ?? null;
 		list($p_val, $p_u)   = sv_vader_precip($res['precip'] ?? null, $units['precip'], 1);
 		$cloud               = isset($res['cloud']) ? intval($res['cloud']) : null;
 
@@ -84,12 +86,15 @@ class SV_Vader_Renderer {
 		$lat      = $res['lat'];
 		$lon      = $res['lon'];
 
+		$alerts   = ( $a['show_alerts'] === '1' ) ? sv_vader_get_alerts($res) : [];
+
 		$forecast = [];
 		if ($a['forecast'] === 'daily') {
 			$forecast = (new SV_Vader_API(intval($opts['cache_minutes'])))->get_daily_forecast($a['ort'], $a['lat'], $a['lon'], intval($a['days']));
 		}
 
-		$classes = 'sv-vader spelhubben-weather ' . $a['class'] . ' ' . ($a['animate']==='1' ? 'svv-anim' : '') . ' svv-layout-' . $layout;
+		$is_anim = in_array(strtolower((string)($a['animate'] ?? '')), ['1','true','yes','on'], true);
+		$classes = 'sv-vader spelhubben-weather ' . $a['class'] . ' ' . ($is_anim ? 'svv-anim' : '') . ' svv-layout-' . $layout;
 
 		ob_start(); ?>
 		<div class="<?php echo esc_attr($classes); ?>" data-svv-ro="1">
@@ -97,11 +102,21 @@ class SV_Vader_Renderer {
 				<div class="svv-ort"><?php echo esc_html($name); ?></div>
 			<?php endif; ?>
 
+			<?php if (!empty($alerts) && $layout !== 'inline'): ?>
+				<div class="svv-frontend-alerts">
+					<?php foreach ($alerts as $alert): ?>
+						<div class="svv-alert-mini is-<?php echo esc_attr($alert['level']); ?>" title="<?php echo esc_attr($alert['msg']); ?>">
+							<span class="svv-alert-text"><?php echo esc_html($alert['title']); ?>: <?php echo esc_html($alert['msg']); ?></span>
+						</div>
+					<?php endforeach; ?>
+				</div>
+			<?php endif; ?>
+
 			<?php switch ($layout) {
 				case 'inline': ?>
 					<div class="svv-row svv-row-inline">
 						<?php if (in_array('icon', $show, true) && $icon_url): ?>
-							<img class="svv-icon" src="<?php echo esc_url($icon_url); ?>" alt="" loading="lazy">
+							<img class="svv-icon" src="<?php echo esc_url($icon_url); ?>" alt="" width="40" height="40" loading="eager" fetchpriority="high">
 						<?php endif; ?>
 						<?php if (in_array('temp', $show, true) && $t_val !== null): ?>
 						<div class="svv-temp"><?php echo esc_html( sv_vader_num($t_val) ); ?><?php echo esc_html($t_sym); ?></div>
@@ -112,7 +127,7 @@ class SV_Vader_Renderer {
 				case 'compact': ?>
 					<div class="svv-row svv-row-compact">
 						<?php if (in_array('icon', $show, true) && $icon_url): ?>
-							<img class="svv-icon" src="<?php echo esc_url($icon_url); ?>" alt="" loading="lazy">
+							<img class="svv-icon" src="<?php echo esc_url($icon_url); ?>" alt="" width="40" height="40" loading="eager" fetchpriority="high">
 						<?php endif; ?>
 						<?php if (in_array('temp', $show, true) && $t_val !== null): ?>
 							<div class="svv-temp"><?php echo esc_html( sv_vader_num($t_val) ); ?><?php echo esc_html($t_sym); ?></div>
@@ -122,7 +137,10 @@ class SV_Vader_Renderer {
 							/* translators: 1: wind value, 2: wind unit (e.g. 5, km/h) */
 							$wind_compact = sprintf( __( 'Wind %1$s %2$s', 'spelhubben-weather' ), sv_vader_num($w_val), $w_u );
 							?>
-							<span class="svv-wind svv-badge"><?php echo esc_html( $wind_compact ); ?></span>
+							<span class="svv-wind svv-badge">
+								<?php echo esc_html( $wind_compact ); ?>
+								<?php if (in_array('wind_dir', $show, true)) echo wp_kses_post( sv_vader_wind_dir_icon($w_dir) ); ?>
+							</span>
 						<?php endif; ?>
 						<?php if (!empty($desc)): ?>
 							<span class="svv-desc svv-badge"><?php echo esc_html($desc); ?></span>
@@ -133,7 +151,7 @@ class SV_Vader_Renderer {
 				case 'detailed': ?>
 					<div class="svv-row svv-row-detailed">
 						<?php if (in_array('icon', $show, true) && $icon_url): ?>
-							<img class="svv-icon" src="<?php echo esc_url($icon_url); ?>" alt="" loading="lazy">
+							<img class="svv-icon" src="<?php echo esc_url($icon_url); ?>" alt="" width="44" height="44" loading="eager" fetchpriority="high">
 						<?php endif; ?>
 						<div class="svv-col">
 							<?php if (in_array('temp', $show, true) && $t_val !== null): ?>
@@ -145,7 +163,10 @@ class SV_Vader_Renderer {
 									/* translators: 1: wind value, 2: wind unit (e.g. 5, km/h) */
 									$wind_detailed = sprintf( __( 'Wind: %1$s %2$s', 'spelhubben-weather' ), sv_vader_num($w_val), $w_u );
 									?>
-									<span class="svv-wind"><?php echo esc_html( $wind_detailed ); ?></span>
+									<span class="svv-wind">
+										<?php echo esc_html( $wind_detailed ); ?>
+										<?php if (in_array('wind_dir', $show, true)) echo wp_kses_post( sv_vader_wind_dir_icon($w_dir) ); ?>
+									</span>
 								<?php endif; ?>
 								<?php if (!empty($desc)): ?>
 									<span class="svv-desc"><?php echo esc_html($desc); ?></span>
@@ -175,7 +196,7 @@ class SV_Vader_Renderer {
 				default: ?>
 					<div class="svv-row">
 						<?php if (in_array('icon', $show, true) && $icon_url): ?>
-							<img class="svv-icon" src="<?php echo esc_url($icon_url); ?>" alt="" loading="lazy">
+							<img class="svv-icon" src="<?php echo esc_url($icon_url); ?>" alt="" width="40" height="40" loading="eager" fetchpriority="high">
 						<?php endif; ?>
 						<?php if (in_array('temp', $show, true) && $t_val !== null): ?>
 							<div class="svv-temp"><?php echo esc_html( sv_vader_num($t_val) ); ?><?php echo esc_html($t_sym); ?></div>
@@ -188,7 +209,10 @@ class SV_Vader_Renderer {
 							/* translators: 1: wind value, 2: wind unit (e.g. 5, km/h) */
 							$wind_card = sprintf( __( 'Wind: %1$s %2$s', 'spelhubben-weather' ), sv_vader_num($w_val), $w_u );
 							?>
-							<span class="svv-wind"><?php echo esc_html( $wind_card ); ?></span>
+							<span class="svv-wind">
+								<?php echo esc_html( $wind_card ); ?>
+								<?php if (in_array('wind_dir', $show, true)) echo wp_kses_post( sv_vader_wind_dir_icon($w_dir) ); ?>
+							</span>
 						<?php endif; ?>
 						<?php if (!empty($desc)): ?>
 							<span class="svv-desc"><?php echo esc_html($desc); ?></span>
@@ -203,18 +227,18 @@ class SV_Vader_Renderer {
 					 data-name="<?php echo esc_attr($name); ?>"
 					 style="height: <?php echo intval($a['map_height']); ?>px;"></div>
 
-				<div class="svv-map-attrib"><?php echo wp_kses_post(SV_VADER_ATTRIB_HTML); ?></div>
+				<div class="svv-map-attrib" role="note" aria-label="<?php echo esc_attr_x('Map data attribution', 'aria label', 'spelhubben-weather'); ?>"><?php echo wp_kses_post(SV_VADER_ATTRIB_HTML); ?></div>
 
 				<div class="svv-map-link">
 					<a href="<?php echo esc_url('https://www.openstreetmap.org/?mlat=' . rawurlencode($lat) . '&mlon=' . rawurlencode($lon) . '#map=12/' . rawurlencode($lat) . '/' . rawurlencode($lon)); ?>"
-					   target="_blank" rel="noopener">
+					   target="_blank" rel="noopener noreferrer">
 						<?php esc_html_e('View on OpenStreetMap', 'spelhubben-weather'); ?>
 					</a>
 				</div>
 			<?php endif; ?>
 
 			<?php if (!empty($forecast) && $layout !== 'inline') : ?>
-				<div class="svv-forecast <?php echo ($a['animate']==='1' ? 'svv-anim' : ''); ?>">
+				<div class="svv-forecast <?php echo ($is_anim ? 'svv-anim' : ''); ?>">
 					<?php foreach ($forecast as $d):
 						$icon = $api->map_icon_url($d['code']);
 						$ts   = strtotime($d['date']);
@@ -222,7 +246,7 @@ class SV_Vader_Renderer {
 					?>
 					<div class="svv-daycard">
 						<div class="svv-daylabel"><?php echo esc_html($lbl); ?></div>
-						<?php if ($icon): ?><img class="svv-dayicon" src="<?php echo esc_url($icon); ?>" alt=""><?php endif; ?>
+						<?php if ($icon): ?><img class="svv-dayicon" src="<?php echo esc_url($icon); ?>" alt="" width="36" height="36"><?php endif; ?>
 						<div class="svv-daytemps">
 							<?php
 							list($fmax,) = sv_vader_temp($d['tmax'], $units['temp'], 0);
@@ -277,6 +301,7 @@ class SV_Vader_Renderer {
 					// Convert values
 					list($t_val, $t_sym) = sv_vader_temp($data['temp'] ?? null, $units['temp'], 0);
 					list($w_val, $w_u)   = sv_vader_wind($data['wind'] ?? null, $units['wind'], 0);
+					$w_dir               = $data['wind_dir'] ?? null;
 					list($p_val, $p_u)   = sv_vader_precip($data['precip'] ?? null, $units['precip'], 1);
 					$cloud = isset($data['cloud']) ? intval($data['cloud']) : null;
 					$desc = $data['desc'] ?? '—';
@@ -294,13 +319,16 @@ class SV_Vader_Renderer {
 
 					<div style="font-size:12px; color:#666; margin-bottom:8px;">
 						<?php if ($w_val !== null): ?>
-							<div>💨 Wind: <?php echo esc_html(sv_vader_num($w_val)); ?> <?php echo esc_html($w_u); ?></div>
+							<div>
+								💨 <?php esc_html_e('Wind:', 'spelhubben-weather'); ?> <?php echo esc_html(sv_vader_num($w_val)); ?> <?php echo esc_html($w_u); ?>
+								<?php if (in_array('wind_dir', $show, true)) echo wp_kses_post( sv_vader_wind_dir_icon($w_dir) ); ?>
+							</div>
 						<?php endif; ?>
 						<?php if ($p_val !== null): ?>
-							<div>💧 Precip: <?php echo esc_html(sv_vader_num($p_val, 1)); ?> <?php echo esc_html($p_u); ?></div>
+							<div>💧 <?php esc_html_e('Precip:', 'spelhubben-weather'); ?> <?php echo esc_html(sv_vader_num($p_val, 1)); ?> <?php echo esc_html($p_u); ?></div>
 							<?php endif; ?>
 							<?php if ($cloud !== null): ?>
-								<div>☁️ Cloud: <?php echo esc_html($cloud); ?>%</div>
+								<div>☁️ <?php esc_html_e('Cloud:', 'spelhubben-weather'); ?> <?php echo esc_html($cloud); ?>%</div>
 							<?php endif; ?>
 						</div>
 

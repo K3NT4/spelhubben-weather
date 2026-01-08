@@ -1,20 +1,29 @@
 <?php
+/**
+ * Admin bootstrap for Spelhubben Weather
+ *
+ * Copyright (C) 2026 Spelhubben
+ * Licensed under the GNU General Public License v3 (or later)
+ * https://www.gnu.org/licenses/gpl-3.0.html
+ */
 // admin/admin.php
 if ( ! defined( 'ABSPATH' ) ) exit;
 
 /**
- * Ladda del-sidor
- * - Görs villkorligt inne i callbacks, men vi require:ar filerna här för enkelhet.
+ * Load sub-pages
+ * - Done conditionally inside callbacks, but we require files here for simplicity.
  */
 require_once __DIR__ . '/page-settings.php';
 require_once __DIR__ . '/page-shortcodes.php';
+require_once __DIR__ . '/page-performance.php';
+require_once __DIR__ . '/page-alerts.php';
 
 /**
- * Enqueue admin assets endast på våra sidor
+ * Enqueue admin assets only on our pages
  */
 if ( ! function_exists( 'sv_vader_admin_enqueue' ) ) {
 	function sv_vader_admin_enqueue( $hook ) {
-		// Ladda våra assets på alla sidor vars hook innehåller "sv-vader"
+		// Load our assets on all pages where hook contains "sv-vader"
 		if ( strpos( $hook, 'sv-vader' ) === false ) {
 			return;
 		}
@@ -25,7 +34,7 @@ if ( ! function_exists( 'sv_vader_admin_enqueue' ) ) {
 			$wporg->enqueue_assets( $hook );
 		}
 
-		// Robust byggning av URL + versions-bust via filemtime
+		// Robust building of URL + version-bust via filemtime
 		$plugin_file = defined( 'SV_VADER_FILE' ) ? SV_VADER_FILE : __DIR__ . '/../spelhubben-weather.php';
 		$base_url    = plugins_url( '', $plugin_file );
 		$base_path   = plugin_dir_path( $plugin_file );
@@ -61,6 +70,18 @@ if ( ! function_exists( 'sv_vader_admin_enqueue' ) ) {
 			'failed'     => __( 'Failed', 'spelhubben-weather' ),
 			'previewErr' => __( 'Preview failed', 'spelhubben-weather' ),
 
+			// Admin UI toggles
+			'show_html'      => __( 'Show HTML', 'spelhubben-weather' ),
+			'show_html_hide' => __( 'Hide HTML', 'spelhubben-weather' ),
+
+			// Attribution checker
+			'check_attrib'     => __( 'Check attribution', 'spelhubben-weather' ),
+			'checking'         => __( 'Checking…', 'spelhubben-weather' ),
+			/* translators: %s: URL where attribution was found */
+			'attrib_found'     => __( 'Attribution found on %s', 'spelhubben-weather' ),
+			'attrib_not_found' => __( 'Attribution not found on recent pages', 'spelhubben-weather' ),
+			'attrib_check_error'=> __( 'Check failed', 'spelhubben-weather' ),
+
 			'ajax_url'   => admin_url( 'admin-ajax.php' ),
 			'ajax_nonce' => wp_create_nonce( 'svv_preview_sc' ),
 
@@ -82,23 +103,171 @@ if ( ! function_exists( 'sv_vader_admin_enqueue' ) ) {
 	add_action( 'admin_enqueue_scripts', 'sv_vader_admin_enqueue' );
 }
 
+// Export settings handler (runs before page render to avoid header already sent)
+if ( ! function_exists( 'sv_vader_handle_export_settings' ) ) {
+	function sv_vader_handle_export_settings() {
+		if ( ! current_user_can( 'manage_options' ) ) {
+			wp_die( esc_html__( 'Insufficient permissions.', 'spelhubben-weather' ) );
+		}
+
+		check_admin_referer( 'svv_export_settings_action', 'svv_export_settings_nonce' );
+
+		$options  = sv_vader_get_options();
+		$json     = wp_json_encode( $options, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE );
+		$filename = 'spelhubben-weather-settings-' . gmdate( 'Ymd-His' ) . '.json';
+
+		nocache_headers();
+		header( 'Content-Type: application/json; charset=utf-8' );
+		header( 'Content-Disposition: attachment; filename=' . $filename );
+		// Intentionally output raw JSON for download.
+		// phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
+		echo $json;
+		exit;
+	}
+
+	add_action( 'admin_post_svv_export_settings', 'sv_vader_handle_export_settings' );
+
+    
+}
+
+// Import settings handler
+if ( ! function_exists( 'sv_vader_handle_import_settings' ) ) {
+	function sv_vader_handle_import_settings() {
+		if ( ! current_user_can( 'manage_options' ) ) {
+			wp_die( esc_html__( 'Insufficient permissions.', 'spelhubben-weather' ) );
+		}
+
+		check_admin_referer( 'svv_import_settings_action', 'svv_import_settings_nonce' );
+
+		$redirect = admin_url( 'admin.php?page=sv-vader' );
+
+		if ( empty( $_FILES['svv_import_file'] ) || ! isset( $_FILES['svv_import_file']['tmp_name'] ) ) {
+			wp_safe_redirect( add_query_arg( array( 'svv_import_status' => 'fail', 'svv_import_msg' => rawurlencode( __( 'No file uploaded.', 'spelhubben-weather' ) ) ), $redirect ) );
+			exit;
+		}
+
+		$file = $_FILES['svv_import_file'];
+
+		// Basic structure validation
+		if ( ! is_array( $file ) || empty( $file['tmp_name'] ) ) {
+			wp_safe_redirect( add_query_arg( array( 'svv_import_status' => 'fail', 'svv_import_msg' => rawurlencode( __( 'No file uploaded.', 'spelhubben-weather' ) ) ), $redirect ) );
+			exit;
+		}
+
+		// Ensure this really was uploaded via HTTP POST
+		if ( ! is_uploaded_file( $file['tmp_name'] ) ) {
+			wp_safe_redirect( add_query_arg( array( 'svv_import_status' => 'fail', 'svv_import_msg' => rawurlencode( __( 'Invalid upload.', 'spelhubben-weather' ) ) ), $redirect ) );
+			exit;
+		}
+
+		// Sanitize and restrict file types to JSON
+		$safe_name = isset( $file['name'] ) ? sanitize_file_name( $file['name'] ) : '';
+		$ext = pathinfo( $safe_name, PATHINFO_EXTENSION );
+		if ( $ext && ! in_array( strtolower( $ext ), array( 'json' ), true ) ) {
+			wp_safe_redirect( add_query_arg( array( 'svv_import_status' => 'fail', 'svv_import_msg' => rawurlencode( __( 'Invalid file type.', 'spelhubben-weather' ) ) ), $redirect ) );
+			exit;
+		}
+
+		if ( ! empty( $file['error'] ) ) {
+			wp_safe_redirect( add_query_arg( array( 'svv_import_status' => 'fail', 'svv_import_msg' => rawurlencode( __( 'Upload failed.', 'spelhubben-weather' ) ) ), $redirect ) );
+			exit;
+		}
+
+		$size = isset( $file['size'] ) ? intval( $file['size'] ) : 0;
+		if ( $size <= 0 || $size > 262144 ) { // 256 KB limit
+			wp_safe_redirect( add_query_arg( array( 'svv_import_status' => 'fail', 'svv_import_msg' => rawurlencode( __( 'Invalid file size.', 'spelhubben-weather' ) ) ), $redirect ) );
+			exit;
+		}
+
+		$payload = file_get_contents( $file['tmp_name'] );
+		if ( $payload === false ) {
+			wp_safe_redirect( add_query_arg( array( 'svv_import_status' => 'fail', 'svv_import_msg' => rawurlencode( __( 'Could not read file.', 'spelhubben-weather' ) ) ), $redirect ) );
+			exit;
+		}
+
+		$data = json_decode( $payload, true );
+		if ( ! is_array( $data ) ) {
+			wp_safe_redirect( add_query_arg( array( 'svv_import_status' => 'fail', 'svv_import_msg' => rawurlencode( __( 'Invalid JSON.', 'spelhubben-weather' ) ) ), $redirect ) );
+			exit;
+		}
+
+		$sanitized = sv_vader_sanitize_options( $data );
+		update_option( 'sv_vader_options', $sanitized );
+
+		wp_safe_redirect( add_query_arg( array( 'svv_import_status' => 'ok' ), $redirect ) );
+		exit;
+	}
+
+	add_action( 'admin_post_svv_import_settings', 'sv_vader_handle_import_settings' );
+}
+
+	// AJAX: Check if attribution HTML appears on recent site pages
+	if ( ! function_exists( 'sv_vader_ajax_check_attrib' ) ) {
+		function sv_vader_ajax_check_attrib() {
+			if ( ! current_user_can( 'manage_options' ) ) {
+				wp_send_json_error( 'insufficient_permissions' );
+			}
+
+			// Search candidate URLs: recent posts + front page
+			$candidates = array();
+			$home = home_url('/');
+			$candidates[] = $home;
+
+			$query = new WP_Query( array( 'post_type' => array('post','page'), 'posts_per_page' => 30, 'post_status' => 'publish', 'no_found_rows' => true ) );
+			if ( $query->have_posts() ) {
+				foreach ( $query->posts as $p ) {
+					$candidates[] = get_permalink( $p );
+				}
+			}
+
+			$attrib_html = SV_VADER_ATTRIB_HTML;
+			$attrib_text = wp_strip_all_tags( $attrib_html );
+
+			foreach ( array_unique( $candidates ) as $url ) {
+				if ( empty( $url ) ) continue;
+				$res = wp_remote_get( $url, array( 'timeout' => 5, 'redirection' => 5 ) );
+				if ( is_wp_error( $res ) ) continue;
+				$body = wp_remote_retrieve_body( $res );
+				if ( ! $body ) continue;
+
+				// 1) Preferentially search inside any <footer>...</footer> blocks
+				$found_in_footer = false;
+				if ( preg_match_all( '#<footer\b[^>]*>(.*?)</footer>#is', $body, $matches ) ) {
+					foreach ( $matches[1] as $footer_html ) {
+						if ( strpos( $footer_html, $attrib_html ) !== false || strpos( $footer_html, $attrib_text ) !== false ) {
+							wp_send_json_success( array( 'found' => true, 'url' => esc_url_raw( $url ), 'context' => 'footer' ) );
+						}
+					}
+				}
+
+				// 2) Fallback: search entire body
+				if ( strpos( $body, $attrib_html ) !== false || strpos( $body, $attrib_text ) !== false ) {
+					wp_send_json_success( array( 'found' => true, 'url' => esc_url_raw( $url ), 'context' => 'body' ) );
+				}
+			}
+
+			wp_send_json_success( array( 'found' => false ) );
+		}
+		add_action( 'wp_ajax_svv_check_attrib', 'sv_vader_ajax_check_attrib' );
+	}
+
 /**
- * Meny och undersidor
+ * Menu and sub-pages
  */
 if ( ! function_exists( 'sv_vader_register_admin_menu' ) ) {
 	function sv_vader_register_admin_menu() {
-		// Toppmeny – visar Inställningar-sidan
+		// Top menu – shows Settings page
 		add_menu_page(
 			__( 'Spelhubben Weather', 'spelhubben-weather' ),
 			__( 'Spelhubben Weather', 'spelhubben-weather' ),
 			'manage_options',
-			'sv-vader', // parent slug (behålls för kompabilitet)
+			'sv-vader', // parent slug (kept for compatibility)
 			'sv_vader_render_settings_page',
 			'dashicons-cloud',
 			65
 		);
 
-		// Undersida: Inställningar (alias – pekar på samma callback som toppnivån)
+		// Sub-page: Settings (alias – points to same callback as top level)
 		add_submenu_page(
 			'sv-vader',
 			__( 'Settings', 'spelhubben-weather' ),
@@ -108,7 +277,17 @@ if ( ! function_exists( 'sv_vader_register_admin_menu' ) ) {
 			'sv_vader_render_settings_page'
 		);
 
-		// Undersida: Kortkoder
+		// Sub-page: Weather Alerts
+		add_submenu_page(
+			'sv-vader',
+			__( 'Alerts', 'spelhubben-weather' ),
+			__( 'Alerts', 'spelhubben-weather' ),
+			'manage_options',
+			'sv-vader-alerts',
+			'sv_vader_render_alerts_page'
+		);
+
+		// Sub-page: Shortcodes
 		add_submenu_page(
 			'sv-vader',
 			__( 'Shortcodes', 'spelhubben-weather' ),
@@ -117,23 +296,33 @@ if ( ! function_exists( 'sv_vader_register_admin_menu' ) ) {
 			'sv-vader-shortcodes',
 			'sv_vader_render_shortcodes_page'
 		);
+
+		// Sub-page: Performance Dashboard
+		add_submenu_page(
+			'sv-vader',
+			__( 'Performance', 'spelhubben-weather' ),
+			__( 'Performance', 'spelhubben-weather' ),
+			'manage_options',
+			'sv-vader-performance',
+			'sv_vader_render_performance_page'
+		);
 	}
 	add_action( 'admin_menu', 'sv_vader_register_admin_menu' );
 }
 
 /**
- * Registrera inställningar (hookas här men själva rendering sker i page-settings.php)
+ * Register settings (hooked here but rendering happens in page-settings.php)
  */
 if ( ! function_exists( 'sv_vader_register_settings' ) ) {
 	function sv_vader_register_settings() {
 		register_setting( 'sv_vader_group', 'sv_vader_options', array(
 			'type'              => 'array',
-			'sanitize_callback' => 'sv_vader_sanitize_options', // måste hantera ev. nya fält
+			'sanitize_callback' => 'sv_vader_sanitize_options', // must handle any new fields
 			'default'           => sv_vader_default_options(),
 			'show_in_rest'      => false,
 		) );
 
-		// ===== Huvudsektion (General) =====
+		// ===== Main Section (General) =====
 		add_settings_section( 'sv_vader_main', __( 'Default settings', 'spelhubben-weather' ), '__return_false', 'sv_vader' );
 
 		add_settings_field( 'default_ort', __( 'Default place', 'spelhubben-weather' ), 'sv_vader_field_default_ort', 'sv_vader', 'sv_vader_main' );
@@ -155,8 +344,28 @@ if ( ! function_exists( 'sv_vader_register_settings' ) ) {
 	add_action( 'admin_init', 'sv_vader_register_settings' );
 }
 
+	// Handle reset defaults request
+	if ( ! function_exists( 'sv_vader_handle_reset_defaults' ) ) {
+		function sv_vader_handle_reset_defaults() {
+			if ( ! current_user_can( 'manage_options' ) ) {
+				wp_die( esc_html__( 'Insufficient permissions.', 'spelhubben-weather' ) );
+			}
+
+			check_admin_referer( 'svv_reset_defaults', 'svv_reset_nonce' );
+
+			// Reset options to defaults
+			update_option( 'sv_vader_options', sv_vader_default_options() );
+
+			// Redirect back with a success flag
+			$redirect = add_query_arg( array( 'svv_reset' => 'ok' ), admin_url( 'admin.php?page=sv-vader' ) );
+			wp_safe_redirect( $redirect );
+			exit;
+		}
+		add_action( 'admin_post_svv_reset_defaults', 'sv_vader_handle_reset_defaults' );
+	}
+
 /**
- * Fält-renderers (hålls här för att inte blanda med sidornas markup)
+ * Field renderers (kept here to not mix with page markup)
  */
 function sv_vader_field_default_ort() {
 	$o  = sv_vader_get_options();
@@ -179,11 +388,27 @@ function sv_vader_field_cache_minutes() {
 
 function sv_vader_field_default_show() {
 	$o = sv_vader_get_options();
+	$current = array_filter(array_map('trim', explode(',', $o['default_show'] ?? 'temp,wind,wind_dir,icon')));
+	$fields = [
+		'temp'     => __('Temperature', 'spelhubben-weather'),
+		'wind'     => __('Wind speed', 'spelhubben-weather'),
+		'wind_dir' => __('Wind direction', 'spelhubben-weather'),
+		'icon'     => __('Weather icon', 'spelhubben-weather'),
+	];
+
+	foreach ($fields as $key => $label) {
+		printf(
+			'<label style="margin-right:15px;"><input type="checkbox" name="sv_vader_show_tmp[]" value="%s" %s onchange="document.getElementById(\'svv_default_show_hidden\').value = Array.from(document.querySelectorAll(\'input[name=\\\'sv_vader_show_tmp[]\\\']:checked\')).map(i=>i.value).join(\',\')"> %s</label>',
+			esc_attr($key),
+			checked( in_array( $key, $current, true ), true, false ),
+			esc_html($label)
+		);
+	}
 	printf(
-		'<input type="text" name="sv_vader_options[default_show]' . '" value="%s" class="regular-text" />',
-		esc_attr( $o['default_show'] ?? 'temp,wind,icon' )
+		'<input type="hidden" id="svv_default_show_hidden" name="sv_vader_options[default_show]" value="%s" />',
+		esc_attr(implode(',', $current))
 	);
-	echo '<p class="description">' . esc_html__( 'Comma-separated: temp,wind,icon', 'spelhubben-weather' ) . '</p>';
+	echo '<p class="description">' . esc_html__( 'Choose which fields to show by default.', 'spelhubben-weather' ) . '</p>';
 }
 
 function sv_vader_field_default_layout() {
@@ -229,6 +454,8 @@ function sv_vader_field_icon_style() {
 		'classic'          => __( 'Classic', 'spelhubben-weather' ),
 		'modern-flat'      => __( 'Modern Flat', 'spelhubben-weather' ),
 		'modern-gradient'  => __( 'Modern Gradient', 'spelhubben-weather' ),
+		'modern-2026'      => __( 'Modern 2026', 'spelhubben-weather' ),
+		'modern-3d'        => __( 'Modern 3D', 'spelhubben-weather' ),
 	);
 	echo '<select name="sv_vader_options[icon_style]">';
 	foreach ( $styles as $val => $label ) {
@@ -340,9 +567,9 @@ function sv_vader_field_date_format() {
 }
 
 /**
- * Live preview av shortcode (admin-ajax)
- * - Sanerar/validerar inkommande shortcode-sträng så den endast
- *   får vara en enda [spelhubben_weather] eller [sv_vader]-tagg.
+ * Live preview of shortcode (admin-ajax)
+ * - Sanitizes/validates incoming shortcode string so it only
+ *   allows a single [spelhubben_weather] or [sv_vader] tag.
  */
 add_action( 'wp_ajax_svv_preview_shortcode', function () {
 	if ( ! current_user_can( 'manage_options' ) ) {
@@ -351,12 +578,12 @@ add_action( 'wp_ajax_svv_preview_shortcode', function () {
 
 	check_ajax_referer( 'svv_preview_sc', 'nonce' );
 
-	// Hämta från POST utan att referera $_POST direkt (tillfredsställer PHPCS).
+	// Get from POST without referring to $_POST directly (satisfies PHPCS).
 	$raw_sc = filter_input( INPUT_POST, 'sc', FILTER_UNSAFE_RAW );
 	$raw_sc = is_string( $raw_sc ) ? $raw_sc : '';
 
-	// Sanera omedelbart.
-	// textarea-varianten bevarar hakparenteser och radbrytningar men rensar oönskat.
+	// Sanitize immediately.
+	// textarea variant preserves brackets and line breaks but cleans unwanted content.
 	$sc = sanitize_textarea_field( $raw_sc );
 	$sc = trim( $sc );
 
@@ -364,16 +591,16 @@ add_action( 'wp_ajax_svv_preview_shortcode', function () {
 		wp_send_json_error( array( 'message' => 'empty' ), 400 );
 	}
 
-	// Tillåt ENDAST våra shortcodes och ingen omgivande HTML/text.
-	// Ex: [spelhubben_weather ...] eller [sv_vader ...]
+	// Allow ONLY our shortcodes and no surrounding HTML/text.
+	// Ex: [spelhubben_weather ...] or [sv_vader ...]
 	if ( ! preg_match( '/^\s*\[(spelhubben_weather|sv_vader)\b[^\]]*\]\s*$/i', $sc ) ) {
 		wp_send_json_error( array( 'message' => 'invalid' ), 400 );
 	}
 
-	// Kör shortcoden. Resultatet kapslas i iframe i admin.js.
+	// Run the shortcode. Result is encapsulated in iframe in admin.js.
 	$html = do_shortcode( $sc );
 
-	// Sänd tillbaka säkrad HTML (tillåt vanlig post-HTML).
+	// Send back secured HTML (allow normal post-HTML).
 	$html = wp_kses_post( $html );
 
 	wp_send_json_success( array( 'html' => $html ) );

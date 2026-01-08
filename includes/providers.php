@@ -18,7 +18,7 @@ if (!function_exists('sv_vader_openmeteo_current')) {
         $url = add_query_arg([
             'latitude'  => $lat,
             'longitude' => $lon,
-            'current'   => 'temperature_2m,wind_speed_10m,weather_code,precipitation,cloud_cover',
+            'current'   => 'temperature_2m,wind_speed_10m,wind_direction_10m,weather_code,precipitation,cloud_cover',
             'timezone'  => 'Europe/Stockholm',
             'lang'      => $locale
         ], 'https://api.open-meteo.com/v1/forecast');
@@ -30,12 +30,13 @@ if (!function_exists('sv_vader_openmeteo_current')) {
 
         $c = $j['current'];
         return [
-            'temp'   => isset($c['temperature_2m']) ? floatval($c['temperature_2m']) : null,
-            'wind'   => isset($c['wind_speed_10m']) ? floatval($c['wind_speed_10m']) : null,
-            'precip' => isset($c['precipitation']) ? floatval($c['precipitation']) : null,
-            'cloud'  => isset($c['cloud_cover']) ? intval($c['cloud_cover']) : null,
-            'code'   => isset($c['weather_code']) ? intval($c['weather_code']) : null,
-            'desc'   => null,
+            'temp'     => isset($c['temperature_2m']) ? floatval($c['temperature_2m']) : null,
+            'wind'     => isset($c['wind_speed_10m']) ? floatval($c['wind_speed_10m']) : null,
+            'wind_dir' => isset($c['wind_direction_10m']) ? floatval($c['wind_direction_10m']) : null,
+            'precip'   => isset($c['precipitation']) ? floatval($c['precipitation']) : null,
+            'cloud'    => isset($c['cloud_cover']) ? intval($c['cloud_cover']) : null,
+            'code'     => isset($c['weather_code']) ? intval($c['weather_code']) : null,
+            'desc'     => null,
         ];
     }
 }
@@ -72,12 +73,13 @@ if (!function_exists('sv_vader_smhi_current')) {
         $cloud_pct = isset($map['tcc']) ? intval(round(($map['tcc'] / 8) * 100)) : null;
 
         return [
-            'temp'   => isset($map['t']) ? floatval($map['t']) : null,
-            'wind'   => isset($map['ws']) ? floatval($map['ws']) : null,
-            'precip' => isset($map['pmean']) ? floatval($map['pmean']) : null,
-            'cloud'  => $cloud_pct,
-            'code'   => null,
-            'desc'   => null,
+            'temp'     => isset($map['t']) ? floatval($map['t']) : null,
+            'wind'     => isset($map['ws']) ? floatval($map['ws']) : null,
+            'wind_dir' => isset($map['wd']) ? floatval($map['wd']) : null,
+            'precip'   => isset($map['pmean']) ? floatval($map['pmean']) : null,
+            'cloud'    => $cloud_pct,
+            'code'     => null,
+            'desc'     => null,
         ];
     }
 }
@@ -110,12 +112,13 @@ if (!function_exists('sv_vader_yr_current')) {
         $next1h = $nearest['data']['next_1_hours']['details'] ?? [];
 
         return [
-            'temp'   => isset($inst['air_temperature']) ? floatval($inst['air_temperature']) : null,
-            'wind'   => isset($inst['wind_speed']) ? floatval($inst['wind_speed']) : null,
-            'precip' => isset($next1h['precipitation_amount']) ? floatval($next1h['precipitation_amount']) : null,
-            'cloud'  => isset($inst['cloud_area_fraction']) ? intval(round($inst['cloud_area_fraction'])) : null,
-            'code'   => null,
-            'desc'   => null,
+            'temp'     => isset($inst['air_temperature']) ? floatval($inst['air_temperature']) : null,
+            'wind'     => isset($inst['wind_speed']) ? floatval($inst['wind_speed']) : null,
+            'wind_dir' => isset($inst['wind_from_direction']) ? floatval($inst['wind_from_direction']) : null,
+            'precip'   => isset($next1h['precipitation_amount']) ? floatval($next1h['precipitation_amount']) : null,
+            'cloud'    => isset($inst['cloud_area_fraction']) ? intval(round($inst['cloud_area_fraction'])) : null,
+            'code'     => null,
+            'desc'     => null,
         ];
     }
 }
@@ -139,7 +142,7 @@ if (!function_exists('sv_vader_fmi_current')) {
             'version'        => '2.0.0',
             'request'        => 'getFeature',
             'storedquery_id' => 'fmi::observations::weather::timevaluepair',
-            'parameters'     => 't2m,ws_10min,r_1h,n_man',
+            'parameters'     => 't2m,ws_10min,wd_10min,r_1h,n_man',
             'bbox'           => $bbox,
         ], 'https://opendata.fmi.fi/wfs');
 
@@ -158,7 +161,7 @@ if (!function_exists('sv_vader_fmi_current')) {
         $sx->registerXPathNamespace('wml2','http://www.opengis.net/waterml/2.0');
         $sx->registerXPathNamespace('gml', 'http://www.opengis.net/gml/3.2');
 
-        $out = ['temp'=>null,'wind'=>null,'precip'=>null,'cloud'=>null,'code'=>null,'desc'=>null];
+        $out = ['temp'=>null,'wind'=>null,'wind_dir'=>null,'precip'=>null,'cloud'=>null,'code'=>null,'desc'=>null];
         $series = $sx->xpath('//wml2:MeasurementTimeseries');
         if (is_array($series)) {
             foreach ($series as $ts) {
@@ -168,16 +171,17 @@ if (!function_exists('sv_vader_fmi_current')) {
                 if (!$vals || !count($vals)) continue;
                 $val = (string)$vals[count($vals)-1];
 
-                if (strpos($gid,'t2m')!==false)          $out['temp']   = is_numeric($val)?(float)$val:null;
-                elseif (strpos($gid,'ws_10min')!==false) $out['wind']   = is_numeric($val)?(float)$val:null;
-                elseif (strpos($gid,'r_1h')!==false)     $out['precip'] = is_numeric($val)?(float)$val:null;
+                if (strpos($gid,'t2m')!==false)          $out['temp']     = is_numeric($val)?(float)$val:null;
+                elseif (strpos($gid,'ws_10min')!==false) $out['wind']     = is_numeric($val)?(float)$val:null;
+                elseif (strpos($gid,'wd_10min')!==false) $out['wind_dir'] = is_numeric($val)?(float)$val:null;
+                elseif (strpos($gid,'r_1h')!==false)     $out['precip']   = is_numeric($val)?(float)$val:null;
                 elseif (strpos($gid,'n_man')!==false) {
                     $oktas = is_numeric($val)?(float)$val:null;
                     $out['cloud'] = ($oktas!==null) ? (int)round(($oktas/8)*100) : null;
                 }
             }
         }
-        return ($out['temp']===null && $out['wind']===null && $out['precip']===null && $out['cloud']===null) ? null : $out;
+        return ($out['temp']===null && $out['wind']===null && $out['wind_dir']===null && $out['precip']===null && $out['cloud']===null) ? null : $out;
     }
 }
 
@@ -202,12 +206,13 @@ if (!function_exists('sv_vader_openweathermap_current')) {
         $rain = !empty($j['rain']) ? $j['rain'] : [];
 
         return [
-            'temp'   => isset($main['temp']) ? floatval($main['temp']) : null,
-            'wind'   => isset($wind['speed']) ? floatval($wind['speed']) : null,
-            'precip' => isset($rain['1h']) ? floatval($rain['1h']) : null,
-            'cloud'  => isset($clouds['all']) ? intval($clouds['all']) : null,
-            'code'   => null,
-            'desc'   => !empty($j['weather'][0]['main']) ? sanitize_text_field($j['weather'][0]['main']) : null,
+            'temp'     => isset($main['temp']) ? floatval($main['temp']) : null,
+            'wind'     => isset($wind['speed']) ? floatval($wind['speed']) : null,
+            'wind_dir' => isset($wind['deg']) ? floatval($wind['deg']) : null,
+            'precip'   => isset($rain['1h']) ? floatval($rain['1h']) : null,
+            'cloud'    => isset($clouds['all']) ? intval($clouds['all']) : null,
+            'code'     => null,
+            'desc'     => !empty($j['weather'][0]['main']) ? sanitize_text_field($j['weather'][0]['main']) : null,
         ];
     }
 }
@@ -238,12 +243,13 @@ if (!function_exists('sv_vader_weatherapi_current')) {
 
         $current = $j['current'];
         return [
-            'temp'   => isset($current['temp_c']) ? floatval($current['temp_c']) : null,
-            'wind'   => isset($current['wind_kph']) ? floatval($current['wind_kph'] / 3.6) : null, // Convert km/h to m/s
-            'precip' => isset($current['precip_mm']) ? floatval($current['precip_mm']) : null,
-            'cloud'  => isset($current['cloud']) ? intval($current['cloud']) : null,
-            'code'   => null,
-            'desc'   => !empty($current['condition']['text']) ? sanitize_text_field($current['condition']['text']) : null,
+            'temp'     => isset($current['temp_c']) ? floatval($current['temp_c']) : null,
+            'wind'     => isset($current['wind_kph']) ? floatval($current['wind_kph'] / 3.6) : null, // Convert km/h to m/s
+            'wind_dir' => isset($current['wind_degree']) ? floatval($current['wind_degree']) : null,
+            'precip'   => isset($current['precip_mm']) ? floatval($current['precip_mm']) : null,
+            'cloud'    => isset($current['cloud']) ? intval($current['cloud']) : null,
+            'code'     => null,
+            'desc'     => !empty($current['condition']['text']) ? sanitize_text_field($current['condition']['text']) : null,
         ];
     }
 }
@@ -295,7 +301,7 @@ if (!function_exists('sv_vader_wmo_text_sv')) {
 
 if (!function_exists('sv_vader_consensus')) {
     function sv_vader_consensus(array $samples) {
-        $nums = ['temp','wind','precip','cloud'];
+        $nums = ['temp','wind','wind_dir','precip','cloud'];
         $out = [];
         foreach ($nums as $k) {
             $vals = array_values(array_filter(array_map(function($s) use ($k){

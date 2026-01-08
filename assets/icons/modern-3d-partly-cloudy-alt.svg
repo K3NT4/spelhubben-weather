@@ -1,0 +1,21 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64">
+  <defs>
+    <radialGradient id="gSunPCAlt3d" cx="28%" cy="28%" r="65%">
+      <stop offset="0%" stop-color="#FFF7E6"/>
+      <stop offset="70%" stop-color="#FFD38A"/>
+      <stop offset="100%" stop-color="#FF8F4A"/>
+    </radialGradient>
+    <linearGradient id="gCloudPCAlt3d" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#F7FBFF"/>
+      <stop offset="100%" stop-color="#DFEDFF"/>
+    </linearGradient>
+    <filter id="dsPCAlt" x="-20%" y="-20%" width="140%" height="140%">
+      <feDropShadow dx="0" dy="2" stdDeviation="2" flood-opacity="0.2"/>
+    </filter>
+  </defs>
+  <g filter="url(#dsPCAlt)">
+    <circle cx="18" cy="16" r="10" fill="url(#gSunPCAlt3d)"/>
+    <path d="M28 42h16a8 8 0 0 0 0-16 11 11 0 0 0-21.6-3A9 9 0 0 0 28 42z" fill="url(#gCloudPCAlt3d)"/>
+    <path d="M28 42h16a8 8 0 0 0 0-16 11 11 0 0 0-21.6-3A9 9 0 0 0 28 42z" stroke="#ABC9F8" stroke-width="3" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+  </g>
+</svg>
