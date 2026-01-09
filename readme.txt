@@ -4,7 +4,7 @@ Tags: weather, forecast, widget, shortcode, blocks
 Requires at least: 6.8
 Tested up to: 6.9
 Requires PHP: 7.4
-Stable tag: 1.9.1
+Stable tag: 1.9.2
 Donate link: https://www.paypal.com/donate/?hosted_button_id=CV74CEXY5XEAU
 
 Weather widget, Gutenberg block and shortcode with optional map and multi-provider forecasts.
@@ -199,7 +199,7 @@ languages/
 6. Performance page: cache statistics, API usage and "Clear cache" action.
 
 == Changelog ==
- - = 1.9.1 =
+ - = 1.9.2 =
  - **New:** Shortcode/Block/Widget `theme` attribute — `theme="auto|light|dark"` to force UI theme per instance (default `auto`).
  - **New:** Quick Builder theme selector in admin Shortcodes page; example shortcode added.
  - **Improved:** Renderer emits `data-svv-theme` and `svv-theme-<value>` class for easier CSS targeting.
