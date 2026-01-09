@@ -57,6 +57,53 @@ body.admin-color-modern .sv-vader {
   --svv-muted: #aaaaaa;
 }
 
+/* Forced theme classes/attributes from shortcode/block/widget */
+.svv-theme-dark,
+[data-svv-theme="dark"] {
+  --svv-bg: #1e1e1e;
+  --svv-text: #f0f0f0;
+  --svv-border: #333333;
+  --svv-shadow: rgba(0,0,0,.2);
+  --svv-badge-border: #444444;
+  --svv-muted: #aaaaaa;
+}
+
+.svv-theme-light,
+[data-svv-theme="light"] {
+  --svv-bg: #ffffff;
+  --svv-text: #1a1a1a;
+  --svv-border: #e6e6e6;
+  --svv-shadow: rgba(0,0,0,.04);
+  --svv-badge-border: #eeeeee;
+  --svv-muted: #666666;
+}
+
+/* Make Leaflet map tiles subtly darker in forced dark theme for better contrast */
+.svv-theme-dark .svv-map,
+[data-svv-theme="dark"] .svv-map {
+  filter: brightness(0.78) contrast(1.06) saturate(0.95);
+}
+
+/* Alerts styling in forced dark theme to match darker UI */
+.svv-theme-dark .svv-alert-mini.is-danger,
+[data-svv-theme="dark"] .svv-alert-mini.is-danger {
+  background: #2b0a0a; /* darker red background */
+  color: #ffb4b4; /* slightly desaturated light text for readability */
+  border-color: #5a0f0f;
+}
+.svv-theme-dark .svv-alert-mini.is-warning,
+[data-svv-theme="dark"] .svv-alert-mini.is-warning {
+  background: #2f1602; /* darker amber */
+  color: #ffdca8; /* warm light text */
+  border-color: #5b2d09;
+}
+.svv-theme-dark .svv-alert-mini.is-info,
+[data-svv-theme="dark"] .svv-alert-mini.is-info {
+  background: #0b1630; /* deeper blue */
+  color: #dbeeff; /* pale blue text */
+  border-color: #14283f;
+}
+
 .svv-ort{font-weight:600;margin-bottom:calc(6px * var(--svv-scale));}
 
 /* Frontend Alerts */

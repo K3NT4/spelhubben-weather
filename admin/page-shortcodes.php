@@ -21,6 +21,7 @@ if ( ! function_exists( 'sv_vader_render_shortcodes_page' ) ) {
 		$nx9 = '[spelhubben_weather forecast="daily" days="10"]';
 		$nx10 = '[spelhubben_weather providers="smhi,yr"]';
 		$nx11 = '[spelhubben_weather place="Stockholm" show="temp,wind,wind_dir,icon"]';
+		$nx12 = '[spelhubben_weather place="Stockholm" theme="dark" show="temp,icon" map="0"]';
 
 		$new_examples = array(
 			array( 'label' => __( 'Basic example', 'spelhubben-weather' ), 'code' => $nx1 ),
@@ -29,6 +30,7 @@ if ( ! function_exists( 'sv_vader_render_shortcodes_page' ) ) {
 			array( 'label' => __( 'Detailed with daily forecast & km/h', 'spelhubben-weather' ), 'code' => $nx4 ),
 			array( 'label' => __( 'Only temperature + wind, imperial', 'spelhubben-weather' ), 'code' => $nx5 ),
 			array( 'label' => __( 'Show temperature, wind speed & direction', 'spelhubben-weather' ), 'code' => $nx11 ),
+			array( 'label' => __( 'Force dark theme (example)', 'spelhubben-weather' ), 'code' => $nx12 ),
 			array( 'label' => __( 'Provider comparison mode', 'spelhubben-weather' ), 'code' => $nx6 ),
 			array( 'label' => __( 'With weather alerts enabled', 'spelhubben-weather' ), 'code' => $nx7 ),
 			array( 'label' => __( 'Custom map height (400px)', 'spelhubben-weather' ), 'code' => $nx8 ),
@@ -135,6 +137,14 @@ if ( ! function_exists( 'sv_vader_render_shortcodes_page' ) ) {
 									</select>
 								</div>
 								<div>
+									<strong><?php esc_html_e( 'Theme:', 'spelhubben-weather' ); ?></strong><br>
+									<select class="svv-b-theme">
+										<option value="auto">Auto</option>
+										<option value="light">Light</option>
+										<option value="dark">Dark</option>
+									</select>
+								</div>
+								<div>
 									<strong><?php esc_html_e( 'Extras:', 'spelhubben-weather' ); ?></strong><br>
 									<label><input type="checkbox" class="svv-b-map" value="1"> <?php esc_html_e( 'Map', 'spelhubben-weather' ); ?></label>
 									<label><input type="checkbox" class="svv-b-animate" value="1" checked> <?php esc_html_e( 'Animate', 'spelhubben-weather' ); ?></label>
@@ -204,6 +214,7 @@ if ( ! function_exists( 'sv_vader_render_shortcodes_page' ) ) {
 									<tr data-group="uf"><td><code>wind_unit</code></td><td><?php esc_html_e( 'Override wind unit', 'spelhubben-weather' ); ?></td><td><code>wind_unit="kmh"</code></td></tr>
 									<tr data-group="uf"><td><code>precip_unit</code></td><td><?php esc_html_e( 'Override precipitation unit', 'spelhubben-weather' ); ?></td><td><code>precip_unit="in"</code></td></tr>
 									<tr data-group="uf"><td><code>date_format</code></td><td><?php esc_html_e( 'Forecast date label (PHP date)', 'spelhubben-weather' ); ?></td><td><code>date_format="D j/n"</code></td></tr>
+									<tr data-group="disp"><td><code>theme</code></td><td><?php esc_html_e( 'auto | light | dark — force display theme (auto uses site/browser preference)', 'spelhubben-weather' ); ?></td><td><code>theme="dark"</code></td></tr>
 								</tbody>
 							</table>
 						</div>

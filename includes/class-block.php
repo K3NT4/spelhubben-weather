@@ -29,6 +29,7 @@ class SV_Vader_Block {
 						'map_height' => isset( $attrs['mapHeight'] ) ? (string) intval( $attrs['mapHeight'] ) : (string) $opts['map_height'],
 						'animate'    => ! empty( $attrs['animate'] ) ? '1' : '0',
 						'forecast'   => isset( $attrs['forecast'] ) ? $attrs['forecast'] : 'none',
+						'theme'      => $attrs['theme'] ?? 'auto',
 						'days'       => isset( $attrs['days'] ) ? (string) intval( $attrs['days'] ) : '5',
 
 						'units'       => $attrs['units']       ?? $opts['units'],
@@ -60,6 +61,7 @@ class SV_Vader_Block {
 						'map_height'  => isset( $attrs['mapHeight'] ) ? (string) intval( $attrs['mapHeight'] ) : (string) $opts['map_height'],
 						'animate'     => ! empty( $attrs['animate'] ) ? '1' : '0',
 						'forecast'    => isset( $attrs['forecast'] ) ? $attrs['forecast'] : 'none',
+						'theme'       => $attrs['theme'] ?? 'auto',
 						'days'        => isset( $attrs['days'] ) ? (string) intval( $attrs['days'] ) : '5',
 						'show_alerts' => isset( $attrs['showAlerts'] ) ? ( $attrs['showAlerts'] ? '1' : '0' ) : (string) $opts['show_alerts'],
 						'units'       => $opts['units'],

@@ -4,36 +4,17 @@ WordPress weather plugin displaying current conditions and optional daily foreca
 
 For common questions and troubleshooting see the FAQ: [FAQ.md](FAQ.md)
 
-**Version:** 1.9.0 (Major update: Weather Alerts, Settings Export/Import, Performance Dashboard, Dark Mode, and Full i18n)
+**Version:** 1.9.1 (Patch: Shortcode theme option, Quick Builder theme, map/alert tweaks)
 
 ## Changelog
 
-### v1.9.0 (2026-01-04)
- - **New:** Wind direction display (`wind_dir`) — rotated arrow + cardinal labels (optional via `show=wind_dir`)
- - **New:** Shortcode Quick Builder in admin **Shortcodes** page with selectable options, one-click copy and live preview
- - **Improved:** `animate` attribute parsing is more tolerant (accepts `1`, `true`, `yes`, `on`)
- - **Admin:** New Tips panel in Settings — rotates short, localizable tips (slower rotation for readability) and includes actionable buttons for `Shortcodes`, `Alerts` and `Performance`.
- - **Admin:** Tips show compact icon+text badges and centered action buttons for quicker access.
- - **Admin:** Added a secure "Reset to defaults" button in Settings with nonce protection and a success notice after reset.
- - **Admin:** UI polish — spacing, compact buttons, accessibility improvements (`aria-live`), and translation-ready strings for all new admin text.
+### v1.9.1 (2026-01-09)
+ - **New:** Shortcode/Block/Widget `theme` attribute — `theme="auto|light|dark"` to force UI theme per instance (default: `auto`, no breaking changes).
+ - **New:** Quick Builder theme selector in admin Shortcodes page and an example shortcode demonstrating `theme="dark"`.
+ - **New:** Renderer now outputs `data-svv-theme` and `svv-theme-<light|dark>` class enabling forced-theme styling.
+ - **Improved:** Frontend CSS: forced dark/light theme rules, darker Leaflet map tiles in dark theme, and darker alert box styles for visual consistency.
+ - **Fix/Polish:** Admin JS updated to include `theme` in generated shortcodes; docs and examples updated across readme files.
 
-- **Improved:** Better error reporting and retry logic in map initialization with Leaflet availability checks
-
-## ✨ Key Features
-- **Shortcode** `[spelhubben_weather]`, **Gutenberg block**, and **classic widget**
- - **Wind direction** display (rotated arrow + cardinal abbreviation) — optional via `show=wind_dir`
-- **6 Weather Providers:** Open-Meteo, SMHI, Yr (MET Norway), FMI, Open-Weathermap, Weatherapi.com — enable any combination
-- **Icon Themes:** Classic, Modern Flat, Modern Gradient, Modern 2026, Modern 3D (selectable in admin settings)
-- **Multiple Layouts:** `inline`, `compact`, `card`, `detailed`
-- **Daily Forecast:** 3–10 days customizable
-- **Provider Comparison:** Side-by-side data from all enabled providers
-- **Leaflet Map:** OpenStreetMap tiles with proper attribution (ODbL)
-- **Local Icons:** SVG icons (no CDN dependency), responsive scaling
-- **Performance:** 6-30x faster settings page, lazy-loaded plugin showcase, optimized caching
-- **Fully GDPR Compliant:** No cookies, no tracking, no personal data collection
-- **Translation-Ready:** English base strings, Swedish and Norwegian translations included
-
-## Performance & Optimizations (v1.9.0)
 
 ### Asset Loading Optimization
 - Leaflet CSS/JS and map assets now load conditionally — only when shortcode or Gutenberg block is present
@@ -226,7 +207,14 @@ Translations are available on [translate.wordpress.org](https://translate.wordpr
 
 ## Version History
 
-### v1.9.0 (Current)
+### 1.9.1 (Current)
+- **New:** Shortcode/Block/Widget `theme` attribute — `theme="auto|light|dark"` to force UI theme per instance (default `auto`).
+- **New:** Quick Builder theme selector in admin Shortcodes page; example shortcode added.
+- **Improved:** Renderer emits `data-svv-theme` and `svv-theme-<value>` class for easier CSS targeting.
+- **Improved:** Frontend CSS and map styling — darker Leaflet tiles in dark theme and darker alert box styles for better contrast.
+- **Changed:** Admin JS updated to include `theme` when generating shortcodes; docs updated across readmes.
+
+### v1.9.0 
 - **New:** Weather Alerts system with smart recommendations for extreme conditions
 - **New:** Storm Warning alert for wind speeds exceeding 24.5 m/s
 - **New:** Settings Export & Import feature for easy configuration management

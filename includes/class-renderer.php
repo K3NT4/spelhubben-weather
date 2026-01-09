@@ -39,6 +39,7 @@ class SV_Vader_Renderer {
 			'wind_unit'    => $opts['wind_unit'],
 			'precip_unit'  => $opts['precip_unit'],
 			'date_format'  => $opts['date_format'],
+			'theme'        => 'auto',
 		], $atts, 'sv_vader');
 
 		$layout = strtolower(trim($a['layout']));
@@ -96,8 +97,18 @@ class SV_Vader_Renderer {
 		$is_anim = in_array(strtolower((string)($a['animate'] ?? '')), ['1','true','yes','on'], true);
 		$classes = 'sv-vader spelhubben-weather ' . $a['class'] . ' ' . ($is_anim ? 'svv-anim' : '') . ' svv-layout-' . $layout;
 
+		// Theme handling: auto|light|dark (fallback to auto)
+		$theme = strtolower(trim((string) ($a['theme'] ?? 'auto')));
+		if (!in_array($theme, ['auto','light','dark'], true)) {
+			$theme = 'auto';
+		}
+
+		if ($theme !== 'auto') {
+			$classes .= ' svv-theme-' . $theme;
+		}
+
 		ob_start(); ?>
-		<div class="<?php echo esc_attr($classes); ?>" data-svv-ro="1">
+		<div class="<?php echo esc_attr($classes); ?>" data-svv-ro="1" data-svv-theme="<?php echo esc_attr($theme); ?>">
 			<?php if (!empty($name) && $layout !== 'inline'): ?>
 				<div class="svv-ort"><?php echo esc_html($name); ?></div>
 			<?php endif; ?>

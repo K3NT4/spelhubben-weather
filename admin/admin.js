@@ -311,6 +311,7 @@
     btn.addEventListener('click', function(){
       var show = Array.from(document.querySelectorAll('.svv-b-show:checked')).map(function(i){ return i.value; }).join(',');
       var layout = document.querySelector('.svv-b-layout').value;
+      var theme = (document.querySelector('.svv-b-theme') && document.querySelector('.svv-b-theme').value) || 'auto';
       var map = document.querySelector('.svv-b-map').checked ? '1' : '0';
       var animate = document.querySelector('.svv-b-animate').checked ? '1' : '0';
       var provs = Array.from(document.querySelectorAll('.svv-b-prov:checked')).map(function(i){ return i.value; }).join(',');
@@ -318,6 +319,7 @@
       var sc = '[spelhubben_weather';
       if (show && show !== 'temp,wind,wind_dir,icon') sc += ' show="' + show + '"';
       if (layout !== 'card') sc += ' layout="' + layout + '"';
+      if (theme && theme !== 'auto') sc += ' theme="' + theme + '"';
       if (map === '1') sc += ' map="1"';
       if (animate === '0') sc += ' animate="0"';
       if (provs && provs !== 'openmeteo,smhi,yr') sc += ' providers="' + provs + '"';
