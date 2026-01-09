@@ -52,6 +52,68 @@
     });
   })();
 
+  // ===== Toggle attribution HTML view =====
+  (function(){
+    var handler = function(e){
+      var btn = e.target.closest('.svv-attr-toggle');
+      if (!btn) return;
+      var box = btn.closest('.svv-attr-actions');
+      if (!box) return;
+      var container = box.closest('.svv-attr-box');
+      if (!container) return;
+      var ta = container.querySelector('.svv-attr-textarea');
+      if (!ta) return;
+      var isHidden = ta.classList.contains('svv-hidden');
+      if (isHidden) {
+        ta.classList.remove('svv-hidden');
+        btn.textContent = (window.SVV_ADMIN_I18N && SVV_ADMIN_I18N.show_html_hide) || 'Hide HTML';
+        btn.setAttribute('aria-expanded','true');
+      } else {
+        ta.classList.add('svv-hidden');
+        btn.textContent = (window.SVV_ADMIN_I18N && SVV_ADMIN_I18N.show_html) || 'Show HTML';
+        btn.setAttribute('aria-expanded','false');
+      }
+    };
+    document.addEventListener('click', handler);
+    window.addEventListener('beforeunload', function(){ document.removeEventListener('click', handler); });
+  })();
+
+  // ===== Attribution presence check (AJAX) =====
+  (function(){
+    var handler = function(e){
+      var btn = e.target.closest('.svv-attr-check-btn');
+      if (!btn) return;
+      var container = btn.closest('.svv-attr-box');
+      var statusEl = container ? container.querySelector('.svv-attr-check-status') : null;
+      var origHtml = btn.innerHTML;
+      btn.disabled = true;
+      btn.innerHTML = '<span class="dashicons dashicons-controls-repeat spin" aria-hidden="true"></span> ' + ((window.SVV_ADMIN_I18N && SVV_ADMIN_I18N.checking) || 'Checking…');
+
+      var fd = new FormData(); fd.append('action','svv_check_attrib');
+
+      fetch((window.SVV_ADMIN_I18N && SVV_ADMIN_I18N.ajax_url) || (window.ajaxurl || '/wp-admin/admin-ajax.php'), { method:'POST', credentials:'same-origin', body: fd })
+        .then(function(r){ return r.json(); })
+        .then(function(data){
+          if (!statusEl) return;
+          statusEl.innerHTML = '';
+          if (data && data.success && data.data && data.data.found) {
+            var url = data.data.url || '';
+            var context = data.data.context || '';
+            var msg = (window.SVV_ADMIN_I18N && SVV_ADMIN_I18N.attrib_found) ? window.SVV_ADMIN_I18N.attrib_found.replace('%s', url) : ('Found on ' + url);
+            if (context === 'footer') msg += ' (in footer)';
+            statusEl.innerHTML = '<span class="dashicons dashicons-yes" style="color:green"></span> ' + msg;
+          } else {
+            var msg2 = (window.SVV_ADMIN_I18N && SVV_ADMIN_I18N.attrib_not_found) || 'Attribution not found on recent pages';
+            statusEl.innerHTML = '<span class="dashicons dashicons-no-alt" style="color:#c0392b"></span> ' + msg2;
+          }
+        })
+        .catch(function(){ if (container && container.querySelector('.svv-attr-check-status')) container.querySelector('.svv-attr-check-status').innerHTML = '<span class="dashicons dashicons-warning" style="color:#f59e0b"></span> ' + ((window.SVV_ADMIN_I18N && SVV_ADMIN_I18N.attrib_check_error) || 'Check failed'); })
+        .finally(function(){ btn.disabled = false; btn.innerHTML = origHtml; });
+    };
+    document.addEventListener('click', handler);
+    window.addEventListener('beforeunload', function(){ document.removeEventListener('click', handler); });
+  })();
+
   // ===== Live filter with cleanup =====
   (function(){
     var handler = function(e){
@@ -88,6 +150,24 @@
     document.addEventListener('click', handler);
     window.addEventListener('beforeunload', function(){
       document.removeEventListener('click', handler);
+    });
+  })();
+
+  // ===== Import file name preview =====
+  (function(){
+    var form = document.querySelector('.svv-import-form');
+    if (!form) return;
+    var input = form.querySelector('.svv-file-input');
+    var nameEl = form.querySelector('.svv-file-name');
+    if (!input || !nameEl) return;
+    var def = nameEl.getAttribute('data-default') || 'Ingen fil vald';
+    input.addEventListener('change', function(){
+      var files = input.files;
+      if (files && files.length > 0) {
+        nameEl.textContent = files[0].name;
+      } else {
+        nameEl.textContent = def;
+      }
     });
   })();
 
@@ -220,6 +300,33 @@
       document.removeEventListener('click', clickHandler);
     };
     window.addEventListener('beforeunload', cleanup);
+  })();
+
+  // ===== Shortcode Builder =====
+  (function(){
+    var btn = document.querySelector('.svv-b-generate');
+    var preview = document.querySelector('.svv-sc-preview');
+    if (!btn || !preview) return;
+
+    btn.addEventListener('click', function(){
+      var show = Array.from(document.querySelectorAll('.svv-b-show:checked')).map(function(i){ return i.value; }).join(',');
+      var layout = document.querySelector('.svv-b-layout').value;
+      var map = document.querySelector('.svv-b-map').checked ? '1' : '0';
+      var animate = document.querySelector('.svv-b-animate').checked ? '1' : '0';
+      var provs = Array.from(document.querySelectorAll('.svv-b-prov:checked')).map(function(i){ return i.value; }).join(',');
+      
+      var sc = '[spelhubben_weather';
+      if (show && show !== 'temp,wind,wind_dir,icon') sc += ' show="' + show + '"';
+      if (layout !== 'card') sc += ' layout="' + layout + '"';
+      if (map === '1') sc += ' map="1"';
+      if (animate === '0') sc += ' animate="0"';
+      if (provs && provs !== 'openmeteo,smhi,yr') sc += ' providers="' + provs + '"';
+      sc += ']';
+
+      preview.value = sc;
+      preview.focus();
+      preview.dispatchEvent(new Event('input', { bubbles: true }));
+    });
   })();
 
 })();

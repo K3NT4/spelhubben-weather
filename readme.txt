@@ -4,10 +4,22 @@ Tags: weather, forecast, widget, shortcode, blocks
 Requires at least: 6.8
 Tested up to: 6.9
 Requires PHP: 7.4
-Stable tag: 1.8.6
+Stable tag: 1.9.0
 Donate link: https://www.paypal.com/donate/?hosted_button_id=CV74CEXY5XEAU
-License: GPLv2 or later
-License URI: https://www.gnu.org/licenses/gpl-2.0.html
+
+Weather widget, Gutenberg block and shortcode with optional map and multi-provider forecasts.
+
+== License ==
+
+This program is free software; you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free Software Foundation; either version 2 of the License, or (at your option) any later version.
+
+Full license text is included in the `LICENSE` file in the plugin root.
+
+== Feedback & Bug Reports ==
+Feedback and bug reports can be posted here: https://github.com/K3NT4/spelhubben-weather/issues
+For common questions see the FAQ: https://github.com/K3NT4/spelhubben-weather/blob/main/Docs/FAQ.md
+License: GPLv3 or later
+License URI: https://www.gnu.org/licenses/gpl-3.0.html
 
 Weather widget & block with optional map and daily forecast. Can combine Open-Meteo, SMHI, Yr/MET, FMI, Open-Weathermap, and Weatherapi.com data.
 
@@ -17,11 +29,12 @@ This plugin displays current weather and an optional forecast. It can aggregate 
 **Features**
 - **Shortcode** `[spelhubben_weather]`, **Gutenberg block**, and **classic widget**
 - **6 Weather Providers:** Open-Meteo, SMHI, Yr (MET Norway), FMI, Open-Weathermap, Weatherapi.com — enable any combination
-- **3 Icon Themes:** Classic, Modern Flat, Modern Gradient (selectable in admin settings)
+- **Icon Themes:** Classic, Modern Flat, Modern Gradient, Modern 2026, Modern 3D (selectable in admin settings)
 - **Multiple Layouts:** `inline`, `compact`, `card`, `detailed`
 - **Daily Forecast:** 3–10 days customizable
 - **Provider Comparison:** Side-by-side data from all enabled providers
 - **Leaflet Map:** OpenStreetMap tiles with proper attribution (ODbL)
+ - **Wind direction display:** Rotated arrow with cardinal labels (optional via `show=wind_dir`)
 - **Local Icons:** SVG icons (no CDN dependency), responsive scaling
 - **Performance:** 6-30x faster settings page, lazy-loaded plugin showcase, optimized caching
 - **Fully GDPR Compliant:** No cookies, no tracking, no personal data collection
@@ -45,6 +58,7 @@ This plugin displays current weather and an optional forecast. It can aggregate 
   - Compact with map & animation: `[spelhubben_weather place="Gothenburg" layout="compact" map="1" animate="1"]`
   - Inline no map: `[spelhubben_weather lat="57.7089" lon="11.9746" layout="inline" map="0" show="temp,icon"]`
   - Detailed + daily forecast (5 days) + provider mix: `[spelhubben_weather place="Umeå" layout="detailed" forecast="daily" days="5" providers="smhi,yr,openmeteo,fmi"]`
+   - With wind direction: `[spelhubben_weather place="Stockholm" show="temp,wind,wind_dir,icon" layout="compact" animate="1"]`
 
 = Classic Widget =
 - Go to **Appearance → Widgets** → add **Spelhubben Weather**.
@@ -62,13 +76,13 @@ No. Open-Meteo, SMHI, and FMI do not require keys. For Yr/MET Norway it’s reco
 All three render the same UI. Use the **block** in the block editor, the **shortcode** in classic content areas, and the **widget** in sidebars (Appearance → Widgets). Each lets you override global defaults.
 
 = Where is the Shortcodes page? (new in 1.7.0) =
-Go to **Settings → Spelhubben Weather → Shortcodes**. You’ll find searchable examples, one-click copy (and “copy all”), plus a **live preview** that renders the shortcode inside WP-admin.
+Go to **Settings → Spelhubben Weather → Shortcodes**. You’ll find searchable examples, one-click copy (and “copy all”), a **Quick Builder** with selectable options, and a **live preview** that renders the shortcode inside WP-admin.
 
 = How do place and coordinates work? =
 If `lat` and `lon` are provided they take precedence. Otherwise the plugin geocodes the `place` string (e.g. `place="Umeå"`). Set a global default place in settings.
 
 = What fields can I show/hide? =
-Use `show="temp,wind,icon"` (comma separated). Defaults are set in settings.
+Use `show="temp,wind,icon"` (comma separated). Defaults are set in settings. Add `wind_dir` to show wind direction arrow and label.
 
 = How do layouts work? =
 Choose `layout="inline|compact|card|detailed"`. “Detailed” supports the multi-day forecast row.
@@ -77,13 +91,13 @@ Yes! Use `comparison="1"` to show all enabled providers' data side-by-side. Usef
 Example: `[spelhubben_weather place="Stockholm" comparison="1" providers="openmeteo,smhi,yr,fmi,openweathermap,weatherapi"]`
 
 = What icon themes are available? =
-Three themes: **Classic** (traditional), **Modern Flat** (clean, minimalist), and **Modern Gradient** (contemporary with gradients). Choose in **Settings → Spelhubben Weather → Icon style**. All themes include icons for sun, partly-cloudy, cloud, fog, rain, sleet, snow, and thunderstorm.
+The plugin offers multiple themes: **Classic** (traditional), **Modern Flat** (clean, minimalist), **Modern Gradient** (contemporary with subtle gradients), **Modern 2026** (duotone/stroke modern style), and **Modern 3D** (subtle gradients + drop-shadows). Choose in **Settings → Spelhubben Weather → Icon style**. All themes include icons for sun, partly-cloudy (including alternate), cloud, fog, rain, sleet, snow, storm/thunder, and hail where applicable.
 
 = How do I enable the map and set its size? =
 `map="1"` shows a Leaflet map (OpenStreetMap). Control height with `map_height="240"` (px). Global defaults exist in settings.
 
 = How do I enable animations? =
-`animate="1"` adds subtle UI animation. Global default is in settings.
+`animate="1"` adds subtle UI animation. Global default is in settings. The renderer also accepts `true`, `yes`, or `on` as truthy values for convenience.
 
 = How do I get a daily forecast? =
 Set `forecast="daily"` and `days="3–10"`. Example: `forecast="daily" days="5"`.
@@ -95,7 +109,7 @@ Yes. Set `providers="smhi,yr,openmeteo,fmi"` (order doesn’t matter). The plugi
 Pick a preset with `units="metric|metric_kmh|imperial"`. You can override parts via `temp_unit="C|F"`, `wind_unit="ms|kmh|mph"`, `precip_unit="mm|in"`, and `date_format` for forecast labels. All have global defaults in settings (**Units & format** section).
 
 = Caching — how long is data stored? =
-Responses are cached with WordPress transients. Change TTL (minutes) in settings. Clear via the **Clear cache** button on the settings page or by changing attributes (which creates a new cache key).
+Responses are cached with WordPress transients. Change TTL (minutes) in settings. Clear via the **Clear cache** button on the Performance page (Settings → Performance) or by changing attributes (which creates a new cache key).
 
 = Does it work without JavaScript? =
 Yes, rendering is server-side. The map (Leaflet) requires JS.
@@ -174,12 +188,34 @@ languages/
 - Use context clues in the POT file (`msgctxt`) to distinguish similar phrases
 - Test your translation in WordPress to ensure formatting and plurals work correctly
 - Check that translated UI aligns properly in your language (RTL vs LTR)
+
 == Screenshots ==
 1. Frontend examples: inline, compact, card, detailed, with optional map.
-2. Settings page: defaults, providers, cache, units & format.
-3. **Shortcodes page (new in 1.7.0):** searchable examples, copy buttons, and admin live preview.
+2. Frontend example: New look and wind direction
+3. Settings page: defaults, providers, cache, units & format.
+4. Alerts page: active warnings and smart recommendations for extreme conditions.
+5. Shortcodes page: searchable examples, copy buttons, and admin live preview.
+6. Performance page: cache statistics, API usage and "Clear cache" action.
 
 == Changelog ==
+- = 1.9.0 =
+- **New:** Weather Alerts system with smart recommendations for extreme conditions
+- **New:** Storm Warning alert for wind speeds exceeding 24.5 m/s
+- **New:** Settings Export & Import feature for easy configuration management
+- **New:** Performance Dashboard to track API usage, cache efficiency, and response times
+- **New:** Full Dark Mode support for all frontend and admin interfaces
+- **New:** 3 Gutenberg Block Patterns (Compact, Detailed, Forecast)
+- **New:** Alert toggles for Blocks, Widgets, and Shortcodes
+- **New:** Wind direction display (`wind_dir`) — rotated arrow + cardinal labels (optional via `show=wind_dir`)
+- **New:** Shortcode Quick Builder in admin **Shortcodes** page with selectable options, one-click copy and live preview
+ - **New:** Rotating Tips panel on the Settings page with contextual admin tips (Shortcodes, Alerts, Performance)
+ - **New:** Compact action buttons in the Tips panel for quick access to Shortcodes, Alerts and Performance
+ - **New:** "Reset to defaults" button on the Settings page (nonce-protected) to restore plugin defaults
+ - **Improved:** Tips text is translation-ready, rotates more slowly for readability (15s), and uses `aria-live` for accessibility
+- **Improved:** `animate` attribute parsing is more tolerant (accepts `1`, `true`, `yes`, `on`)
+- **Improved:** Full English translation and i18n readiness (English is now the base language)
+- **Improved:** Refined alert thresholds based on meteorological standards
+
 = 1.8.6 =
 - **Fixed:** Map not rendering in widgets due to missing Leaflet asset detection
 - **Fixed:** Block name mismatch (`spelhubben/weather` → `spelhubben-weather/spelhubben-weather`) preventing proper asset enqueuing
@@ -257,10 +293,8 @@ languages/
 - Minor fixes and readme updates.
 
 = 1.6.1 =
-- Init6 =
-Version bump for WordPress.org sync. No functional changes.
+- Version bump for WordPress.org sync. No functional changes.
 
-= 1.8.ial public release. Security hardening and improved uninstall cleanup.
 
 == Upgrade Notice ==
 = 1.8.5 =
@@ -278,4 +312,4 @@ Adds **FMI** as an optional free provider. Enable it under **Settings → Spelhu
 = 1.7.0 =
 Admin UX overhaul: new Shortcodes page with live preview, units/format settings, and cache clear. Legacy [sv_vader] is deprecated—please migrate to [spelhubben_weather].
 
-Donate link: https://paypalme/spelhubben
+Donate link: https://www.paypal.com/donate/?hosted_button_id=CV74CEXY5XEAU

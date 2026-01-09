@@ -2,24 +2,28 @@
 
 WordPress weather plugin displaying current conditions and optional daily forecast using a simple consensus of **Open-Meteo**, **SMHI**, **Yr (MET Norway)**, **FMI (Finland)**, **Open-Weathermap**, and **Weatherapi.com**. Includes a Gutenberg block, classic widget, shortcode, optional Leaflet map, responsive layouts, multiple icon themes, and local SVG icons.
 
-**Version:** 1.8.6 (Map display fixes for widgets, blocks, and shortcodes; improved Leaflet initialization)
+For common questions and troubleshooting see the FAQ: [FAQ.md](FAQ.md)
 
-> This `README.md` is for GitHub. For WordPress.org metadata, use `/readme.txt`.
+**Version:** 1.9.0 (Major update: Weather Alerts, Settings Export/Import, Performance Dashboard, Dark Mode, and Full i18n)
 
 ## Changelog
 
-### v1.8.6 (2026-01-03)
-- **Fixed:** Map not rendering in widgets due to missing Leaflet asset detection
-- **Fixed:** Block name mismatch (`spelhubben/weather` → `spelhubben-weather/spelhubben-weather`) preventing proper asset enqueuing
-- **Improved:** Enhanced Leaflet initialization with better timing and error handling in `map.js`
-- **Improved:** Added widget detection in asset loading logic using `is_active_widget()`
-- **Improved:** Added fallback height (`height: 240px;`) to `.svv-map` CSS class for better Leaflet container sizing
+### v1.9.0 (2026-01-04)
+ - **New:** Wind direction display (`wind_dir`) — rotated arrow + cardinal labels (optional via `show=wind_dir`)
+ - **New:** Shortcode Quick Builder in admin **Shortcodes** page with selectable options, one-click copy and live preview
+ - **Improved:** `animate` attribute parsing is more tolerant (accepts `1`, `true`, `yes`, `on`)
+ - **Admin:** New Tips panel in Settings — rotates short, localizable tips (slower rotation for readability) and includes actionable buttons for `Shortcodes`, `Alerts` and `Performance`.
+ - **Admin:** Tips show compact icon+text badges and centered action buttons for quicker access.
+ - **Admin:** Added a secure "Reset to defaults" button in Settings with nonce protection and a success notice after reset.
+ - **Admin:** UI polish — spacing, compact buttons, accessibility improvements (`aria-live`), and translation-ready strings for all new admin text.
+
 - **Improved:** Better error reporting and retry logic in map initialization with Leaflet availability checks
 
 ## ✨ Key Features
 - **Shortcode** `[spelhubben_weather]`, **Gutenberg block**, and **classic widget**
+ - **Wind direction** display (rotated arrow + cardinal abbreviation) — optional via `show=wind_dir`
 - **6 Weather Providers:** Open-Meteo, SMHI, Yr (MET Norway), FMI, Open-Weathermap, Weatherapi.com — enable any combination
-- **3 Icon Themes:** Classic, Modern Flat, Modern Gradient (selectable in admin settings)
+- **Icon Themes:** Classic, Modern Flat, Modern Gradient, Modern 2026, Modern 3D (selectable in admin settings)
 - **Multiple Layouts:** `inline`, `compact`, `card`, `detailed`
 - **Daily Forecast:** 3–10 days customizable
 - **Provider Comparison:** Side-by-side data from all enabled providers
@@ -29,7 +33,7 @@ WordPress weather plugin displaying current conditions and optional daily foreca
 - **Fully GDPR Compliant:** No cookies, no tracking, no personal data collection
 - **Translation-Ready:** English base strings, Swedish and Norwegian translations included
 
-## Performance & Optimizations (v1.8.5)
+## Performance & Optimizations (v1.9.0)
 
 ### Asset Loading Optimization
 - Leaflet CSS/JS and map assets now load conditionally — only when shortcode or Gutenberg block is present
@@ -52,6 +56,35 @@ WordPress weather plugin displaying current conditions and optional daily foreca
 - 7-day geocoding cache with language awareness
 - 24-hour plugin showcase cache
 - Server-side caching only (no client-side tracking)
+
+### New: Centralized plugin cache (v1.9.0)
+- The plugin now uses a centralized cache wrapper (`includes/cache.php`) which provides `sv_vader_cache_get`, `sv_vader_cache_set`, `sv_vader_cache_delete` and `sv_vader_cache_invalidate_all`.
+- Cache keys are namespaced and include an internal `cache_salt` option so the plugin can efficiently invalidate all plugin cache by rotating the salt.
+- This replaces direct `get_transient`/`set_transient` calls across the codebase for consistent behaviour and easier invalidation.
+
+### Clear Cache UI
+- The administrative "Clear cache" action is available only on the **Performance** page in the plugin admin. Clearing cache uses the centralized invalidation helper (`sv_vader_cache_invalidate_all`) to avoid scattered transient deletions.
+- Note: Uninstall still attempts best-effort cleanup of related transient prefixes; rotating `cache_salt` is the recommended approach for quick invalidation.
+
+## Screenshots
+
+![Frontend examples](.wordpress-org/screenshot-1.png)
+Frontend examples: inline, compact, card, detailed, with optional map.
+
+![Settings page](.wordpress-org/screenshot-2.png)
+Settings page: defaults, providers, cache, units & format.
+
+![Shortcodes page](.wordpress-org/screenshot-3.png)
+Shortcodes page: searchable examples, copy buttons, and admin live preview.
+
+![Alerts page](.wordpress-org/screenshot-4.png)
+Alerts page: active warnings and smart recommendations for extreme conditions.
+
+![Performance page](.wordpress-org/screenshot-5.png)
+Performance page: cache statistics, API usage and "Clear cache" action.
+
+![Provider comparison](.wordpress-org/screenshot-6.png)
+Provider comparison: side-by-side data from enabled providers for troubleshooting.
 
 ## Compliance & Security
 
@@ -128,26 +161,31 @@ wp_enqueue_script('spelhubben-weather-map');
 [spelhubben_weather lat="57.7089" lon="11.9746" place="Gothenburg" layout="inline" map="0" show="temp,icon"]
 [spelhubben_weather place="Umeå" layout="detailed" forecast="daily" days="5" providers="smhi,yr,openmeteo,fmi"]
 [spelhubben_weather place="Stockholm" comparison="1" providers="openmeteo,smhi,yr,fmi,openweathermap,weatherapi"]
+[spelhubben_weather place="Stockholm" show="temp,wind,wind_dir,icon" layout="compact" animate="1"]
 ```
 
 ## Icon Themes
-The plugin includes **3 icon themes** selectable in Settings:
+The plugin includes multiple icon themes selectable in Settings:
 1. **Classic** — Traditional, timeless design
 2. **Modern Flat** — Clean, minimalist aesthetic
 3. **Modern Gradient** — Contemporary with subtle gradients and shadows
+4. **Modern 2026** — A crisp, slightly bolder duotone/stroke style designed for modern dashboards
+5. **Modern 3D** — Subtle gradients and drop-shadows for a lightweight 3D appearance
 
-All themes include icons for: sun, partly-cloudy, cloud, fog, rain, sleet, snow, and thunderstorm.
+All themes include icons for: sun, partly-cloudy (including an alternate), cloud, fog, rain, sleet, snow, storm/thunder, and hail (where applicable). SVG variants are stored locally in `assets/icons` so no CDN is required.
 
 ## Shortcode examples
 - `place` — place name to geocode (used if `lat`/`lon` are absent)  
 - `lat`, `lon` — coordinates; take precedence over `place`  
 - `show` — comma list of fields to display (e.g., `temp,wind,icon`)  
+ - `show` — comma list of fields to display (e.g., `temp,wind,icon`). Use `wind_dir` to show wind direction arrow and label.
 - `layout` — `inline | compact | card | detailed`
 - `comparison` — `1` to show side-by-side provider comparison (ignores `layout`)  
 - `map` — `1`/`0` to show/hide map  
 - `map_height` — map height in px (min 120)  
 - `providers` — `openmeteo,smhi,yr` (comma-separated)  
 - `animate` — `1`/`0` for subtle animations  
+ - `animate` — `1`/`0` for subtle animations. The renderer now accepts `1`, `true`, `yes`, or `on` as truthy values.
 - `forecast` — `none | daily`  
 - `days` — number of days (3–10) when `forecast="daily"`  
 - `class` — extra CSS class on the wrapper  
@@ -156,11 +194,16 @@ All themes include icons for: sun, partly-cloudy, cloud, fog, rain, sleet, snow,
 - **Default place** — fallback location (e.g., Stockholm)
 - **Cache TTL** — transient lifetime in minutes (default: 10, configurable)
 - **Default layout** — `inline`, `compact`, `card`, or `detailed`
-- **Icon style** — Classic, Modern Flat, or Modern Gradient
+- **Icon style** — Classic, Modern Flat, Modern Gradient, Modern 2026, or Modern 3D
 - **Data providers** — enable/disable any combination of 6 sources
 - **Units** — `metric` (°C, m/s, mm), `metric_kmh` (°C, km/h, mm), or `imperial` (°F, mph, in) with optional per-unit overrides
 - **Date format** — PHP strtotime format for forecast labels
 - **Contact info** (optional) — email or URL to include in User-Agent for MET Norway API as per their guidelines
+
+### Admin UI improvements (settings)
+- **Tips panel:** New rotating tips in the Settings page that show short, localizable guidance for admins. Tips rotate at a readable interval and include actionable buttons for `Shortcodes`, `Alerts` and `Performance`.
+- **Reset to defaults:** A secure "Reset to defaults" button on the General settings card (nonce-protected) allowing administrators to restore plugin defaults quickly; a success notice confirms the reset.
+- **UI polish:** Compact action buttons, centered layout for actions and badges, improved spacing, and accessibility improvements (aria-live for tip updates). All new admin strings are translation-ready.
 
 ## Development
 - **Minimum Requirements:** PHP 7.4+, WordPress 6.8+
@@ -183,13 +226,23 @@ Translations are available on [translate.wordpress.org](https://translate.wordpr
 
 ## Version History
 
-### v1.8.5 (Current)
-- **Performance:** Conditional Leaflet asset loading — only load when shortcode or block is used
-- **Fix:** Prevent WordPress rewrite rules from interfering with static assets via `.htaccess`
-- **Fix:** Ensure correct MIME types for CSS/JS to prevent browser warnings
-- **UX:** Eliminates 404 errors on pages without weather widget
+### v1.9.0 (Current)
+- **New:** Weather Alerts system with smart recommendations for extreme conditions
+- **New:** Storm Warning alert for wind speeds exceeding 24.5 m/s
+- **New:** Settings Export & Import feature for easy configuration management
+- **New:** Performance Dashboard to track API usage, cache efficiency, and response times
+- **New:** Full Dark Mode support for all frontend and admin interfaces
+- **New:** 3 Gutenberg Block Patterns (Compact, Detailed, Forecast)
+- **New:** Alert toggles for Blocks, Widgets, and Shortcodes
+- **Improved:** Full English translation and i18n readiness (English is now the base language)
+- **Improved:** Refined alert thresholds based on meteorological standards
 
-### v1.8.4
+### v1.8.6
+- **Fixed:** Map not rendering in widgets due to missing Leaflet asset detection
+- **Fixed:** Block name mismatch preventing proper asset enqueuing
+- **Improved:** Enhanced Leaflet initialization with better timing and error handling
+
+### v1.8.5
 - **Maintenance:** Centralized configuration constants for improved maintainability
 - **Performance:** Settings page now 6-30x faster with lazy-loaded plugin showcase
 - **Fixes:** Memory leaks, WMO code duplication, geocoding cache language support, widget null-safety, API error handling
@@ -235,9 +288,15 @@ The repository includes comprehensive documentation for developers:
 - **COMPREHENSIVE_ANALYSIS.md** — Complete code review and recommendations
 
 These files are included in the repository root for developer reference but are not deployed with the plugin to WordPress.org.
-- Code: GPLv2 or later
+- Code: GPLv3 or later
 - Leaflet (bundled): BSD-2-Clause
 - Icons: local SVG created for this plugin
 
 ## Trademarks (no affiliation)
 Open-Meteo, SMHI, Yr, MET Norway, Leaflet, and OpenStreetMap are trademarks or project names of their respective owners. This plugin is not affiliated with or endorsed by them.
+
+## License
+
+This program is free software; you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free Software Foundation; either version 2 of the License, or (at your option) any later version.
+
+Full license text is included in the `LICENSE` file in the plugin root.

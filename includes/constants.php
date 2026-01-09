@@ -105,7 +105,7 @@ if ( ! defined( 'SV_VADER_GEOCODE_LIMIT' ) ) {
 
 // ── Icon Configuration
 if ( ! defined( 'SV_VADER_ICON_STYLES' ) ) {
-	define( 'SV_VADER_ICON_STYLES', 'classic,modern-flat,modern-gradient' );
+	define( 'SV_VADER_ICON_STYLES', 'classic,modern-flat,modern-gradient,modern-2026,modern-3d' );
 }
 
 // ── Wind Unit Conversions

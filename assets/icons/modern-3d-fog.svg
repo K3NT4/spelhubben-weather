@@ -1,0 +1,17 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64">
+  <defs>
+    <linearGradient id="gFog3d" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#F7FBFF"/>
+      <stop offset="100%" stop-color="#E3F0FF"/>
+    </linearGradient>
+    <filter id="dsFog" x="-20%" y="-20%" width="140%" height="140%">
+      <feDropShadow dx="0" dy="2" stdDeviation="2" flood-opacity="0.16"/>
+    </filter>
+  </defs>
+  <g filter="url(#dsFog)">
+    <path d="M22 40h24a10 10 0 0 0 0-20 14 14 0 0 0-27.3-3.8A12 12 0 0 0 22 40z" fill="url(#gFog3d)"/>
+    <line x1="20" y1="44" x2="44" y2="44" stroke="#ABCBE8" stroke-width="3" stroke-linecap="round"/>
+    <line x1="18" y1="48" x2="46" y2="48" stroke="#ABCBE8" stroke-width="3" stroke-linecap="round"/>
+    <line x1="20" y1="52" x2="44" y2="52" stroke="#ABCBE8" stroke-width="3" stroke-linecap="round"/>
+  </g>
+</svg>

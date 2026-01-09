@@ -65,11 +65,16 @@ $sv_vader_option_prefixes = array(
     // New
     'spelhubben_weather_',
     'spelhubben-weather_',
+    // New cache wrapper prefix
+    'spelhubben_',
     // Transients (single-site)
     '_transient_sv_vader_',
     '_transient_timeout_sv_vader_',
     '_transient_spelhubben_weather_',
     '_transient_timeout_spelhubben_weather_',
+    // New wrapper transients
+    '_transient_spelhubben_',
+    '_transient_timeout_spelhubben_',
 );
 
 // phpcs:disable WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
@@ -85,8 +90,8 @@ foreach ( $sv_vader_option_prefixes as $sv_vader_raw_prefix ) {
     );
 
     if ( $names ) {
-        foreach ( $names as $name ) {
-            delete_option( $name );
+        foreach ( $names as $sv_vader_name ) {
+            delete_option( $sv_vader_name );
         }
     }
 }
@@ -98,6 +103,9 @@ if ( is_multisite() && ! empty( $wpdb->sitemeta ) ) {
         '_site_transient_timeout_sv_vader_',
         '_site_transient_spelhubben_weather_',
         '_site_transient_timeout_spelhubben_weather_',
+        // New wrapper site transients
+        '_site_transient_spelhubben_',
+        '_site_transient_timeout_spelhubben_',
         // In case any network options followed these prefixes:
         'sv_vader_',
         'sv-vader-',

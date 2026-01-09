@@ -1,4 +1,11 @@
 <?php
+/**
+ * Core plugin class for Spelhubben Weather
+ *
+ * Copyright (C) 2026 Spelhubben
+ * Licensed under the GNU General Public License v3 (or later)
+ * https://www.gnu.org/licenses/gpl-3.0.html
+ */
 // includes/class-plugin.php
 if (!defined('ABSPATH')) exit;
 
@@ -15,6 +22,7 @@ class SV_Vader_Plugin {
 
         add_action('init',               [$this, 'register_shortcodes']);
         add_action('init',               [$this->block, 'register_block']);
+        add_action('init',               [$this->block, 'register_patterns'], 15);
         add_action('wp_enqueue_scripts', [$this, 'enqueue_public_assets_wrapper']);
 
         if (is_admin()) {

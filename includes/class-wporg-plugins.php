@@ -27,7 +27,11 @@ if ( ! class_exists( 'SV_Vader_WPOrg_Plugins' ) ) {
 
 			// Force refresh via query arg (admin only)
 			if ( current_user_can( 'manage_options' ) && isset( $_GET['svv_wporg_refresh'], $_GET['svv_wporg_nonce'] ) && wp_verify_nonce( sanitize_text_field( wp_unslash( $_GET['svv_wporg_nonce'] ) ), 'svv_wporg_refresh_nonce' ) && $_GET['svv_wporg_refresh'] === '1' ) {
-				delete_transient( $this->transient_key );
+				if ( function_exists('sv_vader_cache_delete') ) {
+					sv_vader_cache_delete( $this->transient_key );
+				} else {
+					delete_transient( $this->transient_key );
+				}
 			}
 
 			// WP core assets for plugin cards + modal
@@ -329,10 +333,12 @@ if ( ! class_exists( 'SV_Vader_WPOrg_Plugins' ) ) {
 		 * Fetch plugin list from WP.org with caching.
 		 */
 		public function get_plugins() {
-			// Purge older cache keys
-			delete_transient( 'spelhubben_plugins_list_v1' );
+			// Purge older cache keys (legacy)
+			$svv_legacy_key = 'spelhubben_plugins_list_v1';
+			// Best-effort removal of legacy transient key (still uses WP core helper)
+			delete_transient( $svv_legacy_key );
 
-			$cached = get_transient( $this->transient_key );
+			$cached = sv_vader_cache_get( $this->transient_key );
 
 			// Return cached list if available
 			if ( is_array( $cached ) && ! empty( $cached ) ) {
@@ -361,7 +367,7 @@ if ( ! class_exists( 'SV_Vader_WPOrg_Plugins' ) ) {
 				return array();
 			}
 
-			set_transient( $this->transient_key, $plugins, DAY_IN_SECONDS );
+			sv_vader_cache_set( $this->transient_key, $plugins, DAY_IN_SECONDS );
 			return $plugins;
 		}
 

@@ -77,20 +77,39 @@
     }
   }
 
-  function scanMaps(){ 
-    if (typeof L === 'undefined') {
-      // Leaflet not ready, try again
-      requestAnimationFrame(scanMaps);
+  // Lazy-initialize maps when they enter the viewport using IntersectionObserver.
+  function scanMapsLazy(){
+    const maps = Array.from(document.querySelectorAll('.svv-map'));
+    if (!maps.length) return;
+
+    // If IntersectionObserver supported, observe and init when visible
+    if ('IntersectionObserver' in window) {
+      const io = new IntersectionObserver(function(entries){
+        entries.forEach(function(entry){
+          if (entry.isIntersecting) {
+            initMap(entry.target);
+            io.unobserve(entry.target);
+          }
+        });
+      }, { root: null, rootMargin: '200px', threshold: 0.01 });
+
+      maps.forEach(function(m){
+        // If already inited, skip
+        if (m.dataset.inited) return;
+        io.observe(m);
+      });
       return;
     }
-    document.querySelectorAll('.svv-map').forEach(initMap); 
+
+    // Fallback: initialize immediately (keeps previous behavior)
+    maps.forEach(initMap);
   }
 
   if (document.readyState === 'loading') {
-    document.addEventListener('DOMContentLoaded', scanMaps);
-  } else { scanMaps(); }
+    document.addEventListener('DOMContentLoaded', scanMapsLazy);
+  } else { scanMapsLazy(); }
 
-  new MutationObserver(scanMaps).observe(document.documentElement, { childList:true, subtree:true });
+  new MutationObserver(scanMapsLazy).observe(document.documentElement, { childList:true, subtree:true });
 
   // --- Responsive scaling for the card ---
   const attachRO = debounce(function(){
