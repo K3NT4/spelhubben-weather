@@ -4,11 +4,11 @@ WordPress weather plugin displaying current conditions and optional daily foreca
 
 For common questions and troubleshooting see the FAQ: [FAQ.md](FAQ.md)
 
-**Version:** 1.9.1 (Patch: Shortcode theme option, Quick Builder theme, map/alert tweaks)
+**Version:** 1.9.2 (Patch: Shortcode theme option, Quick Builder theme, map/alert tweaks)
 
 ## Changelog
 
-### v1.9.1 (2026-01-09)
+### v1.9.2 (2026-01-09)
  - **New:** Shortcode/Block/Widget `theme` attribute — `theme="auto|light|dark"` to force UI theme per instance (default: `auto`, no breaking changes).
  - **New:** Quick Builder theme selector in admin Shortcodes page and an example shortcode demonstrating `theme="dark"`.
  - **New:** Renderer now outputs `data-svv-theme` and `svv-theme-<light|dark>` class enabling forced-theme styling.
@@ -207,8 +207,8 @@ Translations are available on [translate.wordpress.org](https://translate.wordpr
 
 ## Version History
 
-### 1.9.1 (Current)
-- **New:** Shortcode/Block/Widget `theme` attribute — `theme="auto|light|dark"` to force UI theme per instance (default `auto`).
+### 1.9.2 (Current)
+ - **New:** Shortcode/Block/Widget `theme` attribute — `theme="auto|light|dark"` to force UI theme per instance (default `auto`).
 - **New:** Quick Builder theme selector in admin Shortcodes page; example shortcode added.
 - **Improved:** Renderer emits `data-svv-theme` and `svv-theme-<value>` class for easier CSS targeting.
 - **Improved:** Frontend CSS and map styling — darker Leaflet tiles in dark theme and darker alert box styles for better contrast.
