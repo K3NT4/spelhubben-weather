@@ -73,7 +73,7 @@ class SV_Vader_Plugin {
         }
 
         // Pass-through of same-name attributes
-        foreach (['lat','lon','show','layout','class','providers','forecast','days','map_height'] as $k) {
+        foreach (['lat','lon','show','layout','class','providers','forecast','days','map_height','theme'] as $k) {
             if (isset($norm[$k])) {
                 $legacy[$k] = $norm[$k];
             }

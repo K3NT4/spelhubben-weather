@@ -35,6 +35,7 @@ class SV_Vader_Widget extends WP_Widget {
             'forecast'  => 'none',
             'days'      => 5,
             'show_alerts' => 1,
+            'theme'     => 'auto',
             'class'     => 'is-widget',
         ];
         $instance = wp_parse_args((array) $instance, $defaults);
@@ -62,6 +63,7 @@ class SV_Vader_Widget extends WP_Widget {
         $forecast    = in_array($instance['forecast'], ['none','daily'], true) ? $instance['forecast'] : 'none';
         $days        = max(1, min(14, (int) $instance['days']));
         $show_alerts = !empty($instance['show_alerts']) ? 1 : 0;
+        $theme       = in_array(strtolower($instance['theme'] ?? 'auto'), ['auto','light','dark'], true) ? strtolower($instance['theme']) : 'auto';
         $extra_cls   = isset($instance['class']) ? sanitize_html_class($instance['class'], '') : '';
 
         // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- Core wrapper
@@ -87,6 +89,7 @@ class SV_Vader_Widget extends WP_Widget {
                 'forecast'    => $forecast,
                 'days'        => (string) $days,
                 'show_alerts' => $show_alerts ? '1' : '0',
+                    'theme'       => $theme,
             ]);
 
             echo wp_kses_post($html);
@@ -112,6 +115,7 @@ class SV_Vader_Widget extends WP_Widget {
             'animate'   => 1,
             'forecast'  => 'none',
             'days'      => 5,
+            'theme'     => 'auto',
             'class'     => '',
         ];
         $instance   = wp_parse_args((array) $instance, $defaults);
@@ -196,6 +200,23 @@ class SV_Vader_Widget extends WP_Widget {
             </select>
         </p>
         <p>
+            <label for="<?php echo esc_attr($this->get_field_id('theme')); ?>"><?php esc_html_e('Theme:', 'spelhubben-weather'); ?></label>
+            <select id="<?php echo esc_attr($this->get_field_id('theme')); ?>"
+                    name="<?php echo esc_attr($this->get_field_name('theme')); ?>"
+                    class="widefat">
+                <?php
+                $themes = ['auto','light','dark'];
+                foreach ($themes as $th) {
+                    printf(
+                        '<option value="%1$s"%2$s>%1$s</option>',
+                        esc_attr($th),
+                        selected($instance['theme'], $th, false)
+                    );
+                }
+                ?>
+            </select>
+        </p>
+        <p>
             <input id="<?php echo esc_attr($this->get_field_id('map')); ?>"
                    name="<?php echo esc_attr($this->get_field_name('map')); ?>"
                    type="checkbox" value="1" <?php checked($instance['map'], 1); ?>>
@@ -270,6 +291,7 @@ class SV_Vader_Widget extends WP_Widget {
         $instance['forecast']    = in_array($new_instance['forecast'] ?? 'none', ['none','daily'], true) ? $new_instance['forecast'] : 'none';
         $instance['days']        = max(1, min(14, (int) ($new_instance['days'] ?? 5)));
         $instance['show_alerts'] = !empty($new_instance['show_alerts']) ? 1 : 0;
+        $instance['theme']       = in_array(strtolower($new_instance['theme'] ?? 'auto'), ['auto','light','dark'], true) ? sanitize_text_field(strtolower($new_instance['theme'])) : 'auto';
         $instance['class']       = sanitize_html_class($new_instance['class'] ?? '', '');
 
         return $instance;

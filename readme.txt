@@ -4,7 +4,7 @@ Tags: weather, forecast, widget, shortcode, blocks
 Requires at least: 6.8
 Tested up to: 6.9
 Requires PHP: 7.4
-Stable tag: 1.9.0
+Stable tag: 1.9.1
 Donate link: https://www.paypal.com/donate/?hosted_button_id=CV74CEXY5XEAU
 
 Weather widget, Gutenberg block and shortcode with optional map and multi-provider forecasts.
@@ -18,6 +18,7 @@ Full license text is included in the `LICENSE` file in the plugin root.
 == Feedback & Bug Reports ==
 Feedback and bug reports can be posted here: https://github.com/K3NT4/spelhubben-weather/issues
 For common questions see the FAQ: https://github.com/K3NT4/spelhubben-weather/blob/main/Docs/FAQ.md
+For Roadmap: https://github.com/users/K3NT4/projects/2
 License: GPLv3 or later
 License URI: https://www.gnu.org/licenses/gpl-3.0.html
 
@@ -198,6 +199,13 @@ languages/
 6. Performance page: cache statistics, API usage and "Clear cache" action.
 
 == Changelog ==
+ - = 1.9.1 =
+ - **New:** Shortcode/Block/Widget `theme` attribute — `theme="auto|light|dark"` to force UI theme per instance (default `auto`).
+ - **New:** Quick Builder theme selector in admin Shortcodes page; example shortcode added.
+ - **Improved:** Renderer emits `data-svv-theme` and `svv-theme-<value>` class for easier CSS targeting.
+ - **Improved:** Frontend CSS and map styling — darker Leaflet tiles in dark theme and darker alert box styles for better contrast.
+ - **Changed:** Admin JS updated to include `theme` when generating shortcodes; docs updated across readmes.
+
 - = 1.9.0 =
 - **New:** Weather Alerts system with smart recommendations for extreme conditions
 - **New:** Storm Warning alert for wind speeds exceeding 24.5 m/s

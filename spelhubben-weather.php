@@ -8,13 +8,13 @@
  * Domain Path: /languages
  * Requires at least: 6.8
  * Requires PHP: 7.4
- * License: GPLv3 or later
- * License URI: https://www.gnu.org/licenses/gpl-3.0.html
+ * License: GPLv2 or later
+ * License URI: https://www.gnu.org/licenses/gpl-2.0.html
  */
 /*
  * Copyright (C) 2026 Spelhubben
- * Licensed under the GNU General Public License v3 (or later)
- * https://www.gnu.org/licenses/gpl-3.0.html
+ * Licensed under the GNU General Public License v2 (or later)
+ * https://www.gnu.org/licenses/gpl-2.0.html
  */
 
 if ( ! defined( 'ABSPATH' ) ) {
