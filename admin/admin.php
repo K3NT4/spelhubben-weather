@@ -524,6 +524,7 @@ function sv_vader_field_units() {
 	$opts = array(
 		'metric'     => __( 'Metric (°C, m/s, mm)', 'spelhubben-weather' ),
 		'metric_kmh' => __( 'Metric (°C, km/h, mm)', 'spelhubben-weather' ),
+		'metric_knt' => __( 'Metric (°C, knt, mm)', 'spelhubben-weather' ),
 		'imperial'   => __( 'Imperial (°F, mph, in)', 'spelhubben-weather' ),
 	);
 	echo '<select name="sv_vader_options[units]">';
@@ -546,7 +547,7 @@ function sv_vader_field_overrides() {
 		esc_attr( $o['temp_unit'] ?? '' )
 	);
 	printf(
-		'<label>%s <input type="text" name="sv_vader_options[wind_unit]" value="%s" class="small-text" placeholder="ms|kmh|mph" /></label> ',
+		'<label>%s <input type="text" name="sv_vader_options[wind_unit]" value="%s" class="small-text" placeholder="ms|kmh|mph|knt" /></label> ',
 		esc_html__( 'Wind unit', 'spelhubben-weather' ),
 		esc_attr( $o['wind_unit'] ?? '' )
 	);

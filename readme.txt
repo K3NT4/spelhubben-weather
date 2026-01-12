@@ -4,7 +4,7 @@ Tags: weather, forecast, widget, shortcode, blocks
 Requires at least: 6.8
 Tested up to: 6.9
 Requires PHP: 7.4
-Stable tag: 1.9.2
+Stable tag: 1.9.3
 Donate link: https://www.paypal.com/donate/?hosted_button_id=CV74CEXY5XEAU
 
 Weather widget, Gutenberg block and shortcode with optional map and multi-provider forecasts.
@@ -75,9 +75,6 @@ No. Open-Meteo, SMHI, and FMI do not require keys. For Yr/MET Norway it’s reco
 
 = Block, shortcode or widget — what’s the difference? =
 All three render the same UI. Use the **block** in the block editor, the **shortcode** in classic content areas, and the **widget** in sidebars (Appearance → Widgets). Each lets you override global defaults.
-
-= Where is the Shortcodes page? (new in 1.7.0) =
-Go to **Settings → Spelhubben Weather → Shortcodes**. You’ll find searchable examples, one-click copy (and “copy all”), a **Quick Builder** with selectable options, and a **live preview** that renders the shortcode inside WP-admin.
 
 = How do place and coordinates work? =
 If `lat` and `lon` are provided they take precedence. Otherwise the plugin geocodes the `place` string (e.g. `place="Umeå"`). Set a global default place in settings.
@@ -199,12 +196,21 @@ languages/
 6. Performance page: cache statistics, API usage and "Clear cache" action.
 
 == Changelog ==
- - = 1.9.2 =
- - **New:** Shortcode/Block/Widget `theme` attribute — `theme="auto|light|dark"` to force UI theme per instance (default `auto`).
- - **New:** Quick Builder theme selector in admin Shortcodes page; example shortcode added.
- - **Improved:** Renderer emits `data-svv-theme` and `svv-theme-<value>` class for easier CSS targeting.
- - **Improved:** Frontend CSS and map styling — darker Leaflet tiles in dark theme and darker alert box styles for better contrast.
- - **Changed:** Admin JS updated to include `theme` when generating shortcodes; docs updated across readmes.
+- = 1.9.3 =
+- **New:** Support for wind in knots (`knt`, alias `kn`) across Shortcodes, Block, Widget and WPBakery/VC.
+- **New:** `wind_unit` override in Block inspector, Widget settings and Shortcodes Quick Builder.
+- **Improved:** `metric_knt` preset for metric display with knots.
+- **Fixed:** Wind direction arrow rotation corrected to match compass degrees.
+- **Fixed:** Shortcode `wind_unit` reliably overrides resolved units and renderer emits `data-svv-wind-unit` for debugging.
+- **Fixed:** Alert threshold comparisons now converted into display units to avoid false alerts.
+- **Fixed:** PHP parse error in admin page resolved.
+- **Changed:** Plugin version bumped to 1.9.3; readme stable tag updated.
+- = 1.9.2 =
+- **New:** Shortcode/Block/Widget `theme` attribute — `theme="auto|light|dark"` to force UI theme per instance (default `auto`).
+- **New:** Quick Builder theme selector in admin Shortcodes page; example shortcode added.
+- **Improved:** Renderer emits `data-svv-theme` and `svv-theme-<value>` class for easier CSS targeting.
+- **Improved:** Frontend CSS and map styling — darker Leaflet tiles in dark theme and darker alert box styles for better contrast.
+- **Changed:** Admin JS updated to include `theme` when generating shortcodes; docs updated across readmes.
 
 - = 1.9.0 =
 - **New:** Weather Alerts system with smart recommendations for extreme conditions

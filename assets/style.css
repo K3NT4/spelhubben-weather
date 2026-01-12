@@ -32,7 +32,8 @@
 
 /* Dark Mode Support */
 @media (prefers-color-scheme: dark) {
-  .sv-vader:not(.svv-force-light) {
+  /* Do not apply automatic dark-vars when user/site explicitly forces light or dark */
+  .sv-vader:not(.svv-force-light):not(.svv-force-dark) {
     --svv-bg: #1e1e1e;
     --svv-text: #f0f0f0;
     --svv-border: #333333;
@@ -40,7 +41,7 @@
     --svv-badge-border: #444444;
     --svv-muted: #aaaaaa;
   }
-  .sv-vader:not(.svv-force-light) .svv-map {
+  .sv-vader:not(.svv-force-light):not(.svv-force-dark) .svv-map {
     filter: brightness(0.8) contrast(1.2) invert(100%) hue-rotate(180deg);
   }
 }

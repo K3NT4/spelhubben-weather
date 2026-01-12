@@ -2,7 +2,7 @@
 /**
  * Plugin Name: Spelhubben Weather
  * Description: Displays current weather and an optional forecast with a simple consensus across providers (Open-Meteo, SMHI, Yr/MET Norway). Supports shortcode + Gutenberg block + classic widget. Optional Leaflet map, subtle animations, daily forecast, and multiple layouts.
- * Version: 1.9.2
+ * Version: 1.9.3
  * Author: Spelhubben
  * Text Domain: spelhubben-weather
  * Domain Path: /languages
@@ -23,7 +23,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 
 // ── Constants (kept for backward compatibility).
 if ( ! defined( 'SV_VADER_VER' ) ) {
-	define( 'SV_VADER_VER', '1.9.2' );
+	define( 'SV_VADER_VER', '1.9.3' );
 }
 if ( ! defined( 'SV_VADER_DIR' ) ) {
 	define( 'SV_VADER_DIR', plugin_dir_path( __FILE__ ) );
@@ -67,6 +67,12 @@ require_once SV_VADER_DIR . 'includes/cache.php';
 require_once SV_VADER_DIR . 'includes/format.php';         // Units & formatting helpers.
 require_once SV_VADER_DIR . 'includes/class-wporg-plugins.php'; // WP.org plugin showcase.
 require_once SV_VADER_DIR . 'includes/class-sv-vader.php'; // API/service layer.
+
+// Optional integrations
+$sv_vader_vc = SV_VADER_DIR . 'includes/integrations/vc.php';
+if ( file_exists( $sv_vader_vc ) ) {
+	require_once $sv_vader_vc;
+}
 
 if ( is_admin() ) {
 	$sv_vader_admin = SV_VADER_DIR . 'admin/admin.php';

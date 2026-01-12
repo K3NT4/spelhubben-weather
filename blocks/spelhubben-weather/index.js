@@ -16,7 +16,15 @@
   const UNITS = [
     { label: __( 'Metric (°C, m/s, mm)', 'spelhubben-weather' ), value: 'metric' },
     { label: __( 'Metric (°C, km/h, mm)', 'spelhubben-weather' ), value: 'metric_kmh' },
+    { label: __( 'Metric (°C, knt, mm)', 'spelhubben-weather' ), value: 'metric_knt' },
     { label: __( 'Imperial (°F, mph, in)', 'spelhubben-weather' ), value: 'imperial' },
+  ];
+
+  const WIND_UNITS = [
+    { label: __( 'm/s', 'spelhubben-weather' ), value: 'ms' },
+    { label: __( 'km/h', 'spelhubben-weather' ), value: 'kmh' },
+    { label: __( 'mph', 'spelhubben-weather' ), value: 'mph' },
+    { label: __( 'knt (knots)', 'spelhubben-weather' ), value: 'knt' },
   ];
 
   registerBlockType( 'spelhubben-weather/spelhubben-weather', {
@@ -120,6 +128,15 @@
               options: UNITS,
               onChange: ( v ) => setAttributes( { units: v } ),
             } ),
+            el( SelectControl, {
+              label: __( 'Wind unit override', 'spelhubben-weather' ),
+              value: attributes.wind_unit || '',
+              options: [
+                { label: __( '(use preset)', 'spelhubben-weather' ), value: '' },
+                ...WIND_UNITS
+              ],
+              onChange: ( v ) => setAttributes( { wind_unit: v } ),
+            } ),
             el( TextControl, {
               label: __( 'Date format (PHP date)', 'spelhubben-weather' ),
               help: __( 'Used for forecast labels (default: D j/n)', 'spelhubben-weather' ),
@@ -153,7 +170,7 @@
           'div',
           bp,
           ServerSideRender
-            ? el( ServerSideRender, { block: 'spelhubben/weather', attributes } )
+            ? el( ServerSideRender, { block: 'spelhubben-weather/spelhubben-weather', attributes } )
             : el( 'p', null, __( 'Spelhubben Weather preview (ServerSideRender unavailable). Save/update to view.', 'spelhubben-weather' ) )
         )
       );

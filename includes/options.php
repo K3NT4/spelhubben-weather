@@ -25,7 +25,7 @@ if (!function_exists('sv_vader_default_options')) {
 		'prov_openweathermap' => 1,
 		'prov_weatherapi'     => 1,
 			'temp_unit'    => '',       // optional override: C|F
-			'wind_unit'    => '',       // optional override: ms|kmh|mph
+			'wind_unit'    => '',       // optional override: ms|kmh|mph|knt
 			'precip_unit'  => '',       // optional override: mm|in
 			'date_format'  => 'D j/n',  // used in forecast labels
 
@@ -91,7 +91,7 @@ if (!function_exists('sv_vader_sanitize_options')) {
 		$out['yr_contact'] = sanitize_text_field($in['yr_contact'] ?? $def['yr_contact']);
 
 		// NEW: Units & format
-		$units_allowed = ['metric','metric_kmh','imperial'];
+		$units_allowed = ['metric','metric_kmh','metric_knt','imperial'];
 		$units_in = strtolower((string)($in['units'] ?? $def['units']));
 		$out['units'] = in_array($units_in, $units_allowed, true) ? $units_in : 'metric';
 
@@ -99,7 +99,8 @@ if (!function_exists('sv_vader_sanitize_options')) {
 		$wu = strtolower((string)($in['wind_unit'] ?? ''));
 		$pu = strtolower((string)($in['precip_unit'] ?? ''));
 		$out['temp_unit']   = in_array($tu, ['C','F'], true) ? $tu : '';
-		$out['wind_unit']   = in_array($wu, ['ms','kmh','mph'], true) ? $wu : '';
+		// Accept both 'knt' and 'kn' as valid aliases for knots.
+		$out['wind_unit']   = in_array($wu, ['ms','kmh','mph','knt','kn'], true) ? $wu : '';
 		$out['precip_unit'] = in_array($pu, ['mm','in'], true) ? $pu : '';
 		$out['date_format'] = sanitize_text_field($in['date_format'] ?? $def['date_format']);
 
