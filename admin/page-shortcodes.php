@@ -9,6 +9,9 @@ if ( ! function_exists( 'sv_vader_render_shortcodes_page' ) ) {
 	function sv_vader_render_shortcodes_page() {
 		if ( ! current_user_can( 'manage_options' ) ) return;
 
+			// Load current options so Quick Builder can default to site settings
+			$opts = sv_vader_get_options();
+
 		// Examples (new aliases)
 		$nx1 = '[spelhubben_weather]';
 		$nx2 = '[spelhubben_weather place="Gothenburg" layout="compact" map="1" animate="1"]';
@@ -85,10 +88,25 @@ if ( ! function_exists( 'sv_vader_render_shortcodes_page' ) ) {
 									<pre class="svv-pre"><code tabindex="0"><?php echo esc_html( $ex['code'] ); ?></code></pre>
                                 </div>
 							<?php endforeach; ?>
+
+								<!-- Wind unit examples (compact, translatable) -->
+								<div class="svv-codeblock svv-codeblock--light" data-svv-visible="1" data-label="<?php echo esc_attr__( 'Wind unit examples', 'spelhubben-weather' ); ?>">
+									<div class="svv-codeblock-head">
+										<span><?php echo esc_html__( 'Wind unit examples', 'spelhubben-weather' ); ?></span>
+										<button type="button" class="button button-secondary svv-copy-btn" data-copy="[spelhubben_weather layout=\"compact\" map=\"0\" theme=\"light\" show=\"temp,wind,wind_dir,icon\" wind_unit=\"knt\"]">
+											<?php esc_html_e( 'Copy', 'spelhubben-weather' ); ?>
+										</button>
+									</div>
+									<pre class="svv-pre"><code tabindex="0"><?php echo esc_html( '[spelhubben_weather layout="compact" map="0" theme="light" show="temp,wind,wind_dir,icon" wind_unit="kmh"]' ); ?>
+
+		<?php echo esc_html( '[spelhubben_weather layout="compact" map="0" theme="light" show="temp,wind,wind_dir,icon" wind_unit="knt"]' ); ?></code></pre>
+								</div>
 						</div>
 
 					</div>
 				</div>
+
+
 
 				<!-- RIGHT: Preview + Attributes -->
 				<div class="svv-col">
@@ -158,6 +176,16 @@ if ( ! function_exists( 'sv_vader_render_shortcodes_page' ) ) {
 									<label><input type="checkbox" class="svv-b-prov" value="openweathermap"> OpenWeather</label>
 									<label><input type="checkbox" class="svv-b-prov" value="weatherapi"> WeatherAPI</label>
 								</div>
+								<div>
+									<strong><?php esc_html_e( 'Wind unit (override):', 'spelhubben-weather' ); ?></strong><br>
+									<select class="svv-b-windunit">
+										<option value=""<?php echo selected( $opts['wind_unit'] ?? '', '', false ); ?>><?php esc_html_e('(use site default)', 'spelhubben-weather'); ?></option>
+										<option value="ms"<?php echo selected( $opts['wind_unit'] ?? '', 'ms', false ); ?>>m/s</option>
+										<option value="kmh"<?php echo selected( $opts['wind_unit'] ?? '', 'kmh', false ); ?>>km/h</option>
+										<option value="mph"<?php echo selected( $opts['wind_unit'] ?? '', 'mph', false ); ?>>mph</option>
+										<option value="knt"<?php echo selected( $opts['wind_unit'] ?? '', 'knt', false ); ?>>knt (knots)</option>
+									</select>
+								</div>
 							</div>
 							<button type="button" class="button svv-b-generate"><?php esc_html_e( 'Update Shortcode', 'spelhubben-weather' ); ?></button>
 						</div>
@@ -211,7 +239,7 @@ if ( ! function_exists( 'sv_vader_render_shortcodes_page' ) ) {
 
 									<tr data-group="uf"><td><code>units</code></td><td><?php esc_html_e( 'Preset: metric | metric_kmh | imperial', 'spelhubben-weather' ); ?></td><td><code>units="metric_kmh"</code></td></tr>
 									<tr data-group="uf"><td><code>temp_unit</code></td><td><?php esc_html_e( 'Override temperature unit', 'spelhubben-weather' ); ?></td><td><code>temp_unit="F"</code></td></tr>
-									<tr data-group="uf"><td><code>wind_unit</code></td><td><?php esc_html_e( 'Override wind unit', 'spelhubben-weather' ); ?></td><td><code>wind_unit="kmh"</code></td></tr>
+									<tr data-group="uf"><td><code>wind_unit</code></td><td><?php esc_html_e( 'Override wind unit', 'spelhubben-weather' ); ?></td><td><code>wind_unit="kmh"</code> (or <code>wind_unit="knt"</code> for knots)</td></tr>
 									<tr data-group="uf"><td><code>precip_unit</code></td><td><?php esc_html_e( 'Override precipitation unit', 'spelhubben-weather' ); ?></td><td><code>precip_unit="in"</code></td></tr>
 									<tr data-group="uf"><td><code>date_format</code></td><td><?php esc_html_e( 'Forecast date label (PHP date)', 'spelhubben-weather' ); ?></td><td><code>date_format="D j/n"</code></td></tr>
 									<tr data-group="disp"><td><code>theme</code></td><td><?php esc_html_e( 'auto | light | dark — force display theme (auto uses site/browser preference)', 'spelhubben-weather' ); ?></td><td><code>theme="dark"</code></td></tr>
@@ -232,3 +260,4 @@ if ( ! function_exists( 'sv_vader_render_shortcodes_page' ) ) {
 		<?php
 	}
 }
+

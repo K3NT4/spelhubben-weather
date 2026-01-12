@@ -4,16 +4,19 @@ WordPress weather plugin displaying current conditions and optional daily foreca
 
 For common questions and troubleshooting see the FAQ: [FAQ.md](FAQ.md)
 
-**Version:** 1.9.2 (Patch: Shortcode theme option, Quick Builder theme, map/alert tweaks)
+**Version:** 1.9.3 (Patch: knots support, theme forcing, alert fixes)
 
 ## Changelog
 
-### v1.9.2 (2026-01-09)
- - **New:** Shortcode/Block/Widget `theme` attribute — `theme="auto|light|dark"` to force UI theme per instance (default: `auto`, no breaking changes).
- - **New:** Quick Builder theme selector in admin Shortcodes page and an example shortcode demonstrating `theme="dark"`.
- - **New:** Renderer now outputs `data-svv-theme` and `svv-theme-<light|dark>` class enabling forced-theme styling.
- - **Improved:** Frontend CSS: forced dark/light theme rules, darker Leaflet map tiles in dark theme, and darker alert box styles for visual consistency.
- - **Fix/Polish:** Admin JS updated to include `theme` in generated shortcodes; docs and examples updated across readme files.
+### v1.9.3 (2026-01-12)
+ - **New:** Support for wind in knots (`knt`, alias `kn`) across Shortcodes, Block, Widget and WPBakery/VC.
+ - **New:** `wind_unit` override in Block inspector, Widget settings and Shortcodes Quick Builder.
+ - **Improved:** `metric_knt` preset for metric display with knots.
+ - **Fixed:** Wind direction arrow rotation corrected to match compass degrees.
+ - **Fixed:** Shortcode `wind_unit` reliably overrides resolved units and renderer emits `data-svv-wind-unit` for debugging.
+ - **Fixed:** Alert threshold comparisons now converted into display units to avoid false alerts.
+ - **Fixed:** PHP parse error in admin page resolved.
+ - **Changed:** Plugin version bumped to 1.9.3; readme stable tag updated.
 
 
 ### Asset Loading Optimization
@@ -207,7 +210,17 @@ Translations are available on [translate.wordpress.org](https://translate.wordpr
 
 ## Version History
 
-### 1.9.2 (Current)
+### 1.9.3 (Current)
+ - **New:** Support for wind in knots (`knt`, alias `kn`) across Shortcodes, Block, Widget and WPBakery/VC.
+ - **New:** `wind_unit` override in Block inspector, Widget settings and Shortcodes Quick Builder.
+ - **Improved:** `metric_knt` preset for metric display with knots.
+ - **Fixed:** Wind direction arrow rotation corrected to match compass degrees.
+ - **Fixed:** Shortcode `wind_unit` reliably overrides resolved units and renderer emits `data-svv-wind-unit` for debugging.
+ - **Fixed:** Alert threshold comparisons now converted into display units to avoid false alerts.
+ - **Fixed:** PHP parse error in admin page resolved.
+ - **Changed:** Plugin version bumped to 1.9.3; readme stable tag updated.
+
+### 1.9.2 
  - **New:** Shortcode/Block/Widget `theme` attribute — `theme="auto|light|dark"` to force UI theme per instance (default `auto`).
 - **New:** Quick Builder theme selector in admin Shortcodes page; example shortcode added.
 - **Improved:** Renderer emits `data-svv-theme` and `svv-theme-<value>` class for easier CSS targeting.

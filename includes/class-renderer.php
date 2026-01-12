@@ -62,6 +62,15 @@ class SV_Vader_Renderer {
 			'date_format'  => $a['date_format'],
 		]);
 
+		// Safety: if shortcode explicitly sets wind_unit, ensure it is applied.
+		// Accept both 'knt' and 'kn' and canonicalize to 'knt'.
+		$allowed_winds = ['ms','kmh','mph','knt','kn'];
+		$wu_attr = strtolower(trim((string)($a['wind_unit'] ?? '')));
+		if ($wu_attr !== '' && in_array($wu_attr, $allowed_winds, true)) {
+			if ($wu_attr === 'kn') $wu_attr = 'knt';
+			$units['wind'] = $wu_attr;
+		}
+
 		$api = new SV_Vader_API(intval($opts['cache_minutes']));
 		
 		// Check if comparison mode is enabled
@@ -104,11 +113,12 @@ class SV_Vader_Renderer {
 		}
 
 		if ($theme !== 'auto') {
-			$classes .= ' svv-theme-' . $theme;
+			// Add both theme class and a force-class to override OS/browser prefers-color-scheme
+			$classes .= ' svv-theme-' . $theme . ' svv-force-' . $theme;
 		}
 
 		ob_start(); ?>
-		<div class="<?php echo esc_attr($classes); ?>" data-svv-ro="1" data-svv-theme="<?php echo esc_attr($theme); ?>">
+		<div class="<?php echo esc_attr($classes); ?>" data-svv-ro="1" data-svv-theme="<?php echo esc_attr($theme); ?>" data-svv-wind-unit="<?php echo esc_attr($units['wind']); ?>">
 			<?php if (!empty($name) && $layout !== 'inline'): ?>
 				<div class="svv-ort"><?php echo esc_html($name); ?></div>
 			<?php endif; ?>
@@ -150,7 +160,11 @@ class SV_Vader_Renderer {
 							?>
 							<span class="svv-wind svv-badge">
 								<?php echo esc_html( $wind_compact ); ?>
-								<?php if (in_array('wind_dir', $show, true)) echo wp_kses_post( sv_vader_wind_dir_icon($w_dir) ); ?>
+							<?php if (in_array('wind_dir', $show, true) && $w_dir !== null) echo wp_kses_post( sv_vader_wind_dir_icon($w_dir) ); ?>
+							</span>
+						<?php elseif (in_array('wind_dir', $show, true) && $w_dir !== null): ?>
+							<span class="svv-wind svv-badge">
+								<?php echo wp_kses_post( sv_vader_wind_dir_icon($w_dir) ); ?>
 							</span>
 						<?php endif; ?>
 						<?php if (!empty($desc)): ?>
@@ -176,7 +190,12 @@ class SV_Vader_Renderer {
 									?>
 									<span class="svv-wind">
 										<?php echo esc_html( $wind_detailed ); ?>
-										<?php if (in_array('wind_dir', $show, true)) echo wp_kses_post( sv_vader_wind_dir_icon($w_dir) ); ?>
+									<?php if (in_array('wind_dir', $show, true) && $w_dir !== null) echo wp_kses_post( sv_vader_wind_dir_icon($w_dir) ); ?>
+									</span>
+								<?php endif; ?>
+								<?php if (!(in_array('wind', $show, true) && $w_val !== null) && in_array('wind_dir', $show, true) && $w_dir !== null): ?>
+									<span class="svv-wind">
+										<?php echo wp_kses_post( sv_vader_wind_dir_icon($w_dir) ); ?>
 									</span>
 								<?php endif; ?>
 								<?php if (!empty($desc)): ?>
@@ -222,7 +241,12 @@ class SV_Vader_Renderer {
 							?>
 							<span class="svv-wind">
 								<?php echo esc_html( $wind_card ); ?>
-								<?php if (in_array('wind_dir', $show, true)) echo wp_kses_post( sv_vader_wind_dir_icon($w_dir) ); ?>
+							<?php if (in_array('wind_dir', $show, true) && $w_dir !== null) echo wp_kses_post( sv_vader_wind_dir_icon($w_dir) ); ?>
+							</span>
+						<?php endif; ?>
+						<?php if (!(in_array('wind', $show, true) && $w_val !== null) && in_array('wind_dir', $show, true) && $w_dir !== null): ?>
+							<span class="svv-wind">
+								<?php echo wp_kses_post( sv_vader_wind_dir_icon($w_dir) ); ?>
 							</span>
 						<?php endif; ?>
 						<?php if (!empty($desc)): ?>

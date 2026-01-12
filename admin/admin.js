@@ -312,6 +312,7 @@
       var show = Array.from(document.querySelectorAll('.svv-b-show:checked')).map(function(i){ return i.value; }).join(',');
       var layout = document.querySelector('.svv-b-layout').value;
       var theme = (document.querySelector('.svv-b-theme') && document.querySelector('.svv-b-theme').value) || 'auto';
+      var windunit = (document.querySelector('.svv-b-windunit') && document.querySelector('.svv-b-windunit').value) || '';
       var map = document.querySelector('.svv-b-map').checked ? '1' : '0';
       var animate = document.querySelector('.svv-b-animate').checked ? '1' : '0';
       var provs = Array.from(document.querySelectorAll('.svv-b-prov:checked')).map(function(i){ return i.value; }).join(',');
@@ -323,6 +324,7 @@
       if (map === '1') sc += ' map="1"';
       if (animate === '0') sc += ' animate="0"';
       if (provs && provs !== 'openmeteo,smhi,yr') sc += ' providers="' + provs + '"';
+      if (windunit) sc += ' wind_unit="' + windunit + '"';
       sc += ']';
 
       preview.value = sc;

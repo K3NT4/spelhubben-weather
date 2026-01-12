@@ -37,6 +37,7 @@ class SV_Vader_Widget extends WP_Widget {
             'show_alerts' => 1,
             'theme'     => 'auto',
             'class'     => 'is-widget',
+            'wind_unit' => '',
         ];
         $instance = wp_parse_args((array) $instance, $defaults);
 
@@ -90,6 +91,7 @@ class SV_Vader_Widget extends WP_Widget {
                 'days'        => (string) $days,
                 'show_alerts' => $show_alerts ? '1' : '0',
                     'theme'       => $theme,
+                    'wind_unit'   => $instance['wind_unit'] ?? $opts['wind_unit'],
             ]);
 
             echo wp_kses_post($html);
@@ -117,6 +119,7 @@ class SV_Vader_Widget extends WP_Widget {
             'days'      => 5,
             'theme'     => 'auto',
             'class'     => '',
+            'wind_unit' => '',
         ];
         $instance   = wp_parse_args((array) $instance, $defaults);
 
@@ -258,6 +261,18 @@ class SV_Vader_Widget extends WP_Widget {
             <label for="<?php echo esc_attr($this->get_field_id('show_alerts')); ?>"><?php esc_html_e('Show weather alerts', 'spelhubben-weather'); ?></label>
         </p>
         <p>
+            <label for="<?php echo esc_attr($this->get_field_id('wind_unit')); ?>"><?php esc_html_e('Wind unit:', 'spelhubben-weather'); ?></label>
+            <select id="<?php echo esc_attr($this->get_field_id('wind_unit')); ?>"
+                    name="<?php echo esc_attr($this->get_field_name('wind_unit')); ?>"
+                    class="widefat">
+                <option value="" <?php selected($instance['wind_unit'] ?? '', ''); ?>><?php esc_html_e('(use site default)', 'spelhubben-weather'); ?></option>
+                <option value="ms" <?php selected($instance['wind_unit'] ?? '', 'ms'); ?>>m/s</option>
+                <option value="kmh" <?php selected($instance['wind_unit'] ?? '', 'kmh'); ?>>km/h</option>
+                <option value="mph" <?php selected($instance['wind_unit'] ?? '', 'mph'); ?>>mph</option>
+                <option value="knt" <?php selected($instance['wind_unit'] ?? '', 'knt'); ?>>knt (knots)</option>
+            </select>
+        </p>
+        <p>
             <label for="<?php echo esc_attr($this->get_field_id('class')); ?>"><?php esc_html_e('Extra CSS class:', 'spelhubben-weather'); ?></label>
             <input class="widefat"
                    id="<?php echo esc_attr($this->get_field_id('class')); ?>"
@@ -293,6 +308,8 @@ class SV_Vader_Widget extends WP_Widget {
         $instance['show_alerts'] = !empty($new_instance['show_alerts']) ? 1 : 0;
         $instance['theme']       = in_array(strtolower($new_instance['theme'] ?? 'auto'), ['auto','light','dark'], true) ? sanitize_text_field(strtolower($new_instance['theme'])) : 'auto';
         $instance['class']       = sanitize_html_class($new_instance['class'] ?? '', '');
+        $wu = strtolower(trim((string)($new_instance['wind_unit'] ?? '')));
+        $instance['wind_unit'] = in_array($wu, ['ms','kmh','mph','knt','kn'], true) ? $wu : '';
 
         return $instance;
     }

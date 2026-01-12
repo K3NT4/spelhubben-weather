@@ -22,7 +22,8 @@
     "days":       { "type": "number",  "default": 5 },
     "showAlerts": { "type": "boolean", "default": true },
     "units":      { "type": "string",  "default": "metric" },
-    "date_format":{ "type": "string",  "default": "D j/n" }
+    "date_format":{ "type": "string",  "default": "D j/n" },
+    "wind_unit":  { "type": "string",  "default": "" }
   },
   "editorScript": "file:./index.js",
   "style": "sv-vader-style"
