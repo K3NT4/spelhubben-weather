@@ -4,19 +4,12 @@ WordPress weather plugin displaying current conditions and optional daily foreca
 
 For common questions and troubleshooting see the FAQ: [FAQ.md](FAQ.md)
 
-**Version:** 1.9.3 (Patch: knots support, theme forcing, alert fixes)
+**Version:** 1.9.4 (Patch: wind direction fixes and i18n/license updates)
 
 ## Changelog
 
-### v1.9.3 (2026-01-12)
- - **New:** Support for wind in knots (`knt`, alias `kn`) across Shortcodes, Block, Widget and WPBakery/VC.
- - **New:** `wind_unit` override in Block inspector, Widget settings and Shortcodes Quick Builder.
- - **Improved:** `metric_knt` preset for metric display with knots.
+### v1.9.4 (2026-01-13)
  - **Fixed:** Wind direction arrow rotation corrected to match compass degrees.
- - **Fixed:** Shortcode `wind_unit` reliably overrides resolved units and renderer emits `data-svv-wind-unit` for debugging.
- - **Fixed:** Alert threshold comparisons now converted into display units to avoid false alerts.
- - **Fixed:** PHP parse error in admin page resolved.
- - **Changed:** Plugin version bumped to 1.9.3; readme stable tag updated.
 
 
 ### Asset Loading Optimization
@@ -210,7 +203,10 @@ Translations are available on [translate.wordpress.org](https://translate.wordpr
 
 ## Version History
 
-### 1.9.3 (Current)
+### 1.9.4 (Current)
+ - **Fixed:** Wind direction arrow rotation corrected to match compass degrees.
+
+### 1.9.3 
  - **New:** Support for wind in knots (`knt`, alias `kn`) across Shortcodes, Block, Widget and WPBakery/VC.
  - **New:** `wind_unit` override in Block inspector, Widget settings and Shortcodes Quick Builder.
  - **Improved:** `metric_knt` preset for metric display with knots.

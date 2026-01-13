@@ -356,7 +356,10 @@ class SV_Vader_Renderer {
 						<?php if ($w_val !== null): ?>
 							<div>
 								💨 <?php esc_html_e('Wind:', 'spelhubben-weather'); ?> <?php echo esc_html(sv_vader_num($w_val)); ?> <?php echo esc_html($w_u); ?>
-								<?php if (in_array('wind_dir', $show, true)) echo wp_kses_post( sv_vader_wind_dir_icon($w_dir) ); ?>
+								<?php if ($w_dir !== null) {
+									echo wp_kses_post( sv_vader_wind_dir_icon($w_dir) );
+									// (debug removed) 
+								} ?>
 							</div>
 						<?php endif; ?>
 						<?php if ($p_val !== null): ?>

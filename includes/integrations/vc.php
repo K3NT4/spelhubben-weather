@@ -72,7 +72,7 @@ if ( function_exists( 'vc_map' ) ) {
                     'type' => 'checkbox',
                     'heading' => __( 'Show map', 'spelhubben-weather' ),
                     'param_name' => 'map',
-                    'value' => array( __( 'Show map' ) => '1' ),
+                    'value' => array( __( 'Show map', 'spelhubben-weather' ) => '1' ),
                 ),
                 array(
                     'type' => 'textfield',
