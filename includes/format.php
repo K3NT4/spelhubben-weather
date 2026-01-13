@@ -63,6 +63,8 @@ if (!function_exists('sv_vader_wind')) {
 if (!function_exists('sv_vader_wind_dir')) {
 	function sv_vader_wind_dir(?float $deg): string {
 		if ($deg === null) return '';
+		// Normalize degrees to [0,360)
+		$deg = fmod(floatval($deg) + 360.0, 360.0);
 		$cardinals = [
 			__('N', 'spelhubben-weather'),
 			__('NE', 'spelhubben-weather'),
@@ -72,18 +74,23 @@ if (!function_exists('sv_vader_wind_dir')) {
 			__('SW', 'spelhubben-weather'),
 			__('W', 'spelhubben-weather'),
 			__('NW', 'spelhubben-weather'),
-			__('N', 'spelhubben-weather'),
 		];
-		return $cardinals[round($deg / 45)];
+
+		// Use standard sector calculation: each cardinal spans 45°, centered on multiples of 45°.
+		// Adding 22.5° before flooring ensures correct rounding at boundaries.
+		$index = (int) floor(($deg + 22.5) / 45.0) % 8;
+		return $cardinals[$index];
 	}
 }
 
 if (!function_exists('sv_vader_wind_dir_icon')) {
 	function sv_vader_wind_dir_icon(?float $deg): string {
 		if ($deg === null) return '';
+		// Output a data attribute instead of inline styles (wp_kses_post may strip style attrs).
+		$deg_val = floatval($deg);
 		return sprintf(
-				'<span class="svv-wind-dir" style="display:inline-block;transform:rotate(%ddeg);line-height:1;font-style:normal;vertical-align:middle;" title="%s">➤</span>',
-				intval($deg) - 90,
+				'<span class="svv-wind-dir" data-deg="%s" title="%s">➤</span>',
+			esc_attr((string)$deg_val),
 			esc_attr(sv_vader_wind_dir($deg))
 		);
 	}

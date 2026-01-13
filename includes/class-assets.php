@@ -30,10 +30,13 @@ class SV_Vader_Assets {
             $map_file = 'assets/map.min.js';
         }
         wp_register_script('sv-vader-map', SV_VADER_URL . $map_file, ['leaflet-js'], SV_VADER_VER, true);
+        // Small helper to rotate wind direction arrows when inline styles are stripped
+        wp_register_script('sv-vader-wind', SV_VADER_URL . 'assets/wind.js', [], SV_VADER_VER, true);
 
         // Load core style only when plugin output is present on the page
         if ( $this->should_load_assets() ) {
             wp_enqueue_style('sv-vader-style');
+            wp_enqueue_script('sv-vader-wind');
         }
 
         // Localized data for JS will be added only when the map script is enqueued

@@ -4,8 +4,11 @@ Tags: weather, forecast, widget, shortcode, blocks
 Requires at least: 6.8
 Tested up to: 6.9
 Requires PHP: 7.4
-Stable tag: 1.9.3
+Stable tag: 1.9.4
 Donate link: https://www.paypal.com/donate/?hosted_button_id=CV74CEXY5XEAU
+
+License: GPLv3 or later
+License URI: https://www.gnu.org/licenses/gpl-3.0.html
 
 Weather widget, Gutenberg block and shortcode with optional map and multi-provider forecasts.
 
@@ -196,8 +199,10 @@ languages/
 6. Performance page: cache statistics, API usage and "Clear cache" action.
 
 == Changelog ==
+- = 1.9.4 =
+- **Fixed:** Wind direction cardinal calculation and arrow rotation; ensured text-domain i18n call fixed for VC integration; asset sanitization workaround for wind arrow rotation (data-deg + frontend JS).
+
 - = 1.9.3 =
-- **New:** Support for wind in knots (`knt`, alias `kn`) across Shortcodes, Block, Widget and WPBakery/VC.
 - **New:** `wind_unit` override in Block inspector, Widget settings and Shortcodes Quick Builder.
 - **Improved:** `metric_knt` preset for metric display with knots.
 - **Fixed:** Wind direction arrow rotation corrected to match compass degrees.
