@@ -31,6 +31,9 @@ class SV_Vader_Renderer {
 			'forecast'   => 'none',
 			'days'       => '5',
 			'comparison' => '0', // NEW: Show individual provider data
+			'extras'     => '',
+			'show_moon'  => '0',
+			'show_moon_daily' => '0',
 			'show_alerts' => (string) $opts['show_alerts'],
 
 			// Units & formatting (overrides)
@@ -42,6 +45,8 @@ class SV_Vader_Renderer {
 			'theme'        => 'auto',
 		], $atts, 'sv_vader');
 
+
+
 		$layout = strtolower(trim($a['layout']));
 		$allowed_layouts = ['inline','compact','card','detailed'];
 		if (!in_array($layout, $allowed_layouts, true)) $layout = 'card';
@@ -52,6 +57,12 @@ class SV_Vader_Renderer {
 		if (empty($provider_list)) $provider_list = ['openmeteo'];
 
 		$show = array_map('trim', explode(',', strtolower($a['show'])));
+
+		// Extras handling: extras="moon" or show_moon="1"
+		$extras = array_map('trim', explode(',', strtolower((string)($a['extras'] ?? ''))));
+		$show_moon = in_array('moon', $extras, true) || (string)($a['show_moon'] ?? '') === '1';
+		// Daily forecast moon: enable per-day moon icons when extras contains 'moon_daily' or flag set
+		$show_moon_daily = in_array('moon_daily', $extras, true) || (string)($a['show_moon_daily'] ?? '') === '1';
 
 		// Units
 		$units = sv_vader_resolve_units([
@@ -90,6 +101,26 @@ class SV_Vader_Renderer {
 		list($p_val, $p_u)   = sv_vader_precip($res['precip'] ?? null, $units['precip'], 1);
 		$cloud               = isset($res['cloud']) ? intval($res['cloud']) : null;
 
+		// Moon info (optional)
+		$moon = null;
+		if ($show_moon) {
+			if (function_exists('sv_vader_moon')) {
+				$moon = sv_vader_moon();
+			}
+		}
+
+		// Pre-build moon HTML (single place to render)
+		$moon_html = '';
+		if ($show_moon) {
+			if ($moon) {
+				$icon = function_exists('sv_vader_moon_icon') ? sv_vader_moon_icon(intval($moon['phase_index'] ?? 0)) : '';
+				$moon_text = sprintf( __( 'Moon: %1$s (%2$s%%)', 'spelhubben-weather' ), $moon['phase'], sv_vader_num($moon['illum'], 0) );
+				$moon_html = '<span class="svv-moon"><span class="svv-moon-icon">' . esc_html($icon) . '</span>' . esc_html($moon_text) . '</span>';
+			} else {
+				$moon_html = '<span class="svv-moon">' . esc_html( __( 'Moon data unavailable', 'spelhubben-weather' ) ) . '</span>';
+			}
+		}
+
 		$desc     = $res['desc'] ?? '';
 		$icon_url = $api->map_icon_url($res['code'] ?? null);
 		$name     = $res['name'];
@@ -119,6 +150,15 @@ class SV_Vader_Renderer {
 
 		ob_start(); ?>
 		<div class="<?php echo esc_attr($classes); ?>" data-svv-ro="1" data-svv-theme="<?php echo esc_attr($theme); ?>" data-svv-wind-unit="<?php echo esc_attr($units['wind']); ?>">
+		<?php if ($show_moon): ?>
+			<?php if ($moon): ?>
+				<?php echo '<!-- SVV-MOON: phase_index=' . intval($moon['phase_index'] ?? -1) . ' phase=' . esc_html($moon['phase']) . ' illum=' . esc_html($moon['illum']) . ' -->'; ?>
+			<?php else: ?>
+				<?php echo '<!-- SVV-MOON: requested but unavailable -->'; ?>
+			<?php endif; ?>
+		<?php else: ?>
+			<?php echo '<!-- SVV-MOON: not requested -->'; ?>
+		<?php endif; ?>
 			<?php if (!empty($name) && $layout !== 'inline'): ?>
 				<div class="svv-ort"><?php echo esc_html($name); ?></div>
 			<?php endif; ?>
@@ -150,9 +190,10 @@ class SV_Vader_Renderer {
 						<?php if (in_array('icon', $show, true) && $icon_url): ?>
 							<img class="svv-icon" src="<?php echo esc_url($icon_url); ?>" alt="" width="40" height="40" loading="eager" fetchpriority="high">
 						<?php endif; ?>
-						<?php if (in_array('temp', $show, true) && $t_val !== null): ?>
-							<div class="svv-temp"><?php echo esc_html( sv_vader_num($t_val) ); ?><?php echo esc_html($t_sym); ?></div>
-						<?php endif; ?>
+							<?php if (in_array('temp', $show, true) && $t_val !== null): ?>
+								<div class="svv-temp"><?php echo esc_html( sv_vader_num($t_val) ); ?><?php echo esc_html($t_sym); ?></div>
+                            
+							<?php endif; ?>
 						<?php if (in_array('wind', $show, true) && $w_val !== null): ?>
 							<?php
 							/* translators: 1: wind value, 2: wind unit (e.g. 5, km/h) */
@@ -181,6 +222,13 @@ class SV_Vader_Renderer {
 						<div class="svv-col">
 							<?php if (in_array('temp', $show, true) && $t_val !== null): ?>
 								<div class="svv-temp"><?php echo esc_html( sv_vader_num($t_val) ); ?><?php echo esc_html($t_sym); ?></div>
+								<?php if ($show_moon): ?>
+									<?php if ($moon): ?>
+										<span class="svv-moon"><?php echo esc_html( sv_vader_moon_icon(intval($moon['phase_index'] ?? 0)) ); ?> <?php echo esc_html( sv_vader_num($moon['illum'], 0) ); ?>%</span>
+									<?php else: ?>
+										<span class="svv-moon"><?php echo esc_html( __( 'Moon data unavailable', 'spelhubben-weather' ) ); ?></span>
+									<?php endif; ?>
+								<?php endif; ?>
 							<?php endif; ?>
 							<div class="svv-meta">
 								<?php if (in_array('wind', $show, true) && $w_val !== null): ?>
@@ -201,6 +249,7 @@ class SV_Vader_Renderer {
 								<?php if (!empty($desc)): ?>
 									<span class="svv-desc"><?php echo esc_html($desc); ?></span>
 								<?php endif; ?>
+								<?php echo $moon_html; ?>
 							</div>
 							<div class="svv-extra">
 								<?php if ($p_val !== null): ?>
@@ -217,6 +266,7 @@ class SV_Vader_Renderer {
 									?>
 									<span class="svv-cloud"><?php echo esc_html( $cloud_str ); ?></span>
 								<?php endif; ?>
+								<?php // moon shown above in meta; skip duplicate output here ?>
 							</div>
 						</div>
 					</div>
@@ -252,6 +302,7 @@ class SV_Vader_Renderer {
 						<?php if (!empty($desc)): ?>
 							<span class="svv-desc"><?php echo esc_html($desc); ?></span>
 						<?php endif; ?>
+						<?php echo $moon_html; ?>
 					</div>
 				<?php break; } ?>
 
@@ -282,6 +333,20 @@ class SV_Vader_Renderer {
 					<div class="svv-daycard">
 						<div class="svv-daylabel"><?php echo esc_html($lbl); ?></div>
 						<?php if ($icon): ?><img class="svv-dayicon" src="<?php echo esc_url($icon); ?>" alt="" width="36" height="36"><?php endif; ?>
+						<?php if (!empty($show_moon_daily)): ?>
+						<?php
+						// Moon info for this forecast day
+						$day_moon = null;
+						if (function_exists('sv_vader_moon')) {
+							$day_moon = sv_vader_moon($ts);
+						}
+						?>
+						<?php if ($day_moon): ?>
+							<span class="svv-daymoon" title="<?php echo esc_attr(sprintf(__('Moon: %1$s — %2$s%%', 'spelhubben-weather'), $day_moon['phase'], sv_vader_num($day_moon['illum'], 0))); ?>">
+								<?php echo esc_html( sv_vader_moon_icon(intval($day_moon['phase_index'] ?? 0)) ); ?> <?php echo esc_html( sv_vader_num($day_moon['illum'], 0) ); ?>%
+							</span>
+						<?php endif; ?>
+						<?php endif; ?>
 						<div class="svv-daytemps">
 							<?php
 							list($fmax,) = sv_vader_temp($d['tmax'], $units['temp'], 0);

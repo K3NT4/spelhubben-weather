@@ -198,6 +198,10 @@ body.admin-color-modern .sv-vader {
   padding:calc(10px * var(--svv-scale));
   background: var(--svv-bg);
   box-shadow:0 2px 8px var(--svv-shadow);
+
+/* Moon icon styling */
+.svv-moon-icon{font-size:calc(14px * var(--svv-scale));margin-right:8px;vertical-align:middle;display:inline-block}
+.svv-moon{display:inline-flex;align-items:center;gap:6px}
   transition: transform .2s ease, box-shadow .2s ease;
 }
 .svv-anim .svv-daycard:hover{ transform:translateY(-2px); box-shadow:0 6px 18px var(--svv-shadow); }

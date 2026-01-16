@@ -315,6 +315,8 @@
       var windunit = (document.querySelector('.svv-b-windunit') && document.querySelector('.svv-b-windunit').value) || '';
       var map = document.querySelector('.svv-b-map').checked ? '1' : '0';
       var animate = document.querySelector('.svv-b-animate').checked ? '1' : '0';
+      var moon = document.querySelector('.svv-b-moon') && document.querySelector('.svv-b-moon').checked ? true : false;
+      var moonDaily = document.querySelector('.svv-b-moon-daily') && document.querySelector('.svv-b-moon-daily').checked ? true : false;
       var provs = Array.from(document.querySelectorAll('.svv-b-prov:checked')).map(function(i){ return i.value; }).join(',');
       
       var sc = '[spelhubben_weather';
@@ -325,6 +327,10 @@
       if (animate === '0') sc += ' animate="0"';
       if (provs && provs !== 'openmeteo,smhi,yr') sc += ' providers="' + provs + '"';
       if (windunit) sc += ' wind_unit="' + windunit + '"';
+      var extras = [];
+      if (moon) extras.push('moon');
+      if (moonDaily) extras.push('moon_daily');
+      if (extras.length) sc += ' extras="' + extras.join(',') + '"';
       sc += ']';
 
       preview.value = sc;
