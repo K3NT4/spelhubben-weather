@@ -30,4 +30,17 @@ Here are answers to common questions about the Spelhubben Weather plugin.
 
 - **Support:** For bug reports, issues or feature requests use GitHub issues: https://github.com/K3NT4/spelhubben-weather/issues
 
+## Tips & advanced usage
+
+- **Moon phase fields:** Use the new `phase` and `illumination` fields to show moon information. Example shortcode: `[spelhubben_weather show="temp,icon,phase,illumination"]` — available in Block inspector and Widget options as well.
+- **Control which fields show:** Use `show="temp,wind,wind_dir,icon,phase,illumination"` to tailor the display. Fields are comma-separated.
+- **Mix providers & compare:** Request specific providers with `providers="smhi,yr,openmeteo,fmi"`. Use `comparison="1"` to show side-by-side provider outputs for debugging.
+- **Wind unit overrides:** Force wind units per instance with `wind_unit="ms|kmh|mph|knt"` (e.g. `wind_unit="knt"`). The Block/Widget inspector exposes this option.
+- **Map tips:** Enable the map with `map="1"` and set height with `map_height="240"` (px). If tiles or markers don't appear, check that Leaflet assets are enqueued (they load conditionally when needed).
+- **Caching & troubleshooting:** Increase `Cache TTL` in Settings to reduce external calls. Clear plugin cache on Settings → Performance if data looks stale or providers return errors.
+- **Animate & theme:** `animate` accepts `1`, `true`, `yes`, or `on`. Force theme per-instance with `theme="auto|light|dark"`.
+- **MET Norway contact info:** For Yr/MET Norway, set contact email/URL in Settings so your User-Agent meets their API guidelines — this prevents rate-limiting in some cases.
+- **When nothing shows:** Ensure at least one provider is enabled in Settings and that the place or `lat,lon` is valid. Use `comparison="1"` to see which providers return data for your location.
+- **Shortcode Quick Builder & Block inspector:** Use the admin Shortcodes page Quick Builder or Block sidebar to preview and copy instance-specific shortcodes with chosen options.
+
 If you’d like, I can also add a link to this FAQ in `readme.txt` or `README.md`.
