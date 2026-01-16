@@ -4,13 +4,12 @@ WordPress weather plugin displaying current conditions and optional daily foreca
 
 For common questions and troubleshooting see the FAQ: [FAQ.md](FAQ.md)
 
-**Version:** 1.9.4 (Patch: wind direction fixes and i18n/license updates)
+**Version:** 1.9.5 (New: moon phase support — phase + illumination)
 
 ## Changelog
 
-### v1.9.4 (2026-01-13)
- - **Fixed:** Wind direction arrow rotation corrected to match compass degrees.
-
+### v1.9.5 (2026-01-16)
+ - **New:** Moon phase support — added `phase` (phase name) and `illumination` (percent illuminated) fields to the renderer, shortcodes, block and widget.
 
 ### Asset Loading Optimization
 - Leaflet CSS/JS and map assets now load conditionally — only when shortcode or Gutenberg block is present
@@ -203,7 +202,10 @@ Translations are available on [translate.wordpress.org](https://translate.wordpr
 
 ## Version History
 
-### 1.9.4 (Current)
+### 1.9.5 (Current)
+ - **New:** Moon phase support — `phase` and `illumination` available in renderer, shortcodes, block and widget.
+
+### 1.9.4
  - **Fixed:** Wind direction arrow rotation corrected to match compass degrees.
 
 ### 1.9.3 

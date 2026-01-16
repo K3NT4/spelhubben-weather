@@ -4,7 +4,7 @@ Tags: weather, forecast, widget, shortcode, blocks
 Requires at least: 6.8
 Tested up to: 6.9
 Requires PHP: 7.4
-Stable tag: 1.9.4
+Stable tag: 1.9.5
 Donate link: https://www.paypal.com/donate/?hosted_button_id=CV74CEXY5XEAU
 
 License: GPLv3 or later
@@ -103,6 +103,9 @@ The plugin offers multiple themes: **Classic** (traditional), **Modern Flat** (c
 = How do I get a daily forecast? =
 Set `forecast="daily"` and `days="3–10"`. Example: `forecast="daily" days="5"`.
 
+= How do i use Moon phase? =
+Use the new `phase` and `illumination` fields to show moon information. Example shortcode: `[spelhubben_weather show="temp,icon,phase,illumination"]` — available in Block inspector and Widget options as well.
+
 = Can I mix providers and get a consensus? =
 Yes. Set `providers="smhi,yr,openmeteo,fmi"` (order doesn’t matter). The plugin calculates a simple consensus across available providers for the displayed fields.
 
@@ -199,6 +202,9 @@ languages/
 6. Performance page: cache statistics, API usage and "Clear cache" action.
 
 == Changelog ==
+- = 1.9.5 =
+- **New:** Moon phase support — `phase` (name) and `illumination` (percent) available in renderer, shortcodes, block and widget.
+
 - = 1.9.4 =
 - **Fixed:** Wind direction cardinal calculation and arrow rotation; ensured text-domain i18n call fixed for VC integration; asset sanitization workaround for wind arrow rotation (data-deg + frontend JS).
 
@@ -316,6 +322,9 @@ languages/
 
 
 == Upgrade Notice ==
+= 1.9.5 =
+Added moon phase support (phase + illumination) in renderer, shortcodes, block and widget.
+
 = 1.8.5 =
 Performance optimization release with conditional asset loading. Fixes 404 errors and MIME type warnings for Leaflet on non-weather pages. Recommended for all users.
 

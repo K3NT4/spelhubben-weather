@@ -28,6 +28,8 @@ class SV_Vader_Widget extends WP_Widget {
             'lat'       => '',
             'lon'       => '',
             'show'      => ['temp','wind','wind_dir','icon'],
+            'show_moon' => 0,
+            'show_moon_daily' => 0,
             'layout'    => 'card',
             'map'       => 0,
             'mapHeight' => 240,
@@ -66,6 +68,8 @@ class SV_Vader_Widget extends WP_Widget {
         $show_alerts = !empty($instance['show_alerts']) ? 1 : 0;
         $theme       = in_array(strtolower($instance['theme'] ?? 'auto'), ['auto','light','dark'], true) ? strtolower($instance['theme']) : 'auto';
         $extra_cls   = isset($instance['class']) ? sanitize_html_class($instance['class'], '') : '';
+        $show_moon   = !empty($instance['show_moon']) ? 1 : 0;
+        $show_moon_daily = !empty($instance['show_moon_daily']) ? 1 : 0;
 
         // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- Core wrapper
         echo $args['before_widget'];
@@ -82,6 +86,8 @@ class SV_Vader_Widget extends WP_Widget {
                 'lat'         => $lat,
                 'lon'         => $lon,
                 'show'        => $show_csv,
+                'show_moon'   => $show_moon ? '1' : '0',
+                'show_moon_daily' => $show_moon_daily ? '1' : '0',
                 'layout'      => $layout,
                 'class'       => trim('is-widget ' . $extra_cls),
                 'map'         => $map ? '1' : '0',
@@ -111,6 +117,7 @@ class SV_Vader_Widget extends WP_Widget {
             'lat'       => '',
             'lon'       => '',
             'show'      => ['temp','wind','wind_dir','icon'],
+            'show_moon' => 0,
             'layout'    => 'card',
             'map'       => 0,
             'mapHeight' => 240,
@@ -261,6 +268,18 @@ class SV_Vader_Widget extends WP_Widget {
             <label for="<?php echo esc_attr($this->get_field_id('show_alerts')); ?>"><?php esc_html_e('Show weather alerts', 'spelhubben-weather'); ?></label>
         </p>
         <p>
+            <input id="<?php echo esc_attr($this->get_field_id('show_moon')); ?>"
+                   name="<?php echo esc_attr($this->get_field_name('show_moon')); ?>"
+                   type="checkbox" value="1" <?php checked($instance['show_moon'], 1); ?>>
+            <label for="<?php echo esc_attr($this->get_field_id('show_moon')); ?>"><?php esc_html_e('Show moon phase', 'spelhubben-weather'); ?></label>
+        </p>
+        <p>
+            <input id="<?php echo esc_attr($this->get_field_id('show_moon_daily')); ?>"
+                   name="<?php echo esc_attr($this->get_field_name('show_moon_daily')); ?>"
+                   type="checkbox" value="1" <?php checked($instance['show_moon_daily'], 1); ?>>
+            <label for="<?php echo esc_attr($this->get_field_id('show_moon_daily')); ?>"><?php esc_html_e('Show moon in daily forecast', 'spelhubben-weather'); ?></label>
+        </p>
+        <p>
             <label for="<?php echo esc_attr($this->get_field_id('wind_unit')); ?>"><?php esc_html_e('Wind unit:', 'spelhubben-weather'); ?></label>
             <select id="<?php echo esc_attr($this->get_field_id('wind_unit')); ?>"
                     name="<?php echo esc_attr($this->get_field_name('wind_unit')); ?>"
@@ -306,6 +325,8 @@ class SV_Vader_Widget extends WP_Widget {
         $instance['forecast']    = in_array($new_instance['forecast'] ?? 'none', ['none','daily'], true) ? $new_instance['forecast'] : 'none';
         $instance['days']        = max(1, min(14, (int) ($new_instance['days'] ?? 5)));
         $instance['show_alerts'] = !empty($new_instance['show_alerts']) ? 1 : 0;
+        $instance['show_moon_daily'] = !empty($new_instance['show_moon_daily']) ? 1 : 0;
+        $instance['show_moon']   = !empty($new_instance['show_moon']) ? 1 : 0;
         $instance['theme']       = in_array(strtolower($new_instance['theme'] ?? 'auto'), ['auto','light','dark'], true) ? sanitize_text_field(strtolower($new_instance['theme'])) : 'auto';
         $instance['class']       = sanitize_html_class($new_instance['class'] ?? '', '');
         $wu = strtolower(trim((string)($new_instance['wind_unit'] ?? '')));
