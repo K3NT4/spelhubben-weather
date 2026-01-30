@@ -174,6 +174,40 @@ class SV_Vader_API {
 		return $list;
 	}
 
+	/**
+	 * Return tide events for a location (uses providers helper)
+	 * Returns null on failure or an array with 'tz' and 'events'
+	 */
+	public function get_tides($ort = '', $lat = '', $lon = '') {
+		$ort = trim((string)$ort);
+		$lat = trim((string)$lat);
+		$lon = trim((string)$lon);
+
+		$cache_key = 'sv_vader_tides_res_' . md5(json_encode([$ort,$lat,$lon]));
+		$cached = sv_vader_cache_get($cache_key);
+		if ($cached !== false) {
+			sv_vader_stats_hit();
+			return $cached;
+		}
+
+		if ($lat === '' || $lon === '') {
+			$coords = $this->geocode($ort);
+			if (is_wp_error($coords)) return $coords;
+			$lat  = $coords['lat'];
+			$lon  = $coords['lon'];
+			$name = $coords['name'];
+		} else {
+			$name = $ort;
+		}
+
+		$tides = sv_vader_fetch_tides($lat, $lon);
+		if ($tides === null) return null;
+
+		sv_vader_cache_set($cache_key, $tides, MINUTE_IN_SECONDS * max(5, intval(sv_vader_get_options()['tide_cache_minutes'] ?? 60)));
+		sv_vader_stats_miss(1, $name, $lat, $lon);
+		return $tides;
+	}
+
 	private function geocode($q) {
 		$api_lang = sv_vader_api_lang();
 		// Include language in cache key to avoid stale translations

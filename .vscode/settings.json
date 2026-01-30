@@ -1,0 +1,8 @@
+{
+    "chat.tools.terminal.autoApprove": {
+        "/^git status --porcelain; git add -A; git commit -m \"Release: v1\\.9\\.7 — Experimental tide \\(tidvatten\\) support, admin UI toggle and docs\"; git push origin update/docs-license-security; git tag -a v1\\.9\\.7 -m \"v1\\.9\\.7 — Experimental tide \\(tidvatten\\) support\"; git push origin v1\\.9\\.7$/": {
+            "approve": true,
+            "matchCommandLine": true
+        }
+    }
+}

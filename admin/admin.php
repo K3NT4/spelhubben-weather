@@ -334,12 +334,17 @@ if ( ! function_exists( 'sv_vader_register_settings' ) ) {
 		add_settings_field( 'icon_style', __( 'Icon style', 'spelhubben-weather' ), 'sv_vader_field_icon_style', 'sv_vader', 'sv_vader_main' );
 		add_settings_field( 'providers', __( 'Data providers', 'spelhubben-weather' ), 'sv_vader_field_providers', 'sv_vader', 'sv_vader_main' );
 		add_settings_field( 'yr_contact', __( 'Yr contact/UA', 'spelhubben-weather' ), 'sv_vader_field_yr_contact', 'sv_vader', 'sv_vader_main' );
+		// Tides
+		add_settings_field( 'tides', __( 'Tides (tidvatten)', 'spelhubben-weather' ), 'sv_vader_field_tides', 'sv_vader', 'sv_vader_main' );
 
 		// ===== Units & Format =====
 		add_settings_section( 'sv_vader_units', __( 'Units & format', 'spelhubben-weather' ), '__return_false', 'sv_vader' );
 		add_settings_field( 'units', __( 'Preset', 'spelhubben-weather' ), 'sv_vader_field_units', 'sv_vader', 'sv_vader_units' );
 		add_settings_field( 'overrides', __( 'Overrides (optional)', 'spelhubben-weather' ), 'sv_vader_field_overrides', 'sv_vader', 'sv_vader_units' );
 		add_settings_field( 'date_format', __( 'Date format (PHP)', 'spelhubben-weather' ), 'sv_vader_field_date_format', 'sv_vader', 'sv_vader_units' );
+		add_settings_field( 'tide_settings', __( 'Tide provider', 'spelhubben-weather' ), 'sv_vader_field_tide_settings', 'sv_vader', 'sv_vader_units' );
+		// Admin visibility control for experimental tide UI
+		add_settings_field( 'tide_admin_visibility', __( 'Tide admin UI', 'spelhubben-weather' ), 'sv_vader_field_tide_admin_visibility', 'sv_vader', 'sv_vader_units' );
 	}
 	add_action( 'admin_init', 'sv_vader_register_settings' );
 }
@@ -517,6 +522,54 @@ function sv_vader_field_yr_contact() {
 		esc_attr( $o['yr_contact'] ?? '' )
 	);
 	echo '<p class="description">' . esc_html__( 'Recommended by MET Norway: include an email or URL in your User-Agent.', 'spelhubben-weather' ) . '</p>';
+}
+
+/** Render tides settings field (main) */
+function sv_vader_field_tides() {
+	$o = sv_vader_get_options();
+	printf(
+		'<label><input type="checkbox" name="sv_vader_options[tides_enabled]" value="1" %s/> %s</label>',
+		checked( 1, ! empty( $o['tides_enabled'] ), false ),
+		esc_html__( 'Enable tide data (experimental).', 'spelhubben-weather' )
+	);
+	echo '<p class="description">' . esc_html__( 'Tide data requires a provider or a custom API endpoint. Some providers may require an API key and/or paid plan.', 'spelhubben-weather' ) . '</p>';
+}
+
+/** Render tide provider settings (detailed) */
+function sv_vader_field_tide_settings() {
+	$o = sv_vader_get_options();
+	$prov = $o['tide_provider'] ?? 'custom';
+	?>
+	<select name="sv_vader_options[tide_provider]">
+		<option value="worldtides" <?php selected( $prov, 'worldtides' ); ?>><?php esc_html_e( 'WorldTides (global, often paid)', 'spelhubben-weather' ); ?></option>
+		<option value="noaa" <?php selected( $prov, 'noaa' ); ?>><?php esc_html_e( 'NOAA Tides (US only)', 'spelhubben-weather' ); ?></option>
+		<option value="custom" <?php selected( $prov, 'custom' ); ?>><?php esc_html_e( 'Custom endpoint', 'spelhubben-weather' ); ?></option>
+	</select>
+	<p class="description"><?php esc_html_e( 'Choose a tide provider or use a custom API endpoint.', 'spelhubben-weather' ); ?></p>
+	<p style="margin-top:8px;">
+		<label><?php esc_html_e( 'API key (if required)', 'spelhubben-weather' ); ?> <input type="text" name="sv_vader_options[tide_api_key]" value="<?php echo esc_attr( $o['tide_api_key'] ?? '' ); ?>" class="regular-text" /></label>
+	</p>
+	<p>
+		<label><?php esc_html_e( 'Custom endpoint', 'spelhubben-weather' ); ?> <input type="text" name="sv_vader_options[tide_custom_endpoint]" value="<?php echo esc_attr( $o['tide_custom_endpoint'] ?? '' ); ?>" class="regular-text" placeholder="https://example.com/tides" /></label>
+	</p>
+	<p>
+		<label><?php esc_html_e( 'Cache TTL (minutes)', 'spelhubben-weather' ); ?> <input type="number" min="5" name="sv_vader_options[tide_cache_minutes]" value="<?php echo intval( $o['tide_cache_minutes'] ?? 60 ); ?>" class="small-text" /></label>
+	</p>
+	<p class="description" style="margin-top:8px;">
+		<?php echo sprintf( wp_kses_post( __('Need an API key? See <a href="%s" target="_blank" rel="noopener noreferrer">WorldTides</a> (commercial) or NOAA docs for US stations: <a href="%s" target="_blank" rel="noopener noreferrer">NOAA Tides & Currents API</a>.', 'spelhubben-weather') ), esc_url('https://www.worldtides.info'), esc_url('https://api.tidesandcurrents.noaa.gov') ); ?>
+	</p>
+	<?php
+}
+
+/** Render tide admin visibility checkbox */
+function sv_vader_field_tide_admin_visibility() {
+	$o = sv_vader_get_options();
+	printf(
+		'<label><input type="checkbox" name="sv_vader_options[tides_admin_visible]" value="1" %s/> %s</label>',
+		checked( 1, ! empty( $o['tides_admin_visible'] ), false ),
+		esc_html__( 'Show tide examples & notices in admin (for testing)', 'spelhubben-weather' )
+	);
+	echo '<p class="description">' . esc_html__( 'Toggle visibility of experimental tide UI elements in the admin pages. Useful to hide notices/examples while testing with selected users.', 'spelhubben-weather' ) . '</p>';
 }
 
 function sv_vader_field_units() {

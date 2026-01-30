@@ -32,6 +32,15 @@ if (!function_exists('sv_vader_default_options')) {
 			// NEW: cache salt (rotates when user clears cache)
 			'cache_salt'   => '1',
 
+			// Tides
+			'tides_enabled'      => 0,
+			'tide_provider'      => 'custom', // worldtides|noaa|custom
+			'tide_api_key'       => '',
+			'tide_custom_endpoint' => '',
+			'tide_cache_minutes' => 60,
+			// Show tide notices/examples in admin UI (separate from enabling tide fetching)
+			'tides_admin_visible' => 1,
+
 			// Alert Thresholds
 			'alert_cold_extreme'  => -15,
 			'alert_cold_freezing' => 0,
@@ -115,6 +124,16 @@ if (!function_exists('sv_vader_sanitize_options')) {
 		$out['alert_wind_storm']    = floatval($in['alert_wind_storm']    ?? $def['alert_wind_storm']);
 		$out['alert_wind_strong']   = floatval($in['alert_wind_strong']   ?? $def['alert_wind_strong']);
 		$out['alert_precip_heavy']  = floatval($in['alert_precip_heavy']  ?? $def['alert_precip_heavy']);
+
+		// Tides
+		$out['tides_enabled'] = !empty($in['tides_enabled']) ? 1 : 0;
+		$prov = strtolower(trim((string)($in['tide_provider'] ?? $def['tide_provider'] ?? 'custom')));
+		$out['tide_provider'] = in_array($prov, ['worldtides','noaa','custom'], true) ? $prov : 'custom';
+		$out['tide_api_key'] = sanitize_text_field($in['tide_api_key'] ?? '');
+		$out['tide_custom_endpoint'] = esc_url_raw(trim((string)($in['tide_custom_endpoint'] ?? '')));
+		$out['tide_cache_minutes'] = max(5, intval($in['tide_cache_minutes'] ?? $def['tide_cache_minutes'] ?? 60));
+		// Admin visibility toggle for tide UI (helps disable admin notices/examples during rollout)
+		$out['tides_admin_visible'] = !empty($in['tides_admin_visible']) ? 1 : 0;
 
 		return $out;
 	}

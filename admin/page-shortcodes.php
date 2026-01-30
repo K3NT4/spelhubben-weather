@@ -27,6 +27,7 @@ if ( ! function_exists( 'sv_vader_render_shortcodes_page' ) ) {
 		$nx12 = '[spelhubben_weather place="Stockholm" theme="dark" show="temp,icon" map="0"]';
 		$nx_moon = '[spelhubben_weather extras="moon"]';
 		$nx_moon_daily = '[spelhubben_weather forecast="daily" days="7" extras="moon_daily"]';
+		$nx_tides = '[spelhubben_weather extras="tides"]';
 
 		$new_examples = array(
 			array( 'label' => __( 'Basic example', 'spelhubben-weather' ), 'code' => $nx1 ),
@@ -44,10 +45,21 @@ if ( ! function_exists( 'sv_vader_render_shortcodes_page' ) ) {
 			array( 'label' => __( 'Long forecast (10 days)', 'spelhubben-weather' ), 'code' => $nx9 ),
 			array( 'label' => __( 'Specific providers only (SMHI & Yr)', 'spelhubben-weather' ), 'code' => $nx10 ),
 		);
+		// Add tide example only when tides are enabled in settings and visible in admin UI
+		if ( ! empty( $opts['tides_enabled'] ) && ! empty( $opts['tides_admin_visible'] ) ) {
+			$new_examples[] = array( 'label' => __( 'Tide events (experimental)', 'spelhubben-weather' ), 'code' => $nx_tides );
+		}
 		?>
 		<div class="wrap svv-admin-wrap">
 			<h1 class="svv-page-title"><?php esc_html_e( 'Spelhubben Weather – Shortcodes', 'spelhubben-weather' ); ?></h1>
 			<p class="svv-subheader"><?php esc_html_e( 'Copy & paste ready-made snippets. Click “Copy” to put a shortcode on your clipboard.', 'spelhubben-weather' ); ?></p>
+
+			<?php // Experimental tide notice: show only when enabled in settings and visible in admin UI ?>
+			<?php if ( ! empty( $opts['tides_enabled'] ) && ! empty( $opts['tides_admin_visible'] ) ) : ?>
+			<div class="notice notice-warning is-dismissible" style="margin-top:12px;">
+				<p><strong><?php esc_html_e( 'Tide data (experimental)', 'spelhubben-weather' ); ?></strong> — <?php esc_html_e( 'Tide support is experimental. Enable and configure under Settings → Spelhubben Weather → Tide provider. Use extras="tides" or tides="1" in shortcodes to display tide events.', 'spelhubben-weather' ); ?></p>
+			</div>
+			<?php endif; ?>
 
 			<!-- Toolbar: back + filter + copy all -->
 			<div class="svv-toolbar">
@@ -212,6 +224,21 @@ if ( ! function_exists( 'sv_vader_render_shortcodes_page' ) ) {
 							<span class="dashicons dashicons-list-view"></span>
 							<?php esc_html_e( 'Attributes – overview', 'spelhubben-weather' ); ?>
 						</h2>
+
+						<!-- Tide help (experimental) - show only when tides are enabled -->
+						<?php if ( ! empty( $opts['tides_enabled'] ) ) : ?>
+						<div class="svv-help svv-card" style="margin-bottom:12px; padding:12px; background:#fff; border:1px solid #eee;">
+							<h3 style="margin-top:0; font-size:14px;"><?php esc_html_e( 'Tide data (experimental)', 'spelhubben-weather' ); ?></h3>
+							<p class="description"><?php esc_html_e( 'Enable tide data in Settings → Spelhubben Weather. Supported providers: WorldTides (global), NOAA (US only) or a custom endpoint.', 'spelhubben-weather' ); ?></p>
+							<p><strong><?php esc_html_e( 'Shortcode examples:', 'spelhubben-weather' ); ?></strong></p>
+							<ul>
+								<li><code>[spelhubben_weather place="Gothenburg" extras="tides"]</code> — <?php esc_html_e( 'Show tide events for a place.', 'spelhubben-weather' ); ?></li>
+								<li><code>[spelhubben_weather lat="57.7089" lon="11.9667" tides="1"]</code> — <?php esc_html_e( 'Show tide events using coordinates.', 'spelhubben-weather' ); ?></li>
+								<li><code>[spelhubben_weather place="Gothenburg" forecast="daily" extras="tides,moon"]</code> — <?php esc_html_e( 'Combine tides with forecast and moon extras.', 'spelhubben-weather' ); ?></li>
+							</ul>
+							<p class="description"><?php esc_html_e( 'Tide responses are cached; if nothing appears verify provider settings and API key. NOAA is US-only; prefer WorldTides or a custom endpoint for non-US locations.', 'spelhubben-weather' ); ?></p>
+						</div>
+						<?php endif; ?>
 
 						<div class="svv-attr-legend">
 							<span class="svv-badge"><span class="dashicons dashicons-location-alt"></span><?php esc_html_e( 'Location', 'spelhubben-weather' ); ?></span>

@@ -61,6 +61,7 @@ class SV_Vader_Renderer {
 		// Extras handling: extras="moon" or show_moon="1"
 		$extras = array_map('trim', explode(',', strtolower((string)($a['extras'] ?? ''))));
 		$show_moon = in_array('moon', $extras, true) || (string)($a['show_moon'] ?? '') === '1';
+		$show_tides = in_array('tides', $extras, true) || (string)($a['tides'] ?? '') === '1';
 		// Daily forecast moon: enable per-day moon icons when extras contains 'moon_daily' or flag set
 		$show_moon_daily = in_array('moon_daily', $extras, true) || (string)($a['show_moon_daily'] ?? '') === '1';
 
@@ -128,6 +129,15 @@ class SV_Vader_Renderer {
 		$lon      = $res['lon'];
 
 		$alerts   = ( $a['show_alerts'] === '1' ) ? sv_vader_get_alerts($res) : [];
+
+		// Tide data (optional)
+		$tide_data = null;
+		if ($show_tides) {
+			$opts = sv_vader_get_options();
+			if (!empty($opts['tides_enabled'])) {
+				$tide_data = $api->get_tides($a['ort'], $a['lat'], $a['lon']);
+			}
+		}
 
 		$forecast = [];
 		if ($a['forecast'] === 'daily') {
@@ -320,6 +330,20 @@ class SV_Vader_Renderer {
 					   target="_blank" rel="noopener noreferrer">
 						<?php esc_html_e('View on OpenStreetMap', 'spelhubben-weather'); ?>
 					</a>
+				</div>
+			<?php endif; ?>
+
+			<?php if (!empty($tide_data) && $layout !== 'inline'): ?>
+				<div class="svv-tides">
+					<strong><?php echo esc_html__( 'Tides', 'spelhubben-weather' ); ?></strong>
+					<ul class="svv-tide-list">
+						<?php foreach (array_slice($tide_data['events'] ?? [], 0, 5) as $ev):
+							$ts = strtotime($ev['time']);
+							$lbl = $ts ? date_i18n(get_option('time_format') . ' ' . get_option('date_format'), $ts) : ($ev['time'] ?? '');
+						?>
+							<li><?php echo esc_html( ucfirst($ev['type'] ?? 'event') . ': ' . $lbl . (isset($ev['height']) ? (' — ' . sv_vader_num($ev['height'], 2) . ' m') : '') ); ?></li>
+						<?php endforeach; ?>
+					</ul>
 				</div>
 			<?php endif; ?>
 

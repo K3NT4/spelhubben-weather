@@ -385,4 +385,190 @@ if (!function_exists('sv_vader_openmeteo_daily')) {
         }
         return $out;
     }
+
+
+    /**
+     * Tide fetching helpers
+     * - Supports WorldTides (API key) and a generic custom endpoint.
+     * - Returns array: ['tz'=>string,'events'=> [ ['time'=>'ISO','type'=>'high'|'low','height'=>float|null], ... ] ]
+     */
+    if (!function_exists('sv_vader_fetch_tides')) {
+        function sv_vader_fetch_tides($lat, $lon) {
+            $lat = floatval($lat); $lon = floatval($lon);
+            if (!$lat && !$lon) return null;
+
+            $opts = sv_vader_get_options();
+            if (empty($opts['tides_enabled'])) return null;
+
+            $prov = $opts['tide_provider'] ?? 'custom';
+            $cache_key = 'sv_vader_tides_' . md5($lat . '|' . $lon . '|' . $prov . '|' . sv_vader_cache_salt());
+            $cached = sv_vader_cache_get($cache_key);
+            if ($cached !== false) return $cached;
+
+            $res = null;
+            if ($prov === 'worldtides' && !empty($opts['tide_api_key'])) {
+                $res = sv_vader_tide_worldtides($lat, $lon, $opts['tide_api_key']);
+            } elseif ($prov === 'noaa') {
+                // NOAA is US-only and format varies; attempt a simple query to tides API via NOAA CO-OPS (v1 REST)
+                $res = sv_vader_tide_noaa($lat, $lon);
+            } else {
+                // custom endpoint: append lat/lon and api_key as query params if provided
+                $endpoint = rtrim((string)($opts['tide_custom_endpoint'] ?? ''), '/');
+                if ($endpoint !== '') {
+                    $res = sv_vader_tide_custom($endpoint, $lat, $lon, $opts['tide_api_key'] ?? '');
+                }
+            }
+
+            if ($res !== null) {
+                $ttl = max(5, intval($opts['tide_cache_minutes'] ?? 60));
+                sv_vader_cache_set($cache_key, $res, MINUTE_IN_SECONDS * $ttl);
+            }
+            return $res;
+        }
+    }
+
+    if (!function_exists('sv_vader_tide_worldtides')) {
+        function sv_vader_tide_worldtides($lat, $lon, $key) {
+            $url = add_query_arg([
+                'extremes' => 'true',
+                'lat' => $lat,
+                'lon' => $lon,
+                'key' => $key,
+            ], 'https://www.worldtides.info/api/v3');
+
+            $res = wp_remote_get($url, ['timeout' => 12]);
+            if (is_wp_error($res) || wp_remote_retrieve_response_code($res) !== 200) return null;
+            $j = json_decode(wp_remote_retrieve_body($res), true);
+            if (!$j) return null;
+
+            $tz = $j['timezone'] ?? null;
+            $events = [];
+            if (!empty($j['extremes']) && is_array($j['extremes'])) {
+                foreach ($j['extremes'] as $e) {
+                    $dt = !empty($e['dt']) ? gmdate('c', intval($e['dt'])) : ( !empty($e['date']) ? $e['date'] : null );
+                    $type = !empty($e['type']) ? strtolower($e['type']) : null; // High/Low
+                    $h = isset($e['height']) ? floatval($e['height']) : (isset($e['value']) ? floatval($e['value']) : null);
+                    if ($dt && $type) {
+                        $events[] = ['time' => $dt, 'type' => ($type === 'high' ? 'high' : 'low'), 'height' => $h];
+                    }
+                }
+            }
+            // Fallback: heights array
+            if (empty($events) && !empty($j['heights']) && is_array($j['heights'])) {
+                foreach ($j['heights'] as $h) {
+                    $dt = !empty($h['dt']) ? gmdate('c', intval($h['dt'])) : null;
+                    $val = isset($h['height']) ? floatval($h['height']) : (isset($h['value']) ? floatval($h['value']) : null);
+                    if ($dt) $events[] = ['time' => $dt, 'type' => 'height', 'height' => $val];
+                }
+            }
+
+            return ['tz' => $tz, 'events' => $events];
+        }
+    }
+
+    if (!function_exists('sv_vader_tide_custom')) {
+        function sv_vader_tide_custom($endpoint, $lat, $lon, $key = '') {
+            $url = add_query_arg(['lat' => $lat, 'lon' => $lon], $endpoint);
+            if ($key !== '') $url = add_query_arg(['api_key' => $key], $url);
+
+            $res = wp_remote_get($url, ['timeout' => 12]);
+            if (is_wp_error($res) || wp_remote_retrieve_response_code($res) !== 200) return null;
+            $j = json_decode(wp_remote_retrieve_body($res), true);
+            if (!$j || !is_array($j)) return null;
+
+            // Try to normalise common shapes: extremes | events | data
+            $events = [];
+            if (!empty($j['extremes']) && is_array($j['extremes'])) {
+                foreach ($j['extremes'] as $e) {
+                    $time = $e['time'] ?? ($e['date'] ?? null);
+                    $type = strtolower($e['type'] ?? ($e['kind'] ?? ''));
+                    $h = isset($e['height']) ? floatval($e['height']) : null;
+                    if ($time) $events[] = ['time' => $time, 'type' => $type ?: 'event', 'height' => $h];
+                }
+            } elseif (!empty($j['events']) && is_array($j['events'])) {
+                foreach ($j['events'] as $e) {
+                    $time = $e['time'] ?? $e['date'] ?? null;
+                    $type = strtolower($e['type'] ?? 'event');
+                    $h = isset($e['height']) ? floatval($e['height']) : null;
+                    if ($time) $events[] = ['time' => $time, 'type' => $type, 'height' => $h];
+                }
+            } elseif (!empty($j['data']) && is_array($j['data'])) {
+                foreach ($j['data'] as $e) {
+                    $time = $e['time'] ?? $e['date'] ?? null;
+                    $type = strtolower($e['type'] ?? 'event');
+                    $h = isset($e['height']) ? floatval($e['height']) : null;
+                    if ($time) $events[] = ['time' => $time, 'type' => $type, 'height' => $h];
+                }
+            }
+
+            $tz = $j['timezone'] ?? null;
+            return ['tz' => $tz, 'events' => $events];
+        }
+    }
+
+    if (!function_exists('sv_vader_tide_noaa')) {
+        function sv_vader_tide_noaa($lat, $lon) {
+            $lat = floatval($lat); $lon = floatval($lon);
+            if (!$lat && !$lon) return null;
+
+            // Try to find nearby NOAA stations using MDAPI (bounding box).
+            $d = 0.5; // ~50 km box
+            $minlon = $lon - $d; $minlat = $lat - $d; $maxlon = $lon + $d; $maxlat = $lat + $d;
+            $mdapi = add_query_arg([
+                'bbox' => sprintf('%s,%s,%s,%s', $minlon, $minlat, $maxlon, $maxlat),
+            ], 'https://api.tidesandcurrents.noaa.gov/mdapi/prod/webapi/stations.json');
+
+            $res = wp_remote_get($mdapi, ['timeout' => 12]);
+            if (is_wp_error($res) || wp_remote_retrieve_response_code($res) !== 200) return null;
+            $j = json_decode(wp_remote_retrieve_body($res), true);
+            if (empty($j['stations']) || !is_array($j['stations'])) return null;
+
+            // Find nearest station that supports tides (type contains 'TIDE' or has id)
+            $best = null; $bestd = PHP_INT_MAX;
+            foreach ($j['stations'] as $s) {
+                if (empty($s['id']) || empty($s['lat']) || empty($s['lng'])) continue;
+                // prefer tidal stations
+                $stype = strtoupper($s['type'] ?? '');
+                $slat = floatval($s['lat']); $slon = floatval($s['lng']);
+                $dist = pow($slat - $lat, 2) + pow($slon - $lon, 2);
+                if ($dist < $bestd) { $bestd = $dist; $best = $s; }
+            }
+            if (!$best || empty($best['id'])) return null;
+
+            $station = $best['id'];
+            // Request high/low predictions for today..+2 days
+            $start = gmdate('Ymd', time());
+            $end = gmdate('Ymd', time() + 2 * DAY_IN_SECONDS);
+            $pred_url = add_query_arg([
+                'product' => 'predictions',
+                'application' => 'spelhubben-weather',
+                'begin_date' => $start,
+                'end_date' => $end,
+                'station' => $station,
+                'time_zone' => 'gmt',
+                'units' => 'metric',
+                'format' => 'json',
+                'interval' => 'hilo',
+            ], 'https://api.tidesandcurrents.noaa.gov/api/prod/datagetter');
+
+            $r2 = wp_remote_get($pred_url, ['timeout' => 12]);
+            if (is_wp_error($r2) || wp_remote_retrieve_response_code($r2) !== 200) return null;
+            $pj = json_decode(wp_remote_retrieve_body($r2), true);
+            if (empty($pj['predictions']) || !is_array($pj['predictions'])) return null;
+
+            $events = [];
+            foreach ($pj['predictions'] as $p) {
+                $t = $p['t'] ?? ($p['time'] ?? null);
+                $type = isset($p['type']) ? (strtoupper($p['type']) === 'H' ? 'high' : 'low') : null;
+                $val = isset($p['v']) ? floatval($p['v']) : (isset($p['value']) ? floatval($p['value']) : null);
+                if ($t) {
+                    $iso = date('c', strtotime($t));
+                    $events[] = ['time' => $iso, 'type' => $type ?? 'event', 'height' => $val];
+                }
+            }
+
+            return ['tz' => 'GMT', 'events' => $events];
+        }
+
+    }
 }
