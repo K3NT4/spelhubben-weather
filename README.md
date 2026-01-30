@@ -4,12 +4,13 @@ WordPress weather plugin displaying current conditions and optional daily foreca
 
 For common questions and troubleshooting see the FAQ: [FAQ.md](FAQ.md)
 
-**Version:** 1.9.5 (New: moon phase support — phase + illumination)
+**Version:** 1.9.7 (Experimental: tide/tidvatten support added for testing)
 
 ## Changelog
 
-### v1.9.5 (2026-01-16)
- - **New:** Moon phase support — added `phase` (phase name) and `illumination` (percent illuminated) fields to the renderer, shortcodes, block and widget.
+### v1.9.7 (2026-01-30)
+ - **Experimental:** Tide (tidvatten) support added for testing — opt-in feature. Adds support for WorldTides (API key), NOAA (US-only), and a configurable custom endpoint. Shortcode support via `extras="tides"` or `tides="1"`. Admin visibility can be toggled while rolling out to selected users. Responses are cached; configure TTL in Settings.
+
 
 ### Asset Loading Optimization
 - Leaflet CSS/JS and map assets now load conditionally — only when shortcode or Gutenberg block is present
@@ -140,6 +141,21 @@ wp_enqueue_script('spelhubben-weather-map');
 [spelhubben_weather place="Stockholm" show="temp,wind,wind_dir,icon" layout="compact" animate="1"]
 ```
 
+## Tide data FAQ
+
+- **Q:** How do I enable tide data?
+- **A:** Enable `Tides` under Settings → Spelhubben Weather, choose a provider (WorldTides, NOAA or Custom) and optionally enter an API key. The Shortcodes page includes an example when tides are enabled.
+
+- **Q:** How do I display tides in a shortcode?
+- **A:** Add `extras="tides"` or `tides="1"` to your shortcode, e.g. `[spelhubben_weather place="Gothenburg" extras="tides"]`.
+
+- **Q:** Which providers are supported?
+- **A:** `WorldTides` (global, requires API key and may be paid), `NOAA` (US-only), or a `Custom endpoint` that returns a simple JSON payload with `events`/`extremes`/`data` arrays (each item with `time`, optional `type` and optional `height`).
+
+- **Q:** I don't see tides — what now?
+- **A:** Verify `tides_enabled` is turned on in Settings and that `tide_provider` and any required API key or custom endpoint are set. Use the included `tests/tide_test.php` CLI helper or enable the admin test utility (if added) to verify connectivity. Responses are cached using the plugin cache; clear cache or wait TTL if you just changed settings.
+
+
 ## Icon Themes
 The plugin includes multiple icon themes selectable in Settings:
 1. **Classic** — Traditional, timeless design
@@ -202,7 +218,10 @@ Translations are available on [translate.wordpress.org](https://translate.wordpr
 
 ## Version History
 
-### 1.9.5 (Current)
+### v1.9.7 (Current)
+ - **Experimental:** Tide support added for testing — opt-in feature. Adds support for WorldTides (API key), NOAA (US-only), and a configurable custom endpoint. Shortcode support via `extras="tides"` or `tides="1"`. Admin visibility can be toggled while rolling out to selected users. Responses are cached; configure TTL in Settings.
+
+### 1.9.5
  - **New:** Moon phase support — `phase` and `illumination` available in renderer, shortcodes, block and widget.
 
 ### 1.9.4
@@ -273,6 +292,47 @@ Translations are available on [translate.wordpress.org](https://translate.wordpr
   - OpenWeatherMap (if enabled) — requires API key (stored server-side)
   - WeatherAPI.com (if enabled) — requires API key (stored server-side)
   - OpenStreetMap (maps only) — client-side tile requests
+
+  ### Tide data (tidvatten)
+
+  - **WorldTides** — Global tide API (https://www.worldtides.info). Often requires an API key and may have paid tiers for higher limits. If you choose WorldTides, add your API key in the plugin Settings (Spelhubben Weather → Tide provider).
+  - **NOAA CO-OPS** — Free tide/station data for US coastal locations only. NOAA requires station lookup (not implemented automatically); use a custom endpoint or NOAA station ID when relevant.
+  - **Custom endpoint** — If you operate a tide API or proxy (e.g., internal service) you can enter a custom endpoint URL in Settings. The plugin will call the endpoint with `lat` and `lon` query params, and will accept common JSON shapes including `extremes`, `events` or `data` arrays with `time`/`date`, `type` and optional `height` fields. If your endpoint requires a key, set it in the `API key` field in Settings.
+
+  How to enable tides:
+
+  - Go to Settings → Spelhubben Weather.
+  - Under "Tides (tidvatten)" enable tide data and choose a provider (`WorldTides`, `NOAA` or `Custom`).
+  - Add API key if required (WorldTides) and/or a `Custom endpoint` URL.
+  - In shortcodes add `extras="tides"` or `tides="1"` to show tide events. In the Gutenberg block, enable "Show tides" in the block inspector.
+
+  Caching and limits:
+
+  - Tide responses are cached (TTL configurable in Settings). If using a paid provider, be mindful of request limits and set a suitable cache TTL to avoid unnecessary API calls.
+  - For inland locations or where tide providers are unavailable the plugin will gracefully skip tide output.
+
+### WorldTides example
+
+Example cURL request to WorldTides (replace YOUR_KEY):
+
+```bash
+curl "https://www.worldtides.info/api/v3?extremes=true&lat=57.7000&lon=11.9667&key=YOUR_KEY"
+```
+
+Typical minimal response shape (JSON):
+
+```json
+{
+  "status": 200,
+  "timezone": "Europe/Stockholm",
+  "extremes": [
+    {"dt": 1670000000, "date": "2026-01-01T03:12:00Z", "type": "High", "height": 1.23},
+    {"dt": 1670020000, "date": "2026-01-01T09:20:00Z", "type": "Low",  "height": 0.12}
+  ]
+}
+```
+
+If you use WorldTides, add your API key in Settings → Spelhubben Weather → Tide provider, and choose `WorldTides` as the provider.
 
 For full transparency, see `CONSENT_API_AUDIT.md` in the repository root.
 

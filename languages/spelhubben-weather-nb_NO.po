@@ -2,8 +2,8 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: Spelhubben Weather\n"
-"POT-Creation-Date: 2026-01-13 18:18+0100\n"
-"PO-Revision-Date: 2026-01-13 18:23+0100\n"
+"POT-Creation-Date: 2026-01-30 21:53+0100\n"
+"PO-Revision-Date: 2026-01-30 21:56+0100\n"
 "Last-Translator: \n"
 "Language-Team: \n"
 "Language: no\n"
@@ -25,12 +25,12 @@ msgstr ""
 msgid "Copied!"
 msgstr "Kopiert!"
 
-#: admin/admin.php:65 admin/page-shortcodes.php:89
-#: admin/page-shortcodes.php:101 admin/page-shortcodes.php:129
+#: admin/admin.php:65 admin/page-shortcodes.php:101
+#: admin/page-shortcodes.php:113 admin/page-shortcodes.php:141
 msgid "Copy"
 msgstr "Kopier"
 
-#: admin/admin.php:66 admin/page-shortcodes.php:135
+#: admin/admin.php:66 admin/page-shortcodes.php:147
 msgid "Expand"
 msgstr "Utvid"
 
@@ -84,7 +84,7 @@ msgstr "Attribusjon ikke funnet på nylige sider"
 msgid "Check failed"
 msgstr "Sjekken mislyktes"
 
-#: admin/admin.php:110 admin/admin.php:137 admin/admin.php:351
+#: admin/admin.php:110 admin/admin.php:137 admin/admin.php:356
 msgid "Insufficient permissions."
 msgstr "Utilstrekkelige tillatelser."
 
@@ -146,7 +146,7 @@ msgstr "Standardinnstillinger"
 msgid "Default place"
 msgstr "Standardsted"
 
-#: admin/admin.php:329
+#: admin/admin.php:329 admin/admin.php:556
 msgid "Cache TTL (minutes)"
 msgstr "Cache-TTL (minutter)"
 
@@ -178,170 +178,241 @@ msgstr "Dataleverandører"
 msgid "Yr contact/UA"
 msgstr "Yr kontakt/UA"
 
-#: admin/admin.php:339 admin/page-shortcodes.php:220
-#: blocks/spelhubben-weather/index.js:124
+#: admin/admin.php:338
+msgid "Tides (tidvatten)"
+msgstr "Tidevann"
+
+#: admin/admin.php:341 admin/page-shortcodes.php:247
+#: blocks/spelhubben-weather/index.js:131
 msgid "Units & format"
 msgstr "Enheter og format"
 
-#: admin/admin.php:340 blocks/spelhubben-weather/index.js:126
+#: admin/admin.php:342 blocks/spelhubben-weather/index.js:133
 msgid "Preset"
 msgstr "Forhåndsinnstilt"
 
-#: admin/admin.php:341
+#: admin/admin.php:343
 msgid "Overrides (optional)"
 msgstr "Overstyringer (valgfritt)"
 
-#: admin/admin.php:342
+#: admin/admin.php:344
 msgid "Date format (PHP)"
 msgstr "Datoformat (PHP)"
 
-#: admin/admin.php:372 blocks/spelhubben-weather/index.js:50
+#: admin/admin.php:345
+msgid "Tide provider"
+msgstr "Tidevannsleverandør"
+
+#: admin/admin.php:347
+msgid "Tide admin UI"
+msgstr "Tide admin brukergrensesnitt"
+
+#: admin/admin.php:377 blocks/spelhubben-weather/index.js:50
 msgid "e.g. Stockholm"
 msgstr "f.eks. Oslo"
 
-#: admin/admin.php:386
+#: admin/admin.php:391
 msgid "How long weather data is cached (transients)."
 msgstr "Hvor lenge værdata lagres i mellomlagring (transienter)."
 
-#: admin/admin.php:393 blocks/spelhubben-weather/index.js:76
+#: admin/admin.php:398 blocks/spelhubben-weather/index.js:76
 #: includes/Widget/class-widget.php:170
 msgid "Temperature"
 msgstr "Temperatur"
 
-#: admin/admin.php:394 blocks/spelhubben-weather/index.js:77
+#: admin/admin.php:399 blocks/spelhubben-weather/index.js:77
 #: includes/Widget/class-widget.php:171
 msgid "Wind speed"
 msgstr "Vindhastighet"
 
-#: admin/admin.php:395 blocks/spelhubben-weather/index.js:78
+#: admin/admin.php:400 blocks/spelhubben-weather/index.js:78
 #: includes/Widget/class-widget.php:172
 msgid "Wind direction"
 msgstr "Vindretning"
 
-#: admin/admin.php:396 blocks/spelhubben-weather/index.js:79
+#: admin/admin.php:401 blocks/spelhubben-weather/index.js:79
 #: includes/Widget/class-widget.php:173
 msgid "Weather icon"
 msgstr "Værikon"
 
-#: admin/admin.php:411
+#: admin/admin.php:416
 msgid "Choose which fields to show by default."
 msgstr "Velg hvilke felt som skal vises som standard."
 
-#: admin/admin.php:417
+#: admin/admin.php:422
 msgctxt "layout label"
 msgid "Inline"
 msgstr "Innebygd"
 
-#: admin/admin.php:418
+#: admin/admin.php:423
 msgctxt "layout label"
 msgid "Compact"
 msgstr "Kompakt"
 
-#: admin/admin.php:419
+#: admin/admin.php:424
 msgctxt "layout label"
 msgid "Card"
 msgstr "Kort"
 
-#: admin/admin.php:420
+#: admin/admin.php:425
 msgctxt "layout label"
 msgid "Detailed"
 msgstr "Detaljert"
 
-#: admin/admin.php:439
+#: admin/admin.php:444
 msgid "Enable map as default."
 msgstr "Aktiver kart som standard."
 
-#: admin/admin.php:454
+#: admin/admin.php:459
 msgid "Classic"
 msgstr "Klassisk"
 
-#: admin/admin.php:455
+#: admin/admin.php:460
 msgid "Modern Flat"
 msgstr "Moderne leilighet"
 
-#: admin/admin.php:456
+#: admin/admin.php:461
 msgid "Modern Gradient"
 msgstr "Moderne gradient"
 
-#: admin/admin.php:457
+#: admin/admin.php:462
 msgid "Modern 2026"
 msgstr "Moderne 2026"
 
-#: admin/admin.php:458
+#: admin/admin.php:463
 msgid "Modern 3D"
 msgstr "Moderne 3D"
 
-#: admin/admin.php:470
+#: admin/admin.php:475
 msgid "Choose your preferred weather icon theme."
 msgstr "Velg ditt foretrukne værikontema."
 
-#: admin/admin.php:478
+#: admin/admin.php:483
 msgid "Open-Meteo"
 msgstr "Open-Meteo"
 
-#: admin/admin.php:483
+#: admin/admin.php:488
 msgid "SMHI"
 msgstr "SMHI"
 
-#: admin/admin.php:488
+#: admin/admin.php:493
 msgid "Yr (MET Norway)"
 msgstr "Yr (MET Norway)"
 
-#: admin/admin.php:493
+#: admin/admin.php:498
 msgid "MET Norway Nowcast"
 msgstr "MET Norway Nowcast"
 
-#: admin/admin.php:499
+#: admin/admin.php:504
 msgid "FMI (Finland, Open Data)"
 msgstr "FMI (Finland, Open Data)"
 
-#: admin/admin.php:504
+#: admin/admin.php:509
 msgid "Open-Weathermap"
 msgstr "Open-Weathermap"
 
-#: admin/admin.php:509
+#: admin/admin.php:514
 msgid "Weatherapi.com"
 msgstr "Weatherapi.com"
 
-#: admin/admin.php:519
+#: admin/admin.php:524
 msgid "Recommended by MET Norway: include an email or URL in your User-Agent."
 msgstr ""
 "Anbefalt av MET Norge: inkluder en e-postadresse eller URL i brukeragenten "
 "din."
 
-#: admin/admin.php:525 blocks/spelhubben-weather/index.js:17
+#: admin/admin.php:533
+msgid "Enable tide data (experimental)."
+msgstr "Aktiver tidevannsdata (eksperimentelt)."
+
+#: admin/admin.php:535
+msgid ""
+"Tide data requires a provider or a custom API endpoint. Some providers may "
+"require an API key and/or paid plan."
+msgstr ""
+"Tidevannsdata krever en leverandør eller et tilpasset API-endepunkt. Noen "
+"leverandører kan kreve en API-nøkkel og/eller et betalt abonnement."
+
+#: admin/admin.php:544
+msgid "WorldTides (global, often paid)"
+msgstr "WorldTides (global, ofte betalt)"
+
+#: admin/admin.php:545
+msgid "NOAA Tides (US only)"
+msgstr "NOAA Tides (kun USA)"
+
+#: admin/admin.php:546 admin/admin.php:553
+msgid "Custom endpoint"
+msgstr "Tilpasset endepunkt"
+
+#: admin/admin.php:548
+msgid "Choose a tide provider or use a custom API endpoint."
+msgstr "Velg en tidevannsleverandør eller bruk et tilpasset API-endepunkt."
+
+#: admin/admin.php:550
+msgid "API key (if required)"
+msgstr "API-nøkkel (hvis nødvendig)"
+
+#: admin/admin.php:559
+#, php-format
+msgid ""
+"Need an API key? See <a href=\"%s\" target=\"_blank\" rel=\"noopener "
+"noreferrer\">WorldTides</a> (commercial) or NOAA docs for US stations: <a "
+"href=\"%s\" target=\"_blank\" rel=\"noopener noreferrer\">NOAA Tides & "
+"Currents API</a>."
+msgstr ""
+"Trenger du en API-nøkkel? Se <a href=\"%s\" target=\"_blank\" rel=\"noopener "
+"noreferrer\">WorldTides</a> (kommersiell) eller NOAA-dokumentasjon for "
+"amerikanske stasjoner: <a href=\"%s\" target=\"_blank\" rel=\"noopener "
+"noreferrer\">NOAA Tides & Currents API</a>."
+
+#: admin/admin.php:570
+msgid "Show tide examples & notices in admin (for testing)"
+msgstr ""
+"Vis tidevannseksempler og varsler i administrasjonspanelet (for testing)"
+
+#: admin/admin.php:572
+msgid ""
+"Toggle visibility of experimental tide UI elements in the admin pages. "
+"Useful to hide notices/examples while testing with selected users."
+msgstr ""
+"Aktiver/deaktiver synligheten av eksperimentelle Tide UI-elementer på "
+"administratorsidene. Nyttig for å skjule varsler/eksempler under testing med "
+"utvalgte brukere."
+
+#: admin/admin.php:578 blocks/spelhubben-weather/index.js:17
 #: includes/integrations/vc.php:53
 msgid "Metric (°C, m/s, mm)"
 msgstr "Metrisk (°C, m/s, mm)"
 
-#: admin/admin.php:526 blocks/spelhubben-weather/index.js:18
+#: admin/admin.php:579 blocks/spelhubben-weather/index.js:18
 #: includes/integrations/vc.php:54
 msgid "Metric (°C, km/h, mm)"
 msgstr "Metrisk (°C, km/t, mm)"
 
-#: admin/admin.php:527 blocks/spelhubben-weather/index.js:19
+#: admin/admin.php:580 blocks/spelhubben-weather/index.js:19
 #: includes/integrations/vc.php:55
 msgid "Metric (°C, knt, mm)"
 msgstr "Metrisk (°C, knt, mm)"
 
-#: admin/admin.php:528 blocks/spelhubben-weather/index.js:20
+#: admin/admin.php:581 blocks/spelhubben-weather/index.js:20
 #: includes/integrations/vc.php:56
 msgid "Imperial (°F, mph, in)"
 msgstr "Imperial (°F, mph, in)"
 
-#: admin/admin.php:546
+#: admin/admin.php:599
 msgid "Temp unit"
 msgstr "Temp-enhet"
 
-#: admin/admin.php:551
+#: admin/admin.php:604
 msgid "Wind unit"
 msgstr "Vindenhet"
 
-#: admin/admin.php:556
+#: admin/admin.php:609
 msgid "Precip unit"
 msgstr "Nedbørsenhet"
 
-#: admin/admin.php:567
+#: admin/admin.php:620
 msgid "Used for forecast day labels."
 msgstr "Brukes til etiketter for prognosedag."
 
@@ -718,8 +789,8 @@ msgstr ""
 msgid "Shortcode"
 msgstr "Kortkode"
 
-#: admin/page-settings.php:143 admin/page-shortcodes.php:219
-#: blocks/spelhubben-weather/index.js:150 includes/integrations/vc.php:79
+#: admin/page-settings.php:143 admin/page-shortcodes.php:246
+#: blocks/spelhubben-weather/index.js:157 includes/integrations/vc.php:79
 msgid "Forecast"
 msgstr "Prognose"
 
@@ -756,67 +827,71 @@ msgstr "Laster inn andre Spelhubben-pluginer …"
 msgid "Could not load plugin showcase."
 msgstr "Kunne ikke laste inn programtilleggsvisningen."
 
-#: admin/page-shortcodes.php:32
+#: admin/page-shortcodes.php:33
 msgid "Basic example"
 msgstr "Grunnleggende eksempel"
 
-#: admin/page-shortcodes.php:33
+#: admin/page-shortcodes.php:34
 msgid "Compact with map & animation"
 msgstr "Kompakt med kart og animasjon"
 
-#: admin/page-shortcodes.php:34
+#: admin/page-shortcodes.php:35
 msgid "Inline without map"
 msgstr "Innebygd uten kart"
 
-#: admin/page-shortcodes.php:35
+#: admin/page-shortcodes.php:36
 msgid "Detailed with daily forecast & km/h"
 msgstr "Detaljert med daglig værmelding og km/t"
 
-#: admin/page-shortcodes.php:36
+#: admin/page-shortcodes.php:37
 msgid "Only temperature + wind, imperial"
 msgstr "Kun temperatur + vind, imperial"
 
-#: admin/page-shortcodes.php:37
+#: admin/page-shortcodes.php:38
 msgid "Show temperature, wind speed & direction"
 msgstr "Vis temperatur, vindhastighet og -retning"
 
-#: admin/page-shortcodes.php:38
+#: admin/page-shortcodes.php:39
 msgid "Force dark theme (example)"
 msgstr "Tving mørkt tema (eksempel)"
 
-#: admin/page-shortcodes.php:39
+#: admin/page-shortcodes.php:40
 msgid "Show moon phase (example)"
 msgstr "Vis månefase (eksempel)"
 
-#: admin/page-shortcodes.php:40
+#: admin/page-shortcodes.php:41
 msgid "Show moon in daily forecast (example)"
 msgstr "Vis månen i daglig værmelding (eksempel)"
 
-#: admin/page-shortcodes.php:41
+#: admin/page-shortcodes.php:42
 msgid "Provider comparison mode"
 msgstr "Leverandørsammenligningsmodus"
 
-#: admin/page-shortcodes.php:42
+#: admin/page-shortcodes.php:43
 msgid "With weather alerts enabled"
 msgstr "Med værvarsler aktivert"
 
-#: admin/page-shortcodes.php:43
+#: admin/page-shortcodes.php:44
 msgid "Custom map height (400px)"
 msgstr "Tilpasset karthøyde (400 piksler)"
 
-#: admin/page-shortcodes.php:44
+#: admin/page-shortcodes.php:45
 msgid "Long forecast (10 days)"
 msgstr "Langtidsvarsel (10 dager)"
 
-#: admin/page-shortcodes.php:45
+#: admin/page-shortcodes.php:46
 msgid "Specific providers only (SMHI & Yr)"
 msgstr "Kun spesifikke leverandører (SMHI & Yr)"
 
-#: admin/page-shortcodes.php:49
+#: admin/page-shortcodes.php:50
+msgid "Tide events (experimental)"
+msgstr "Tidevannshendelser (eksperimentelle)"
+
+#: admin/page-shortcodes.php:54
 msgid "Spelhubben Weather – Shortcodes"
 msgstr "Spelhubben Vær – Kortkoder"
 
-#: admin/page-shortcodes.php:50
+#: admin/page-shortcodes.php:55
 msgid ""
 "Copy & paste ready-made snippets. Click “Copy” to put a shortcode on your "
 "clipboard."
@@ -824,217 +899,266 @@ msgstr ""
 "Kopier og lim inn ferdige utdrag. Klikk på «Kopier» for å legge inn en "
 "kortkode på utklippstavlen."
 
-#: admin/page-shortcodes.php:56 admin/page-shortcodes.php:261
+#: admin/page-shortcodes.php:60 admin/page-shortcodes.php:231
+msgid "Tide data (experimental)"
+msgstr "Tidevannsdata (eksperimentell)"
+
+#: admin/page-shortcodes.php:60
+msgid ""
+"Tide support is experimental. Enable and configure under Settings → "
+"Spelhubben Weather → Tide provider. Use extras=\"tides\" or tides=\"1\" in "
+"shortcodes to display tide events."
+msgstr ""
+"Støtte for tidevann er eksperimentell. Aktiver og konfigurer under "
+"Innstillinger → Spelhubben Vær → Tidevannsleverandør. Bruk extras=\"tides\" "
+"eller tides=\"1\" i kortkoder for å vise tidevannshendelser."
+
+#: admin/page-shortcodes.php:68 admin/page-shortcodes.php:288
 msgid "Back to Settings"
 msgstr "Tilbake til innstillinger"
 
-#: admin/page-shortcodes.php:61
+#: admin/page-shortcodes.php:73
 msgid "Search examples… e.g. inline, map, imperial"
 msgstr "Søkeeksempler… f.eks. innebygd, kart, imperial"
 
-#: admin/page-shortcodes.php:67
+#: admin/page-shortcodes.php:79
 msgid "Copy all (visible)"
 msgstr "Kopier alle (synlige)"
 
-#: admin/page-shortcodes.php:77
+#: admin/page-shortcodes.php:89
 msgid "Quick start – shortcodes"
 msgstr "Hurtigstart – kortkoder"
 
-#: admin/page-shortcodes.php:97 admin/page-shortcodes.php:99
+#: admin/page-shortcodes.php:109 admin/page-shortcodes.php:111
 msgid "Wind unit examples"
 msgstr "Eksempler på vindenheter"
 
-#: admin/page-shortcodes.php:121
+#: admin/page-shortcodes.php:133
 msgid "Preview"
 msgstr "Forhåndsvisning"
 
-#: admin/page-shortcodes.php:124
+#: admin/page-shortcodes.php:136
 msgid "Click a snippet to send it here. You can edit, copy or expand the box."
 msgstr ""
 "Klikk på et utdrag for å sende det hit. Du kan redigere, kopiere eller "
 "utvide boksen."
 
-#: admin/page-shortcodes.php:132 includes/i18n.php:47
+#: admin/page-shortcodes.php:144 includes/i18n.php:47
 msgid "Clear"
 msgstr "Fjerne"
 
-#: admin/page-shortcodes.php:139
+#: admin/page-shortcodes.php:151
 msgid "Shortcode preview"
 msgstr "Forhåndsvisning av kortkode"
 
-#: admin/page-shortcodes.php:143
+#: admin/page-shortcodes.php:155
 msgid "Quick Builder"
 msgstr "Hurtigbygger"
 
-#: admin/page-shortcodes.php:146
+#: admin/page-shortcodes.php:158
 msgid "Show fields:"
 msgstr "Vis felt:"
 
-#: admin/page-shortcodes.php:147
+#: admin/page-shortcodes.php:159
 msgid "Temp"
 msgstr "Temp"
 
-#: admin/page-shortcodes.php:148
+#: admin/page-shortcodes.php:160
 msgid "Wind"
 msgstr "Vind"
 
-#: admin/page-shortcodes.php:149
+#: admin/page-shortcodes.php:161
 msgid "Wind Dir"
 msgstr "Vindretning"
 
-#: admin/page-shortcodes.php:150
+#: admin/page-shortcodes.php:162
 msgid "Icon"
 msgstr "Ikon"
 
-#: admin/page-shortcodes.php:153 includes/Widget/class-widget.php:196
+#: admin/page-shortcodes.php:165 includes/Widget/class-widget.php:196
 msgid "Layout:"
 msgstr "Oppsett:"
 
-#: admin/page-shortcodes.php:162 includes/Widget/class-widget.php:213
+#: admin/page-shortcodes.php:174 includes/Widget/class-widget.php:213
 msgid "Theme:"
 msgstr "Tema:"
 
-#: admin/page-shortcodes.php:170
+#: admin/page-shortcodes.php:182
 msgid "Extras:"
 msgstr "Ekstra:"
 
-#: admin/page-shortcodes.php:171
+#: admin/page-shortcodes.php:183
 msgid "Map"
 msgstr "Kart"
 
-#: admin/page-shortcodes.php:172
+#: admin/page-shortcodes.php:184
 msgid "Animate"
 msgstr "Animer"
 
-#: admin/page-shortcodes.php:173
+#: admin/page-shortcodes.php:185
 msgid "Moon (meta)"
 msgstr "Månen (meta)"
 
-#: admin/page-shortcodes.php:174
+#: admin/page-shortcodes.php:186
 msgid "Moon (daily forecast)"
 msgstr "Månen (daglig værmelding)"
 
-#: admin/page-shortcodes.php:177
+#: admin/page-shortcodes.php:189
 msgid "Providers:"
 msgstr "Leverandører:"
 
-#: admin/page-shortcodes.php:186
+#: admin/page-shortcodes.php:198
 msgid "Wind unit (override):"
 msgstr "Vindenhet (overstyring):"
 
-#: admin/page-shortcodes.php:188 includes/Widget/class-widget.php:287
+#: admin/page-shortcodes.php:200 includes/Widget/class-widget.php:287
 msgid "(use site default)"
 msgstr "(bruk standardnettstedet)"
 
-#: admin/page-shortcodes.php:196
+#: admin/page-shortcodes.php:208
 msgid "Update Shortcode"
 msgstr "Oppdater kortkode"
 
-#: admin/page-shortcodes.php:202
+#: admin/page-shortcodes.php:214
 msgid "Live preview"
 msgstr "Direkte forhåndsvisning"
 
-#: admin/page-shortcodes.php:206
+#: admin/page-shortcodes.php:218
 msgid "Shortcode live preview"
 msgstr "Forhåndsvisning av kortkode i sanntid"
 
-#: admin/page-shortcodes.php:213
+#: admin/page-shortcodes.php:225
 msgid "Attributes – overview"
 msgstr "Attributter – oversikt"
 
-#: admin/page-shortcodes.php:217 blocks/spelhubben-weather/index.js:45
+#: admin/page-shortcodes.php:232
+msgid ""
+"Enable tide data in Settings → Spelhubben Weather. Supported providers: "
+"WorldTides (global), NOAA (US only) or a custom endpoint."
+msgstr ""
+"Aktiver tidevannsdata i Innstillinger → Spelhubben Vær. Støttede "
+"leverandører: WorldTides (global), NOAA (kun USA) eller et tilpasset "
+"endepunkt."
+
+#: admin/page-shortcodes.php:233
+msgid "Shortcode examples:"
+msgstr "Eksempler på kortkoder:"
+
+#: admin/page-shortcodes.php:235
+msgid "Show tide events for a place."
+msgstr "Vis tidevannshendelser for et sted."
+
+#: admin/page-shortcodes.php:236
+msgid "Show tide events using coordinates."
+msgstr "Vis tidevannshendelser ved hjelp av koordinater."
+
+#: admin/page-shortcodes.php:237
+msgid "Combine tides with forecast and moon extras."
+msgstr "Kombiner tidevann med prognoser og månetillegg."
+
+#: admin/page-shortcodes.php:239
+msgid ""
+"Tide responses are cached; if nothing appears verify provider settings and "
+"API key. NOAA is US-only; prefer WorldTides or a custom endpoint for non-US "
+"locations."
+msgstr ""
+"Tidevannsresponser lagres i mellomlagre. Hvis ingenting vises, bekreft "
+"leverandørinnstillingene og API-nøkkelen. NOAA er kun for USA. Foretrekk "
+"WorldTides eller et tilpasset endepunkt for steder utenfor USA."
+
+#: admin/page-shortcodes.php:244 blocks/spelhubben-weather/index.js:45
 msgid "Location"
 msgstr "Lokasjon"
 
-#: admin/page-shortcodes.php:218 blocks/spelhubben-weather/index.js:66
+#: admin/page-shortcodes.php:245 blocks/spelhubben-weather/index.js:66
 msgid "Display"
 msgstr "Fremvisning"
 
-#: admin/page-shortcodes.php:227
+#: admin/page-shortcodes.php:254
 msgid "Attribute"
 msgstr "Attributt"
 
-#: admin/page-shortcodes.php:228
+#: admin/page-shortcodes.php:255
 msgid "Description"
 msgstr "Beskrivelse"
 
-#: admin/page-shortcodes.php:229
+#: admin/page-shortcodes.php:256
 msgid "Example"
 msgstr "Eksempel"
 
-#: admin/page-shortcodes.php:233
+#: admin/page-shortcodes.php:260
 msgid "Place name to geocode (used if lat/lon are missing)."
 msgstr ""
 "Stedsnavn som skal geokodes (brukes hvis breddegrad/lengdegrad mangler)."
 
-#: admin/page-shortcodes.php:234
+#: admin/page-shortcodes.php:261
 msgid "Coordinates take precedence over place."
 msgstr "Koordinater prioriteres fremfor sted."
 
-#: admin/page-shortcodes.php:236
+#: admin/page-shortcodes.php:263
 msgid "Fields to display: temp,wind,wind_dir,icon"
 msgstr "Felt som skal vises: temp, wind, wind_dir, icon"
 
-#: admin/page-shortcodes.php:237
+#: admin/page-shortcodes.php:264
 msgid "inline | compact | card | detailed"
 msgstr "innebygd | kompakt | kort | detaljert"
 
-#: admin/page-shortcodes.php:238
+#: admin/page-shortcodes.php:265
 msgid "1/0 to show/hide map"
 msgstr "1/0 for å vise/skjule kart"
 
-#: admin/page-shortcodes.php:239
+#: admin/page-shortcodes.php:266
 msgid "Map height in px (min 120)."
 msgstr "Karthøyde i piksler (min. 120)."
 
-#: admin/page-shortcodes.php:240
+#: admin/page-shortcodes.php:267
 msgid "openmeteo,smhi,yr,metno_nowcast (comma-separated)"
 msgstr "openmeteo,smhi,yr,metno_nowcast (kommaseparert)"
 
-#: admin/page-shortcodes.php:241
+#: admin/page-shortcodes.php:268
 msgid "1/0 – subtle animations"
 msgstr "1/0 – subtile animasjoner"
 
-#: admin/page-shortcodes.php:243
+#: admin/page-shortcodes.php:270
 msgid "none | daily"
 msgstr "ingen | daglig"
 
-#: admin/page-shortcodes.php:244
+#: admin/page-shortcodes.php:271
 msgid "Number of days in the forecast (3–10)"
 msgstr "Antall dager i værmeldingen (3–10)"
 
-#: admin/page-shortcodes.php:246
+#: admin/page-shortcodes.php:273
 msgid "Preset: metric | metric_kmh | imperial"
 msgstr "Forhåndsinnstilling: metrisk | metrisk_kmt | britisk"
 
-#: admin/page-shortcodes.php:247
+#: admin/page-shortcodes.php:274
 msgid "Override temperature unit"
 msgstr "Overstyr temperaturenhet"
 
-#: admin/page-shortcodes.php:248
+#: admin/page-shortcodes.php:275
 msgid "Override wind unit"
 msgstr "Overstyr vindenheten"
 
-#: admin/page-shortcodes.php:249
+#: admin/page-shortcodes.php:276
 msgid "Override precipitation unit"
 msgstr "Overstyr nedbørsenhet"
 
-#: admin/page-shortcodes.php:250
+#: admin/page-shortcodes.php:277
 msgid "Forecast date label (PHP date)"
 msgstr "Prognose-datoetikett (PHP-dato)"
 
-#: admin/page-shortcodes.php:251
+#: admin/page-shortcodes.php:278
 msgid ""
 "auto | light | dark — force display theme (auto uses site/browser preference)"
 msgstr ""
 "auto | lys | mørk — tving frem visningstema (automatisk bruker nettsted-/"
 "nettleserpreferanser)"
 
-#: admin/page-shortcodes.php:252
+#: admin/page-shortcodes.php:279
 msgid "Comma-separated extra features. Supported: moon, moon_daily"
 msgstr "Kommaseparerte ekstrafunksjoner. Støttet: moon, moon_daily"
 
-#: admin/page-shortcodes.php:253
+#: admin/page-shortcodes.php:280
 msgid ""
 "Legacy boolean to show moon in meta area (1/0). Use extras=\"moon\" instead."
 msgstr ""
@@ -1102,39 +1226,51 @@ msgstr "Animasjoner"
 msgid "Show weather alerts"
 msgstr "Vis værvarsler"
 
-#: blocks/spelhubben-weather/index.js:132 includes/integrations/vc.php:61
+#: blocks/spelhubben-weather/index.js:123
+msgid "Show tides (tidvatten)"
+msgstr "Vis tidevann"
+
+#: blocks/spelhubben-weather/index.js:126
+msgid ""
+"Requires tide support enabled in plugin settings. Provider and API key are "
+"configured under Settings → Spelhubben Weather."
+msgstr ""
+"Krever at tidevannsstøtte er aktivert i plugin-innstillingene. Leverandør og "
+"API-nøkkel konfigureres under Innstillinger → Spelhubben Vær."
+
+#: blocks/spelhubben-weather/index.js:139 includes/integrations/vc.php:61
 msgid "Wind unit override"
 msgstr "Overstyring av vindenhet"
 
-#: blocks/spelhubben-weather/index.js:135 includes/integrations/vc.php:64
+#: blocks/spelhubben-weather/index.js:142 includes/integrations/vc.php:64
 msgid "(use preset)"
 msgstr "(bruk forhåndsinnstilling)"
 
-#: blocks/spelhubben-weather/index.js:141
+#: blocks/spelhubben-weather/index.js:148
 msgid "Date format (PHP date)"
 msgstr "Datoformat (PHP-dato)"
 
-#: blocks/spelhubben-weather/index.js:142
+#: blocks/spelhubben-weather/index.js:149
 msgid "Used for forecast labels (default: D j/n)"
 msgstr "Brukes for prognoseetiketter (standard: D j/n)"
 
-#: blocks/spelhubben-weather/index.js:152
+#: blocks/spelhubben-weather/index.js:159
 msgid "Type"
 msgstr "Type"
 
-#: blocks/spelhubben-weather/index.js:155 includes/Widget/class-widget.php:253
+#: blocks/spelhubben-weather/index.js:162 includes/Widget/class-widget.php:253
 msgid "None"
 msgstr "Ingen"
 
-#: blocks/spelhubben-weather/index.js:156 includes/Widget/class-widget.php:254
+#: blocks/spelhubben-weather/index.js:163 includes/Widget/class-widget.php:254
 msgid "Daily"
 msgstr "Daglig"
 
-#: blocks/spelhubben-weather/index.js:161
+#: blocks/spelhubben-weather/index.js:168
 msgid "Days"
 msgstr "Dager"
 
-#: blocks/spelhubben-weather/index.js:174
+#: blocks/spelhubben-weather/index.js:181
 msgid ""
 "Spelhubben Weather preview (ServerSideRender unavailable). Save/update to "
 "view."
@@ -1228,78 +1364,82 @@ msgstr "Detaljert prognose"
 msgid "Detailed layout with 7-day daily forecast."
 msgstr "Detaljert oppsett med 7-dagers daglig værmelding."
 
-#: includes/class-renderer.php:117
+#: includes/class-renderer.php:118
 #, php-format
 msgid "Moon: %1$s (%2$s%%)"
 msgstr "Månen: %1$s (%2$s%%)"
 
-#: includes/class-renderer.php:120 includes/class-renderer.php:229
+#: includes/class-renderer.php:121 includes/class-renderer.php:239
 msgid "Moon data unavailable"
 msgstr "Månedata er ikke tilgjengelige"
 
 #. translators: 1: wind value, 2: wind unit (e.g. 5, km/h)
-#: includes/class-renderer.php:200
+#: includes/class-renderer.php:210
 #, php-format
 msgid "Wind %1$s %2$s"
 msgstr "Vind %1$s %2$s"
 
 #. translators: 1: wind value, 2: wind unit (e.g. 5, km/h)
-#: includes/class-renderer.php:237 includes/class-renderer.php:290
+#: includes/class-renderer.php:247 includes/class-renderer.php:300
 #, php-format
 msgid "Wind: %1$s %2$s"
 msgstr "Vind: %1$s %2$s"
 
 #. translators: 1: precipitation value, 2: precipitation unit (e.g. 1.2, mm)
-#: includes/class-renderer.php:258
+#: includes/class-renderer.php:268
 #, php-format
 msgid "Precipitation: %1$s %2$s"
 msgstr "Nedbør: %1$s %2$s"
 
 #. translators: %s: cloud cover percent (0–100)
-#: includes/class-renderer.php:265
+#: includes/class-renderer.php:275
 #, php-format
 msgid "Cloud cover: %s%%"
 msgstr "Skydekke: %s%%"
 
-#: includes/class-renderer.php:316
+#: includes/class-renderer.php:326
 msgctxt "aria label"
 msgid "Map data attribution"
 msgstr "Kartdataattribusjon"
 
-#: includes/class-renderer.php:321
+#: includes/class-renderer.php:331
 msgid "View on OpenStreetMap"
 msgstr "Vis på OpenStreetMap"
 
-#: includes/class-renderer.php:345
+#: includes/class-renderer.php:338
+msgid "Tides"
+msgstr "Tidevann"
+
+#: includes/class-renderer.php:369
 #, php-format
 msgid "Moon: %1$s — %2$s%%"
 msgstr "Månen: %1$s — %2$s%%"
 
-#: includes/class-renderer.php:393
+#: includes/class-renderer.php:417
 msgid "Provider Comparison"
 msgstr "Leverandørsammenligning"
 
-#: includes/class-renderer.php:393
+#: includes/class-renderer.php:417
 msgid "sources"
 msgstr "kilder"
 
-#: includes/class-renderer.php:423
+#: includes/class-renderer.php:447
 msgid "Wind:"
 msgstr "Vind:"
 
-#: includes/class-renderer.php:431
+#: includes/class-renderer.php:455
 msgid "Precip:"
 msgstr "Nedbør:"
 
-#: includes/class-renderer.php:434
+#: includes/class-renderer.php:458
 msgid "Cloud:"
 msgstr "Sky:"
 
-#: includes/class-renderer.php:448
+#: includes/class-renderer.php:472
 msgid "Note:"
 msgstr "Note:"
 
-#: includes/class-renderer.php:449
+#: includes/class-renderer.php:473
 msgid ""
 "Each provider may report different values due to different measuring "
 "stations or calculation methods. Use this view to compare accuracy and "
@@ -1313,7 +1453,7 @@ msgstr ""
 msgid "Could not fetch weather data from the selected providers."
 msgstr "Kunne ikke hente værdata fra de valgte leverandørene."
 
-#: includes/class-sv-vader.php:198
+#: includes/class-sv-vader.php:232
 msgid "Could not find the place."
 msgstr "Kunne ikke finne stedet."
 

@@ -118,6 +118,13 @@
               checked: !! attributes.showAlerts,
               onChange: ( v ) => setAttributes( { showAlerts: !! v } ),
             } )
+            ,
+            el( ToggleControl, {
+              label: __( 'Show tides (tidvatten)', 'spelhubben-weather' ),
+              checked: !! attributes.tides,
+              onChange: ( v ) => setAttributes( { tides: !! v } ),
+              help: __( 'Requires tide support enabled in plugin settings. Provider and API key are configured under Settings → Spelhubben Weather.', 'spelhubben-weather' ),
+            } )
           ),
           el(
             PanelBody,

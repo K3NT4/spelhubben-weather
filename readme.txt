@@ -4,7 +4,7 @@ Tags: weather, forecast, widget, shortcode, blocks
 Requires at least: 6.8
 Tested up to: 6.9
 Requires PHP: 7.4
-Stable tag: 1.9.5
+Stable tag: 1.9.7
 Donate link: https://www.paypal.com/donate/?hosted_button_id=CV74CEXY5XEAU
 
 License: GPLv3 or later
@@ -80,6 +80,16 @@ No. Open-Meteo, SMHI, and FMI do not require keys. For Yr/MET Norway it’s reco
 All three render the same UI. Use the **block** in the block editor, the **shortcode** in classic content areas, and the **widget** in sidebars (Appearance → Widgets). Each lets you override global defaults.
 
 = How do place and coordinates work? =
+
+= Tide (experimental) =
+
+If you're testing tide support in version 1.9.7:
+
+- **Enabling:** Turn on `Tides` in Settings → Spelhubben Weather and select a provider (WorldTides, NOAA or Custom endpoint). WorldTides typically requires an API key.
+- **Shortcode:** Use `extras="tides"` or `tides="1"` to show tide events, e.g. `[spelhubben_weather place="Gothenburg" extras="tides"]`.
+- **Providers:** WorldTides (global, commercial), NOAA Tides & Currents (US only), or supply a custom endpoint that returns JSON with `events`/`extremes`/`data` arrays (items should include `time`, and optionally `type` and `height`).
+- **Troubleshooting:** Use `tests/tide_test.php` to validate provider responses and caching. Ensure provider settings and API key are correct; tide results are cached according to the configured TTL.
+
 If `lat` and `lon` are provided they take precedence. Otherwise the plugin geocodes the `place` string (e.g. `place="Umeå"`). Set a global default place in settings.
 
 = What fields can I show/hide? =
@@ -202,6 +212,9 @@ languages/
 6. Performance page: cache statistics, API usage and "Clear cache" action.
 
 == Changelog ==
+- = 1.9.7 =
+- **Experimental:** Tide support added for testing — opt-in feature. Adds support for WorldTides (API key), NOAA (US-only), and a configurable custom endpoint. Shortcode support via `extras="tides"` or `tides="1"`. Admin visibility can be toggled while rolling out to selected users. Responses are cached; configure TTL in Settings.
+
 - = 1.9.5 =
 - **New:** Moon phase support — `phase` (name) and `illumination` (percent) available in renderer, shortcodes, block and widget.
 
