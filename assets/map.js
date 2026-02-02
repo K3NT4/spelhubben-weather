@@ -31,13 +31,23 @@
   // --- Initialize maps WITHOUT a marker ---
   function initMap(el){
     if (el.dataset.inited) return;
+
+    // Retry guard (prevents infinite console spam if Leaflet never loads)
+    const tries = parseInt(el.dataset.svvLeafletTries || '0', 10);
+    if (tries > 20) { // ~10s total with 500ms interval
+      console.error('Leaflet failed to load after multiple retries. Giving up for element:', el);
+      el.dataset.svvLeafletFailed = '1';
+      el.dataset.inited = '1'; // lock
+      return;
+    }
+
     el.dataset.inited = '1';
 
     // Check if Leaflet is loaded
     if (typeof L === 'undefined' || !L.map) {
       console.warn('Leaflet not loaded yet, retrying...', el);
-      // Try again in a moment
       setTimeout(() => {
+        el.dataset.svvLeafletTries = String(tries + 1);
         delete el.dataset.inited;
         initMap(el);
       }, 500);
@@ -69,7 +79,6 @@
       map.setView([lat, lon], 12);
       L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', { maxZoom:19 }).addTo(map);
 
-      // NOTE: No L.marker here — the pin is never placed.
       setTimeout(()=>map.invalidateSize(), 200);
     } catch (e) {
       console.error('Error initializing map:', e);
@@ -82,7 +91,6 @@
     const maps = Array.from(document.querySelectorAll('.svv-map'));
     if (!maps.length) return;
 
-    // If IntersectionObserver supported, observe and init when visible
     if ('IntersectionObserver' in window) {
       const io = new IntersectionObserver(function(entries){
         entries.forEach(function(entry){
@@ -94,14 +102,12 @@
       }, { root: null, rootMargin: '200px', threshold: 0.01 });
 
       maps.forEach(function(m){
-        // If already inited, skip
         if (m.dataset.inited) return;
         io.observe(m);
       });
       return;
     }
 
-    // Fallback: initialize immediately (keeps previous behavior)
     maps.forEach(initMap);
   }
 
@@ -115,7 +121,6 @@
   const attachRO = debounce(function(){
     if (!('ResizeObserver' in window)) return;
 
-    // Support both old (.sv-vader) and new (.spelhubben-weather) container classes
     document.querySelectorAll('.sv-vader[data-svv-ro="1"], .spelhubben-weather[data-svv-ro="1"]').forEach(function(card){
       if (card._svvObserved) return;
       card._svvObserved = true;
@@ -135,8 +140,7 @@
       applyScale();
       const ro = new ResizeObserver(debounce(applyScale, 60));
       ro.observe(card);
-      
-      // Store observer reference for cleanup
+
       card._svvResizeObserver = ro;
     });
   }, 50);
@@ -145,13 +149,11 @@
     document.addEventListener('DOMContentLoaded', attachRO);
   } else { attachRO(); }
 
-  // Single persistent MutationObserver instead of creating new ones
   const mutationObserver = new MutationObserver(function(mutations){
-    // Cleanup removed cards
     mutations.forEach(function(m){
       if (m.removedNodes.length) {
         m.removedNodes.forEach(function(node){
-          if (node.nodeType === 1) { // Element node
+          if (node.nodeType === 1) {
             const cards = node.querySelectorAll ? node.querySelectorAll('.sv-vader[data-svv-ro="1"], .spelhubben-weather[data-svv-ro="1"]') : [];
             cards.forEach(function(card){
               if (card._svvResizeObserver) {
@@ -170,6 +172,6 @@
     });
     attachRO();
   });
-  
+
   mutationObserver.observe(document.documentElement, { childList:true, subtree: true });
 })();
