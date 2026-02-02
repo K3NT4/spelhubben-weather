@@ -4,7 +4,7 @@ Tags: weather, forecast, widget, shortcode, blocks
 Requires at least: 6.8
 Tested up to: 6.9
 Requires PHP: 7.4
-Stable tag: 1.9.7
+Stable tag: 1.9.8
 Donate link: https://www.paypal.com/donate/?hosted_button_id=CV74CEXY5XEAU
 
 License: GPLv3 or later
@@ -91,7 +91,7 @@ If you're testing tide support in version 1.9.7:
 - **Troubleshooting:** Use `tests/tide_test.php` to validate provider responses and caching. Ensure provider settings and API key are correct; tide results are cached according to the configured TTL.
 
 If `lat` and `lon` are provided they take precedence. Otherwise the plugin geocodes the `place` string (e.g. `place="Umeå"`). Set a global default place in settings.
-
+rontend assets are registered
 = What fields can I show/hide? =
 Use `show="temp,wind,icon"` (comma separated). Defaults are set in settings. Add `wind_dir` to show wind direction arrow and label.
 
@@ -212,6 +212,13 @@ languages/
 6. Performance page: cache statistics, API usage and "Clear cache" action.
 
 == Changelog ==
+- = 1.9.8 =
+- **Fixed:** Fixed an issue where the Leaflet map could fail to load on live/optimized sites due to script handle conflicts with themes or other plugins.
+- **Improved:** Renamed Leaflet asset handles to unique, plugin-specific names to prevent collisions and ensure correct dependency resolution.
+- **Improved:** Removed forced defer handling for Leaflet/map scripts to avoid broken load order when caching/optimization plugins are active.
+- **Improved:** Improved map initialization logic to prevent infinite retry loops and reduce console spam when Leaflet isn’t available.
+- **Improved:** Kept Leaflet/map assets conditionally loaded only on pages where the widget/block/shortcode is actually rendered.
+
 - = 1.9.7 =
 - **Experimental:** Tide support added for testing — opt-in feature. Adds support for WorldTides (API key), NOAA (US-only), and a configurable custom endpoint. Shortcode support via `extras="tides"` or `tides="1"`. Admin visibility can be toggled while rolling out to selected users. Responses are cached; configure TTL in Settings.
 

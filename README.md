@@ -4,9 +4,16 @@ WordPress weather plugin displaying current conditions and optional daily foreca
 
 For common questions and troubleshooting see the FAQ: [FAQ.md](FAQ.md)
 
-**Version:** 1.9.7 (Experimental: tide/tidvatten support added for testing)
+**Version:** 1.9.8 Fixed an issue where the Leaflet map could fail to load on live/optimized sites due to script handle conflicts with themes or other plugins.
 
 ## Changelog
+
+###  1.9.8 (Current)
+- **Fixed:** Fixed an issue where the Leaflet map could fail to load on live/optimized sites due to script handle conflicts with themes or other plugins.
+- **Improved:** Renamed Leaflet asset handles to unique, plugin-specific names to prevent collisions and ensure correct dependency resolution.
+- **Improved:** Removed forced defer handling for Leaflet/map scripts to avoid broken load order when caching/optimization plugins are active.
+- **Improved:** Improved map initialization logic to prevent infinite retry loops and reduce console spam when Leaflet isn’t available.
+- **Improved:** Kept Leaflet/map assets conditionally loaded only on pages where the widget/block/shortcode is actually rendered.
 
 ### v1.9.7 (2026-01-30)
  - **Experimental:** Tide (tidvatten) support added for testing — opt-in feature. Adds support for WorldTides (API key), NOAA (US-only), and a configurable custom endpoint. Shortcode support via `extras="tides"` or `tides="1"`. Admin visibility can be toggled while rolling out to selected users. Responses are cached; configure TTL in Settings.
@@ -17,6 +24,7 @@ For common questions and troubleshooting see the FAQ: [FAQ.md](FAQ.md)
 - Eliminates unnecessary 404 errors on pages without weather widget
 - Added `.htaccess` files to ensure correct MIME types for static assets
 - Improved page load performance by reducing asset requests on non-weather pages
+- If the map loads in staging but not in production: exclude the plugin’s Leaflet/map scripts from “Delay JS” / “Defer JS” features in your cache/optimization plugin.
 
 ### Settings Page Speed
 - **Before:** 3-15 seconds (waiting for WP.org plugin showcase)
@@ -218,7 +226,15 @@ Translations are available on [translate.wordpress.org](https://translate.wordpr
 
 ## Version History
 
-### v1.9.7 (Current)
+###  1.9.8 (Current)
+- **Fixed:** Fixed an issue where the Leaflet map could fail to load on live/optimized sites due to script handle conflicts with themes or other plugins.
+- **Improved:** Renamed Leaflet asset handles to unique, plugin-specific names to prevent collisions and ensure correct dependency resolution.
+- **Improved:** Removed forced defer handling for Leaflet/map scripts to avoid broken load order when caching/optimization plugins are active.
+- **Improved:** Improved map initialization logic to prevent infinite retry loops and reduce console spam when Leaflet isn’t available.
+- **Improved:** Kept Leaflet/map assets conditionally loaded only on pages where the widget/block/shortcode is actually rendered.
+
+
+### v1.9.7 
  - **Experimental:** Tide support added for testing — opt-in feature. Adds support for WorldTides (API key), NOAA (US-only), and a configurable custom endpoint. Shortcode support via `extras="tides"` or `tides="1"`. Admin visibility can be toggled while rolling out to selected users. Responses are cached; configure TTL in Settings.
 
 ### 1.9.5
