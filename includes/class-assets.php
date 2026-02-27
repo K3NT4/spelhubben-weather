@@ -75,6 +75,10 @@ class SV_Vader_Assets {
      */
     private function should_load_leaflet() {
         global $post;
+        // Fallback: get queried object if $post is not set or not a WP_Post
+        if ( ! isset( $post ) || ! is_a( $post, 'WP_Post' ) ) {
+            $post = get_queried_object();
+        }
 
         // Check for shortcodes in post content
         if ( isset( $post->post_content ) ) {
@@ -110,6 +114,10 @@ class SV_Vader_Assets {
      */
     private function should_load_assets() {
         global $post;
+        // Fallback: get queried object if $post is not set or not en WP_Post
+        if ( ! isset( $post ) || ! is_a( $post, 'WP_Post' ) ) {
+            $post = get_queried_object();
+        }
 
         // If the post contains the shortcode or block, load assets
         if ( isset( $post->post_content ) ) {

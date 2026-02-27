@@ -4,11 +4,14 @@ WordPress weather plugin displaying current conditions and optional daily foreca
 
 For common questions and troubleshooting see the FAQ: [FAQ.md](FAQ.md)
 
-**Version:** 1.9.8 Fixed an issue where the Leaflet map could fail to load on live/optimized sites due to script handle conflicts with themes or other plugins.
+**Version:** 1.9.9 Fix: Leaflet/map visas nu korrekt även för gäster och specialsidor där $post inte är satt.
 
 ## Changelog
 
-###  1.9.8 (Current)
+###  1.9.9 (2026-02-27)
+- **Fixed:** Leaflet/map visas nu korrekt även för gäster och specialsidor där $post inte är satt (fallback till get_queried_object()).
+
+###  1.9.8
 - **Fixed:** Fixed an issue where the Leaflet map could fail to load on live/optimized sites due to script handle conflicts with themes or other plugins.
 - **Improved:** Renamed Leaflet asset handles to unique, plugin-specific names to prevent collisions and ensure correct dependency resolution.
 - **Improved:** Removed forced defer handling for Leaflet/map scripts to avoid broken load order when caching/optimization plugins are active.

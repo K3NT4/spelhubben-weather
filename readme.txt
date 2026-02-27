@@ -4,7 +4,7 @@ Tags: weather, forecast, widget, shortcode, blocks
 Requires at least: 6.8
 Tested up to: 6.9
 Requires PHP: 7.4
-Stable tag: 1.9.8
+Stable tag: 1.9.9
 Donate link: https://www.paypal.com/donate/?hosted_button_id=CV74CEXY5XEAU
 
 License: GPLv3 or later
@@ -212,6 +212,9 @@ languages/
 6. Performance page: cache statistics, API usage and "Clear cache" action.
 
 == Changelog ==
+
+= 1.9.9 =
+* FIX: Leaflet/map visas nu korrekt även för gäster och specialsidor där $post inte är satt (fallback till get_queried_object()).
 - = 1.9.8 =
 - **Fixed:** Fixed an issue where the Leaflet map could fail to load on live/optimized sites due to script handle conflicts with themes or other plugins.
 - **Improved:** Renamed Leaflet asset handles to unique, plugin-specific names to prevent collisions and ensure correct dependency resolution.
