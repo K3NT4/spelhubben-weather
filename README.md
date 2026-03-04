@@ -9,7 +9,7 @@ For common questions and troubleshooting see the FAQ: [FAQ.md](FAQ.md)
 ## Changelog
 
 ###  1.9.9 (2026-02-27)
-- **Fixed:** Leaflet/map visas nu korrekt även för gäster och specialsidor där $post inte är satt (fallback till get_queried_object()).
+- **Fixed:** Leaflet/map is now displayed correctly even for guests and special pages where $post is not set (fallback to get_queried_object()).
 
 ###  1.9.8
 - **Fixed:** Fixed an issue where the Leaflet map could fail to load on live/optimized sites due to script handle conflicts with themes or other plugins.
