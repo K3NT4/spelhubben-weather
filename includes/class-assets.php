@@ -99,6 +99,21 @@ class SV_Vader_Assets {
             }
         }
 
+        // If we're on an archive/home/paged view, scan the main query posts
+        global $wp_query;
+        if ( isset( $wp_query ) && ! empty( $wp_query->posts ) && is_array( $wp_query->posts ) ) {
+            foreach ( $wp_query->posts as $qpost ) {
+                if ( isset( $qpost->post_content ) ) {
+                    if ( has_shortcode( $qpost->post_content, 'sv-vader' ) || has_shortcode( $qpost->post_content, 'spelhubben_weather' ) ) {
+                        return true;
+                    }
+                    if ( has_block( 'spelhubben-weather/spelhubben-weather', $qpost ) || has_block( 'sv/vader', $qpost ) ) {
+                        return true;
+                    }
+                }
+            }
+        }
+
         // Check if the sv_vader_widget is active in any sidebar
         if ( function_exists( 'is_active_widget' ) ) {
             if ( is_active_widget( false, false, 'sv_vader_widget' ) ) {
@@ -126,6 +141,21 @@ class SV_Vader_Assets {
             }
             if ( has_block( 'spelhubben-weather/spelhubben-weather', $post ) ) {
                 return true;
+            }
+        }
+
+        // Also scan posts in the main query for archives/paged views
+        global $wp_query;
+        if ( isset( $wp_query ) && ! empty( $wp_query->posts ) && is_array( $wp_query->posts ) ) {
+            foreach ( $wp_query->posts as $qpost ) {
+                if ( isset( $qpost->post_content ) ) {
+                    if ( has_shortcode( $qpost->post_content, 'spelhubben_weather' ) ) {
+                        return true;
+                    }
+                    if ( has_block( 'spelhubben-weather/spelhubben-weather', $qpost ) ) {
+                        return true;
+                    }
+                }
             }
         }
 

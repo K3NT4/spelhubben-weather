@@ -4,7 +4,7 @@ Tags: weather, forecast, widget, shortcode, blocks
 Requires at least: 6.8
 Tested up to: 6.9
 Requires PHP: 7.4
-Stable tag: 1.9.9
+Stable tag: 2.0.0
 Donate link: https://www.paypal.com/donate/?hosted_button_id=CV74CEXY5XEAU
 
 License: GPLv3 or later
@@ -212,6 +212,10 @@ languages/
 6. Performance page: cache statistics, API usage and "Clear cache" action.
 
 == Changelog ==
+
+= 2.0.0 =
+* FIX: Leaflet map now loads correctly on paginated, archive and guest pages where the global `$post` may be unavailable. Asset loader now scans the main query for shortcodes/blocks and enqueues Leaflet assets accordingly.
+* CHANGE: Bumped version to 2.0.0.
 
 = 1.9.9 =
 * FIX: Leaflet/map is now displayed correctly even for guests and special pages where $post is not set (fallback to get_queried_object()).

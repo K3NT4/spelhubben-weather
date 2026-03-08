@@ -4,9 +4,15 @@ WordPress weather plugin displaying current conditions and optional daily foreca
 
 For common questions and troubleshooting see the FAQ: [FAQ.md](FAQ.md)
 
-**Version:** 1.9.9 Fix: Leaflet/map visas nu korrekt även för gäster och specialsidor där $post inte är satt.
+**Version:** 2.0.0
+
+**Note:** This release ensures Leaflet maps load correctly on paginated, archive and guest views by scanning posts in the main query for shortcodes/blocks when the global `$post` is unavailable.
 
 ## Changelog
+
+###  2.0.0 (2026-03-08)
+- **Fixed:** Leaflet map now loads correctly on paginated, archive and guest pages where the global `$post` may be unavailable. The assets loader scans the main query for shortcodes/blocks to ensure scripts/styles are enqueued.
+- **Changed:** Plugin version bumped to `2.0.0`.
 
 ###  1.9.9 (2026-02-27)
 - **Fixed:** Leaflet/map is now displayed correctly even for guests and special pages where $post is not set (fallback to get_queried_object()).
