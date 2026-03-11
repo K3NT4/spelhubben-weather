@@ -2,6 +2,50 @@
 (function () {
   'use strict';
 
+  // Ensure Leaflet is available. If not, dynamically load the bundled Leaflet
+  // and call queued initializers once it has loaded. This helps when
+  // optimization plugins change script order or add `defer`/`async`.
+  function ensureLeafletLoaded(cb){
+    if (typeof L !== 'undefined' && L && L.map) return cb();
+
+    if (window._svv_leaflet_loader) {
+      window._svv_leaflet_loader.callbacks.push(cb);
+      return;
+    }
+
+    window._svv_leaflet_loader = { callbacks: [cb] };
+
+    // Try to derive base plugin URL from current script src (map.js/map.min.js)
+    var scripts = document.getElementsByTagName('script');
+    var base = '';
+    for (var i = 0; i < scripts.length; i++){
+      var src = scripts[i].src || '';
+      if (src.indexOf('assets/map') !== -1 || src.indexOf('/map.js') !== -1 || src.indexOf('/map.min.js') !== -1) {
+        base = src.split('assets/')[0];
+        break;
+      }
+    }
+
+    var leafletSrc = base ? (base + 'assets/vendor/leaflet/leaflet.js') : 'assets/vendor/leaflet/leaflet.js';
+
+    var s = document.createElement('script');
+    s.src = leafletSrc;
+    s.async = false;
+    s.onload = function(){
+      try{
+        window._svv_leaflet_loader.callbacks.forEach(function(f){ try{ f(); }catch(e){ console.error(e); } });
+      }finally{
+        delete window._svv_leaflet_loader;
+      }
+    };
+    s.onerror = function(){
+      console.error('SVV: failed to load Leaflet from', leafletSrc);
+      try{ window._svv_leaflet_loader.callbacks.forEach(function(f){ try{ f(); }catch(e){} }); }catch(e){}
+      delete window._svv_leaflet_loader;
+    };
+    (document.head || document.documentElement).appendChild(s);
+  }
+
   // (Optional) Point Leaflet default icons to local files.
   // Harmless to keep even when we don't place markers.
   if (window.SVV && SVV.iconBase && window.L && L.Icon && L.Icon.Default) {
@@ -111,11 +155,14 @@
     maps.forEach(initMap);
   }
 
-  if (document.readyState === 'loading') {
-    document.addEventListener('DOMContentLoaded', scanMapsLazy);
-  } else { scanMapsLazy(); }
+  // Initialize map scanning once Leaflet is available (or immediately if present).
+  ensureLeafletLoaded(function(){
+    if (document.readyState === 'loading') {
+      document.addEventListener('DOMContentLoaded', scanMapsLazy);
+    } else { scanMapsLazy(); }
 
-  new MutationObserver(scanMapsLazy).observe(document.documentElement, { childList:true, subtree:true });
+    new MutationObserver(scanMapsLazy).observe(document.documentElement, { childList:true, subtree:true });
+  });
 
   // --- Responsive scaling for the card ---
   const attachRO = debounce(function(){

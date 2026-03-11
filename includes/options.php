@@ -39,7 +39,8 @@ if (!function_exists('sv_vader_default_options')) {
 			'tide_custom_endpoint' => '',
 			'tide_cache_minutes' => 60,
 			// Show tide notices/examples in admin UI (separate from enabling tide fetching)
-			'tides_admin_visible' => 1,
+			// Default to 0 (hidden) because these are just examples/notices for testing
+			'tides_admin_visible' => 0,
 
 			// Alert Thresholds
 			'alert_cold_extreme'  => -15,

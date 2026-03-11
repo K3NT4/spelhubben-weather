@@ -31,7 +31,13 @@ class SV_Vader_Assets {
          * Live sites often already register "leaflet-js" which can break our dependency chain.
          */
         wp_register_style('svv-leaflet-css', SV_VADER_URL . 'assets/vendor/leaflet/leaflet.css', [], '1.9.4');
-        wp_register_script('svv-leaflet-js', SV_VADER_URL . 'assets/vendor/leaflet/leaflet.js', [], '1.9.4', true);
+        // Register Leaflet to load in the HEAD (not footer) to avoid race conditions
+        // caused by optimization plugins that may defer/async scripts.
+        wp_register_script('svv-leaflet-js', SV_VADER_URL . 'assets/vendor/leaflet/leaflet.js', [], '1.9.4', false);
+
+        // Small inline flag executed immediately after Leaflet to aid debugging and
+        // to allow other scripts to detect that Leaflet has been output.
+        wp_add_inline_script('svv-leaflet-js', "window._svv_leaflet_registered = true;");
 
         // Prefer minified map script when available
         $map_file = 'assets/map.js';
@@ -42,6 +48,10 @@ class SV_Vader_Assets {
         // Map depends on *our* Leaflet handle (svv-leaflet-js)
         wp_register_script('sv-vader-map', SV_VADER_URL . $map_file, ['svv-leaflet-js'], SV_VADER_VER, true);
 
+        // Enable translations for front-end scripts (if present)
+        if ( function_exists( 'wp_set_script_translations' ) ) {
+            wp_set_script_translations( 'sv-vader-map', 'spelhubben-weather' );
+        }
         // Small helper to rotate wind direction arrows when inline styles are stripped
         wp_register_script('sv-vader-wind', SV_VADER_URL . 'assets/wind.js', [], SV_VADER_VER, true);
 

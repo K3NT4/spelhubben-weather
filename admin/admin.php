@@ -60,6 +60,10 @@ if ( ! function_exists( 'sv_vader_admin_enqueue' ) ) {
 			true
 		);
 
+		// Enable JS translations for admin script when available
+		if ( function_exists( 'wp_set_script_translations' ) ) {
+			wp_set_script_translations( 'sv-vader-admin', 'spelhubben-weather' );
+		}
 		wp_localize_script( 'sv-vader-admin', 'SVV_ADMIN_I18N', array(
 			'copied'     => __( 'Copied!', 'spelhubben-weather' ),
 			'copy'       => __( 'Copy', 'spelhubben-weather' ),
@@ -206,6 +210,11 @@ if ( ! function_exists( 'sv_vader_handle_import_settings' ) ) {
 		function sv_vader_ajax_check_attrib() {
 			if ( ! current_user_can( 'manage_options' ) ) {
 				wp_send_json_error( 'insufficient_permissions' );
+			}
+
+			// Verify AJAX nonce created in admin UI (SVV_ADMIN_I18N.ajax_nonce)
+			if ( ! check_ajax_referer( 'svv_preview_sc', 'nonce', false ) ) {
+				wp_send_json_error( array( 'message' => 'invalid_nonce' ), 403 );
 			}
 
 			// Search candidate URLs: recent posts + front page
@@ -538,6 +547,12 @@ function sv_vader_field_tides() {
 /** Render tide provider settings (detailed) */
 function sv_vader_field_tide_settings() {
 	$o = sv_vader_get_options();
+
+	// Only show detailed tide provider settings when Tide admin UI is visible
+	if ( empty( $o['tides_admin_visible'] ) ) {
+		echo '<p class="description">' . esc_html__( 'Tide provider settings are hidden. Enable "Tide admin UI" to configure.', 'spelhubben-weather' ) . '</p>';
+		return;
+	}
 	$prov = $o['tide_provider'] ?? 'custom';
 	?>
 	<select name="sv_vader_options[tide_provider]">
@@ -666,6 +681,11 @@ add_action( 'wp_ajax_svv_preview_shortcode', function () {
 add_action( 'wp_ajax_svv_load_wporg_showcase', function () {
 	if ( ! current_user_can( 'manage_options' ) ) {
 		wp_send_json_error( array( 'message' => 'forbidden' ), 403 );
+	}
+
+	// Verify nonce for AJAX requests from admin UI
+	if ( ! check_ajax_referer( 'svv_preview_sc', 'nonce', false ) ) {
+		wp_send_json_error( array( 'message' => 'invalid_nonce' ), 403 );
 	}
 
 	if ( class_exists( 'SV_Vader_WPOrg_Plugins' ) ) {

@@ -181,7 +181,7 @@ if ( ! function_exists( 'sv_vader_render_settings_page' ) ) {
 						method: 'POST',
 						credentials: 'same-origin',
 						headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-						body: 'action=svv_load_wporg_showcase'
+						body: 'action=svv_load_wporg_showcase&nonce=' + encodeURIComponent((window.SVV_ADMIN_I18N && SVV_ADMIN_I18N.ajax_nonce) || '')
 					})
 					.then(r => r.json())
 					.then(data => {
