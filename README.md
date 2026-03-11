@@ -4,16 +4,21 @@ WordPress weather plugin displaying current conditions and optional daily foreca
 
 For common questions and troubleshooting see the FAQ: [FAQ.md](FAQ.md)
 
-**Version:** 2.0.1
+**Version:** 2.0.2
 
-**Note:** This release contains small bug fixes and documentation updates. It also includes a minor robustness improvement to Leaflet/map asset enqueuing for edge cases where the global `$post` may be unavailable.
+**Note:** Urgent fix release. Ensures bundled vendor assets are included in distribution packages (fixes missing `assets/vendor` during packaging), and small enqueue/documentation improvements.
 
 ## Changelog
 
+###  2.0.2 (2026-03-11)
+- **Urgent Fix:** Included `assets/vendor` in distribution packages by adjusting packaging ignore rules. This prevents missing Leaflet vendor files after packaging/deploy.
+- **Fixed:** Ensured admin/public asset versioning is consistent with the plugin version constant.
+- **Improved:** Documentation updated to describe the packaging fix and recommended deploy steps.
+
 ###  2.0.1 (2026-03-11)
-- **Fixed:** Minor asset/enqueue edge-case causing Leaflet/map to fail loading on some paginated or special views where `$post` is not available.
-- **Fixed:** Small admin asset versioning inconsistency corrected (plugin version constant updated).
-- **Improved:** Documentation and package metadata updated to reflect the new release.
+ - **Fixed:** Minor asset/enqueue edge-case causing Leaflet/map to fail loading on some paginated or special views where `$post` is not available.
+ - **Fixed:** Small admin asset versioning inconsistency corrected (plugin version constant updated).
+ - **Improved:** Documentation and package metadata updated to reflect the new release.
 
 ###  2.0.0 (2026-03-08)
 - **Fixed:** Leaflet map now loads correctly on paginated, archive and guest pages where the global `$post` may be unavailable. The assets loader scans the main query for shortcodes/blocks to ensure scripts/styles are enqueued.

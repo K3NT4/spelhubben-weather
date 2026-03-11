@@ -31,9 +31,9 @@ class SV_Vader_Assets {
          * Live sites often already register "leaflet-js" which can break our dependency chain.
          */
         wp_register_style('svv-leaflet-css', SV_VADER_URL . 'assets/vendor/leaflet/leaflet.css', [], '1.9.4');
-        // Register Leaflet to load in the HEAD (not footer) to avoid race conditions
-        // caused by optimization plugins that may defer/async scripts.
-        wp_register_script('svv-leaflet-js', SV_VADER_URL . 'assets/vendor/leaflet/leaflet.js', [], '1.9.4', false);
+        // Register Leaflet to load in the footer to improve ordering when
+        // optimization plugins move or defer head scripts.
+        wp_register_script('svv-leaflet-js', SV_VADER_URL . 'assets/vendor/leaflet/leaflet.js', [], '1.9.4', true);
 
         // Small inline flag executed immediately after Leaflet to aid debugging and
         // to allow other scripts to detect that Leaflet has been output.

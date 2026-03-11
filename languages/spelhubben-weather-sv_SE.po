@@ -1,8 +1,8 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: Spelhubben Weather\n"
-"POT-Creation-Date: 2026-01-30 21:50+0100\n"
-"PO-Revision-Date: 2026-01-30 21:53+0100\n"
+"POT-Creation-Date: 2026-03-11 19:52+0100\n"
+"PO-Revision-Date: 2026-03-11 19:52+0100\n"
 "Last-Translator: \n"
 "Language-Team: \n"
 "Language: sv_SE\n"
@@ -20,311 +20,311 @@ msgstr ""
 "X-Poedit-SearchPathExcluded-0: *.min.js\n"
 "X-Poedit-SearchPathExcluded-1: assets/vendor\n"
 
-#: admin/admin.php:64
+#: admin/admin.php:68
 msgid "Copied!"
 msgstr "Kopierad!"
 
-#: admin/admin.php:65 admin/page-shortcodes.php:101
+#: admin/admin.php:69 admin/page-shortcodes.php:101
 #: admin/page-shortcodes.php:113 admin/page-shortcodes.php:141
 msgid "Copy"
 msgstr "Kopiera"
 
-#: admin/admin.php:66 admin/page-shortcodes.php:147
+#: admin/admin.php:70 admin/page-shortcodes.php:147
 msgid "Expand"
 msgstr "Expandera"
 
-#: admin/admin.php:67
+#: admin/admin.php:71
 msgid "Collapse"
 msgstr "Kollapsa"
 
-#: admin/admin.php:68
+#: admin/admin.php:72
 msgid "Rendering…"
 msgstr "Genererar…"
 
-#: admin/admin.php:69
+#: admin/admin.php:73
 msgid "OK"
 msgstr "OK"
 
-#: admin/admin.php:70
+#: admin/admin.php:74
 msgid "Failed"
 msgstr "Misslyckades"
 
-#: admin/admin.php:71
+#: admin/admin.php:75
 msgid "Preview failed"
 msgstr "Förhandsgranskningen misslyckades"
 
-#: admin/admin.php:74 admin/page-settings.php:109
+#: admin/admin.php:78 admin/page-settings.php:109
 msgid "Show HTML"
 msgstr "Visa HTML"
 
-#: admin/admin.php:75
+#: admin/admin.php:79
 msgid "Hide HTML"
 msgstr "Dölj HTML"
 
-#: admin/admin.php:78 admin/page-settings.php:112
+#: admin/admin.php:82 admin/page-settings.php:112
 msgid "Check attribution"
 msgstr "Kontrollera attribution"
 
-#: admin/admin.php:79
+#: admin/admin.php:83
 msgid "Checking…"
 msgstr "Kontroll…"
 
 #. translators: %s: URL where attribution was found
-#: admin/admin.php:81
+#: admin/admin.php:85
 #, php-format
 msgid "Attribution found on %s"
 msgstr "Attribution hittades på %s"
 
-#: admin/admin.php:82
+#: admin/admin.php:86
 msgid "Attribution not found on recent pages"
 msgstr "Attribution hittades inte på de senaste sidorna"
 
-#: admin/admin.php:83
+#: admin/admin.php:87
 msgid "Check failed"
 msgstr "Kontrollen misslyckades"
 
-#: admin/admin.php:110 admin/admin.php:137 admin/admin.php:356
+#: admin/admin.php:114 admin/admin.php:141 admin/admin.php:365
 msgid "Insufficient permissions."
 msgstr "Otillräckliga behörigheter."
 
-#: admin/admin.php:145 admin/admin.php:153
+#: admin/admin.php:149 admin/admin.php:157
 msgid "No file uploaded."
 msgstr "Ingen fil uppladdad."
 
-#: admin/admin.php:159
+#: admin/admin.php:163
 msgid "Invalid upload."
 msgstr "Ogiltig uppladdning."
 
-#: admin/admin.php:167
+#: admin/admin.php:171
 msgid "Invalid file type."
 msgstr "Ogiltig filtyp."
 
-#: admin/admin.php:172
+#: admin/admin.php:176
 msgid "Upload failed."
 msgstr "Uppladdningen misslyckades."
 
-#: admin/admin.php:178
+#: admin/admin.php:182
 msgid "Invalid file size."
 msgstr "Ogiltig filstorlek."
 
-#: admin/admin.php:184
+#: admin/admin.php:188
 msgid "Could not read file."
 msgstr "Kunde inte läsa filen."
 
-#: admin/admin.php:190
+#: admin/admin.php:194
 msgid "Invalid JSON."
 msgstr "Ogiltig JSON."
 
 #. Plugin Name of the plugin/theme
-#: admin/admin.php:261 admin/admin.php:262 includes/Widget/class-widget.php:19
+#: admin/admin.php:270 admin/admin.php:271 includes/Widget/class-widget.php:19
 #: includes/class-block.php:93 includes/integrations/vc.php:9
 msgid "Spelhubben Weather"
 msgstr "Spelhubben Väder"
 
-#: admin/admin.php:273 admin/admin.php:274 includes/class-plugin.php:112
+#: admin/admin.php:282 admin/admin.php:283 includes/class-plugin.php:112
 msgid "Settings"
 msgstr "Inställningar"
 
-#: admin/admin.php:283 admin/admin.php:284 admin/page-settings.php:138
+#: admin/admin.php:292 admin/admin.php:293 admin/page-settings.php:138
 msgid "Alerts"
 msgstr "Varningar"
 
-#: admin/admin.php:293 admin/admin.php:294 admin/page-settings.php:137
+#: admin/admin.php:302 admin/admin.php:303 admin/page-settings.php:137
 msgid "Shortcodes"
 msgstr "Kortkoder"
 
-#: admin/admin.php:303 admin/admin.php:304 admin/page-settings.php:139
+#: admin/admin.php:312 admin/admin.php:313 admin/page-settings.php:139
 msgid "Performance"
 msgstr "Prestanda"
 
-#: admin/admin.php:326
+#: admin/admin.php:335
 msgid "Default settings"
 msgstr "Standardinställningar"
 
-#: admin/admin.php:328
+#: admin/admin.php:337
 msgid "Default place"
 msgstr "Standardplats"
 
-#: admin/admin.php:329 admin/admin.php:556
+#: admin/admin.php:338 admin/admin.php:571
 msgid "Cache TTL (minutes)"
 msgstr "Cache-TTL (minuter)"
 
-#: admin/admin.php:330
+#: admin/admin.php:339
 msgid "Default fields"
 msgstr "Standardfält"
 
-#: admin/admin.php:331
+#: admin/admin.php:340
 msgid "Default layout"
 msgstr "Standard Layout"
 
-#: admin/admin.php:332
+#: admin/admin.php:341
 msgid "Show map by default"
 msgstr "Visa karta som standard"
 
-#: admin/admin.php:333 blocks/spelhubben-weather/index.js:104
+#: admin/admin.php:342 blocks/spelhubben-weather/index.js:104
 msgid "Map height (px)"
 msgstr "Karthöjd (px)"
 
-#: admin/admin.php:334
+#: admin/admin.php:343
 msgid "Icon style"
 msgstr "Ikonstil"
 
-#: admin/admin.php:335
+#: admin/admin.php:344
 msgid "Data providers"
 msgstr "Dataleverantörer"
 
-#: admin/admin.php:336
+#: admin/admin.php:345
 msgid "Yr contact/UA"
 msgstr "Yr contact/UA"
 
-#: admin/admin.php:338
+#: admin/admin.php:347
 msgid "Tides (tidvatten)"
 msgstr ""
 
-#: admin/admin.php:341 admin/page-shortcodes.php:247
+#: admin/admin.php:350 admin/page-shortcodes.php:247
 #: blocks/spelhubben-weather/index.js:131
 msgid "Units & format"
 msgstr "Enheter och format"
 
-#: admin/admin.php:342 blocks/spelhubben-weather/index.js:133
+#: admin/admin.php:351 blocks/spelhubben-weather/index.js:133
 msgid "Preset"
 msgstr "Förinställa"
 
-#: admin/admin.php:343
+#: admin/admin.php:352
 msgid "Overrides (optional)"
 msgstr "Åsidosättningar (valfritt)"
 
-#: admin/admin.php:344
+#: admin/admin.php:353
 msgid "Date format (PHP)"
 msgstr "Datumformat (PHP)"
 
-#: admin/admin.php:345
+#: admin/admin.php:354
 msgid "Tide provider"
 msgstr "Tidvattenleverantör"
 
-#: admin/admin.php:347
+#: admin/admin.php:356
 msgid "Tide admin UI"
 msgstr "Tide admin UI"
 
-#: admin/admin.php:377 blocks/spelhubben-weather/index.js:50
+#: admin/admin.php:386 blocks/spelhubben-weather/index.js:50
 msgid "e.g. Stockholm"
 msgstr "t.ex. Stockholm"
 
-#: admin/admin.php:391
+#: admin/admin.php:400
 msgid "How long weather data is cached (transients)."
 msgstr "Hur länge väderdata cachas (transienter)."
 
-#: admin/admin.php:398 blocks/spelhubben-weather/index.js:76
+#: admin/admin.php:407 blocks/spelhubben-weather/index.js:76
 #: includes/Widget/class-widget.php:170
 msgid "Temperature"
 msgstr "Temperatur"
 
-#: admin/admin.php:399 blocks/spelhubben-weather/index.js:77
+#: admin/admin.php:408 blocks/spelhubben-weather/index.js:77
 #: includes/Widget/class-widget.php:171
 msgid "Wind speed"
 msgstr "Vindhastighet"
 
-#: admin/admin.php:400 blocks/spelhubben-weather/index.js:78
+#: admin/admin.php:409 blocks/spelhubben-weather/index.js:78
 #: includes/Widget/class-widget.php:172
 msgid "Wind direction"
 msgstr "Vindriktning"
 
-#: admin/admin.php:401 blocks/spelhubben-weather/index.js:79
+#: admin/admin.php:410 blocks/spelhubben-weather/index.js:79
 #: includes/Widget/class-widget.php:173
 msgid "Weather icon"
 msgstr "Väderikon"
 
-#: admin/admin.php:416
+#: admin/admin.php:425
 msgid "Choose which fields to show by default."
 msgstr "Välj vilka fält som ska visas som standard."
 
-#: admin/admin.php:422
+#: admin/admin.php:431
 msgctxt "layout label"
 msgid "Inline"
 msgstr "Inline"
 
-#: admin/admin.php:423
+#: admin/admin.php:432
 msgctxt "layout label"
 msgid "Compact"
 msgstr "Kompakt"
 
-#: admin/admin.php:424
+#: admin/admin.php:433
 msgctxt "layout label"
 msgid "Card"
 msgstr "Kort"
 
-#: admin/admin.php:425
+#: admin/admin.php:434
 msgctxt "layout label"
 msgid "Detailed"
 msgstr "Detaljer"
 
-#: admin/admin.php:444
+#: admin/admin.php:453
 msgid "Enable map as default."
 msgstr "Aktivera karta som standard."
 
-#: admin/admin.php:459
+#: admin/admin.php:468
 msgid "Classic"
 msgstr "Klassisk"
 
-#: admin/admin.php:460
+#: admin/admin.php:469
 msgid "Modern Flat"
 msgstr "Modern platt"
 
-#: admin/admin.php:461
+#: admin/admin.php:470
 msgid "Modern Gradient"
 msgstr "Modern gradient"
 
-#: admin/admin.php:462
+#: admin/admin.php:471
 msgid "Modern 2026"
 msgstr "Modernt 2026"
 
-#: admin/admin.php:463
+#: admin/admin.php:472
 msgid "Modern 3D"
 msgstr "Modern 3D"
 
-#: admin/admin.php:475
+#: admin/admin.php:484
 msgid "Choose your preferred weather icon theme."
 msgstr "Välj ditt föredragna tema för väderikoner."
 
-#: admin/admin.php:483
+#: admin/admin.php:492
 msgid "Open-Meteo"
 msgstr "Open-Meteo"
 
-#: admin/admin.php:488
+#: admin/admin.php:497
 msgid "SMHI"
 msgstr "SMHI"
 
-#: admin/admin.php:493
+#: admin/admin.php:502
 msgid "Yr (MET Norway)"
 msgstr "Yr (MET Norway)"
 
-#: admin/admin.php:498
+#: admin/admin.php:507
 msgid "MET Norway Nowcast"
 msgstr "MET Norway Nowcast"
 
-#: admin/admin.php:504
+#: admin/admin.php:513
 msgid "FMI (Finland, Open Data)"
 msgstr "FMI (Finland, Open Data)"
 
-#: admin/admin.php:509
+#: admin/admin.php:518
 msgid "Open-Weathermap"
 msgstr "Open-Weathermap"
 
-#: admin/admin.php:514
+#: admin/admin.php:523
 msgid "Weatherapi.com"
 msgstr "Weatherapi.com"
 
-#: admin/admin.php:524
+#: admin/admin.php:533
 msgid "Recommended by MET Norway: include an email or URL in your User-Agent."
 msgstr ""
 "Rekommenderas av MET Norge: inkludera en e-postadress eller URL i din "
 "användaragent."
 
-#: admin/admin.php:533
+#: admin/admin.php:542
 msgid "Enable tide data (experimental)."
 msgstr "Aktivera tidvattendata (experimentellt)."
 
-#: admin/admin.php:535
+#: admin/admin.php:544
 msgid ""
 "Tide data requires a provider or a custom API endpoint. Some providers may "
 "require an API key and/or paid plan."
@@ -332,27 +332,34 @@ msgstr ""
 "Tidedata kräver en leverantör eller en anpassad API-slutpunkt. Vissa "
 "leverantörer kan kräva en API-nyckel och/eller ett betalt abonnemang."
 
-#: admin/admin.php:544
+#: admin/admin.php:553
+msgid ""
+"Tide provider settings are hidden. Enable \"Tide admin UI\" to configure."
+msgstr ""
+"Inställningarna för tidvattenleverantören är dolda. Aktivera \"Tide admin "
+"UI\" för att konfigurera."
+
+#: admin/admin.php:559
 msgid "WorldTides (global, often paid)"
 msgstr "WorldTides (global, ofta betald)"
 
-#: admin/admin.php:545
+#: admin/admin.php:560
 msgid "NOAA Tides (US only)"
 msgstr "NOAA Tides (endast USA)"
 
-#: admin/admin.php:546 admin/admin.php:553
+#: admin/admin.php:561 admin/admin.php:568
 msgid "Custom endpoint"
 msgstr "Anpassad slutpunkt"
 
-#: admin/admin.php:548
+#: admin/admin.php:563
 msgid "Choose a tide provider or use a custom API endpoint."
 msgstr "Välj en tide-leverantör eller använd en anpassad API-slutpunkt."
 
-#: admin/admin.php:550
+#: admin/admin.php:565
 msgid "API key (if required)"
 msgstr "API-nyckel (om det behövs)"
 
-#: admin/admin.php:559
+#: admin/admin.php:574
 #, php-format
 msgid ""
 "Need an API key? See <a href=\"%s\" target=\"_blank\" rel=\"noopener "
@@ -365,11 +372,11 @@ msgstr ""
 "amerikanska stationer: <a href=\"%s\" target=\"_blank\" rel=\"noopener "
 "noreferrer\">NOAA Tides & Currents API</a>."
 
-#: admin/admin.php:570
+#: admin/admin.php:585
 msgid "Show tide examples & notices in admin (for testing)"
 msgstr "Visa exempel och meddelanden om tidvatten i admin (för testning)"
 
-#: admin/admin.php:572
+#: admin/admin.php:587
 msgid ""
 "Toggle visibility of experimental tide UI elements in the admin pages. "
 "Useful to hide notices/examples while testing with selected users."
@@ -378,39 +385,39 @@ msgstr ""
 "administratörssidorna. Användbart för att dölja meddelanden/exempel vid "
 "testning med utvalda användare."
 
-#: admin/admin.php:578 blocks/spelhubben-weather/index.js:17
+#: admin/admin.php:593 blocks/spelhubben-weather/index.js:17
 #: includes/integrations/vc.php:53
 msgid "Metric (°C, m/s, mm)"
 msgstr "Metrisk (°C, m/s, mm)"
 
-#: admin/admin.php:579 blocks/spelhubben-weather/index.js:18
+#: admin/admin.php:594 blocks/spelhubben-weather/index.js:18
 #: includes/integrations/vc.php:54
 msgid "Metric (°C, km/h, mm)"
 msgstr "Metrisk (°C, km/h, mm)"
 
-#: admin/admin.php:580 blocks/spelhubben-weather/index.js:19
+#: admin/admin.php:595 blocks/spelhubben-weather/index.js:19
 #: includes/integrations/vc.php:55
 msgid "Metric (°C, knt, mm)"
 msgstr "Metrisk (°C, knt, mm)"
 
-#: admin/admin.php:581 blocks/spelhubben-weather/index.js:20
+#: admin/admin.php:596 blocks/spelhubben-weather/index.js:20
 #: includes/integrations/vc.php:56
 msgid "Imperial (°F, mph, in)"
 msgstr "Imperial (°F, mph, in)"
 
-#: admin/admin.php:599
+#: admin/admin.php:614
 msgid "Temp unit"
 msgstr "Temp-enhet"
 
-#: admin/admin.php:604
+#: admin/admin.php:619
 msgid "Wind unit"
 msgstr "Vindenhet"
 
-#: admin/admin.php:609
+#: admin/admin.php:624
 msgid "Precip unit"
 msgstr "Nederbördsenhet"
 
-#: admin/admin.php:620
+#: admin/admin.php:635
 msgid "Used for forecast day labels."
 msgstr "Används för etiketter för prognosdagar."
 

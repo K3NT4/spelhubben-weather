@@ -26,24 +26,60 @@
       }
     }
 
-    var leafletSrc = base ? (base + 'assets/vendor/leaflet/leaflet.js') : 'assets/vendor/leaflet/leaflet.js';
+    var localJs = base ? (base + 'assets/vendor/leaflet/leaflet.js') : 'assets/vendor/leaflet/leaflet.js';
+    var localCss = base ? (base + 'assets/vendor/leaflet/leaflet.css') : 'assets/vendor/leaflet/leaflet.css';
 
-    var s = document.createElement('script');
-    s.src = leafletSrc;
-    s.async = false;
-    s.onload = function(){
-      try{
-        window._svv_leaflet_loader.callbacks.forEach(function(f){ try{ f(); }catch(e){ console.error(e); } });
-      }finally{
+    // CDN fallbacks (Leaflet v1.9.4)
+    var cdnJs  = 'https://unpkg.com/leaflet@1.9.4/dist/leaflet.js';
+    var cdnCss = 'https://unpkg.com/leaflet@1.9.4/dist/leaflet.css';
+
+    // Helper: ensure a stylesheet is present; try local then CDN on error.
+    function ensureLeafletCss() {
+      // If any leaflet css present, skip
+      if (document.querySelector('link[href*="leaflet.css"]')) return;
+      var l = document.createElement('link');
+      l.rel = 'stylesheet';
+      l.href = localCss;
+      l.onerror = function(){
+        console.warn('SVV: failed to load local Leaflet CSS, falling back to CDN');
+        l.href = cdnCss;
+      };
+      (document.head || document.documentElement).appendChild(l);
+    }
+
+    // Load script with CDN fallback on error
+    var triedCdn = false;
+    function loadLeaflet(src){
+      var s = document.createElement('script');
+      s.src = src;
+      s.async = false;
+      s.onload = function(){
+        try{
+          window._svv_leaflet_loader.callbacks.forEach(function(f){ try{ f(); }catch(e){ console.error(e); } });
+        }finally{
+          delete window._svv_leaflet_loader;
+        }
+      };
+      s.onerror = function(){
+        if (!triedCdn) {
+          triedCdn = true;
+          console.warn('SVV: failed to load local Leaflet, attempting CDN fallback');
+          // ensure CSS fallback too
+          ensureLeafletCss();
+          // try CDN next
+          loadLeaflet(cdnJs);
+          return;
+        }
+        console.error('SVV: failed to load Leaflet from both local and CDN', src);
+        try{ window._svv_leaflet_loader.callbacks.forEach(function(f){ try{ f(); }catch(e){} }); }catch(e){}
         delete window._svv_leaflet_loader;
-      }
-    };
-    s.onerror = function(){
-      console.error('SVV: failed to load Leaflet from', leafletSrc);
-      try{ window._svv_leaflet_loader.callbacks.forEach(function(f){ try{ f(); }catch(e){} }); }catch(e){}
-      delete window._svv_leaflet_loader;
-    };
-    (document.head || document.documentElement).appendChild(s);
+      };
+      (document.head || document.documentElement).appendChild(s);
+    }
+
+    // Start by ensuring CSS and trying local JS
+    ensureLeafletCss();
+    loadLeaflet(localJs);
   }
 
   // (Optional) Point Leaflet default icons to local files.
@@ -82,6 +118,16 @@
       console.error('Leaflet failed to load after multiple retries. Giving up for element:', el);
       el.dataset.svvLeafletFailed = '1';
       el.dataset.inited = '1'; // lock
+
+      // Show a small inline error message so site visitors know why the map is blank.
+      if (!el.querySelector('.svv-map-error')) {
+        var err = document.createElement('div');
+        err.className = 'svv-map-error';
+        err.textContent = 'Kartan kunde inte laddas. Vänligen kontrollera om ett annonsblockerande tillägg eller script-optimering blockerar kartbiblioteket.';
+        err.style.cssText = 'padding:12px;border-radius:6px;background:#fff8f0;color:#7a2a00;border:1px solid #ffd7c2;font-size:13px;text-align:center;margin:8px;';
+        el.appendChild(err);
+      }
+
       return;
     }
 
