@@ -11,9 +11,6 @@ Docs/
 
 # ---- Node/Composer ----
 node_modules/
-vendor/
-!/assets/vendor/
-!/assets/vendor/**
 package-lock.json
 pnpm-lock.yaml
 yarn.lock
