@@ -22,6 +22,8 @@ class SV_Vader_Widget extends WP_Widget {
     }
 
     public function widget($args, $instance) {
+        $opts = function_exists('sv_vader_get_options') ? sv_vader_get_options() : [];
+
         $defaults = [
             'title'     => '',
             'ort'       => 'Stockholm',
@@ -97,7 +99,7 @@ class SV_Vader_Widget extends WP_Widget {
                 'days'        => (string) $days,
                 'show_alerts' => $show_alerts ? '1' : '0',
                     'theme'       => $theme,
-                    'wind_unit'   => $instance['wind_unit'] ?? $opts['wind_unit'],
+                        'wind_unit'   => $instance['wind_unit'] ?? ($opts['wind_unit'] ?? ''),
             ]);
 
             echo wp_kses_post($html);

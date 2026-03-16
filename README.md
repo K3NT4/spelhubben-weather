@@ -4,11 +4,17 @@ WordPress weather plugin displaying current conditions and optional daily foreca
 
 For common questions and troubleshooting see the FAQ: [FAQ.md](FAQ.md)
 
-**Version:** 2.0.2
+**Version:** 2.0.3
 
-**Note:** Urgent fix release. Ensures bundled vendor assets are included in distribution packages (fixes missing `assets/vendor` during packaging), and small enqueue/documentation improvements.
+**Note:** Maintenance release addressing notices and admin JS nonce, plus refreshed minified map bundle and safer widget defaults.
 
 ## Changelog
+
+###  2.0.3 (2026-03-16)
+- **Fixed:** Added default `units` and `yr_contact` values to options to remove undefined index notices on fresh installs.
+- **Fixed:** Widget now initializes options before rendering so `wind_unit` fallback no longer triggers notices.
+- **Fixed:** Admin attribution checker now sends the localized AJAX nonce (no more `nonce is not defined` JS error).
+- **Fixed:** Rebuilt `assets/map.min.js` from the source to remove the stray syntax error and keep in sync with `map.js`.
 
 ###  2.0.2 (2026-03-11)
 - **Urgent Fix:** Included `assets/vendor` in distribution packages by adjusting packaging ignore rules. This prevents missing Leaflet vendor files after packaging/deploy.

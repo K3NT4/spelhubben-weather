@@ -29,6 +29,10 @@ if (!function_exists('sv_vader_default_options')) {
 			'precip_unit'  => '',       // optional override: mm|in
 			'date_format'  => 'D j/n',  // used in forecast labels
 
+			// Contact + units (for backward compatibility when upgrading from older installs)
+			'yr_contact'   => '',
+			'units'        => 'metric',
+
 			// NEW: cache salt (rotates when user clears cache)
 			'cache_salt'   => '1',
 

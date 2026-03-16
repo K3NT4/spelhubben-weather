@@ -4,7 +4,7 @@ Tags: weather, forecast, widget, shortcode, blocks
 Requires at least: 6.8
 Tested up to: 6.9
 Requires PHP: 7.4
-Stable tag: 2.0.2
+Stable tag: 2.0.3
 Donate link: https://www.paypal.com/donate/?hosted_button_id=CV74CEXY5XEAU
 
 License: GPLv3 or later
@@ -31,6 +31,12 @@ Weather widget & block with optional map and daily forecast. Can combine Open-Me
 This plugin displays current weather and an optional forecast. It can aggregate data from free global weather providers (Open-Meteo, SMHI, Yr/MET Norway, FMI, Open-Weathermap, and Weatherapi.com) and compute a simple consensus. Works worldwide with excellent coverage in Europe and beyond.
 
 == Changelog ==
+
+= 2.0.3 =
+- Fixed: Added default `units` and `yr_contact` options to remove undefined index notices on new installs.
+- Fixed: Widget now initializes options before render so `wind_unit` fallback is safe and notice-free.
+- Fixed: Admin attribution checker now uses the localized AJAX nonce (no more `nonce is not defined` error).
+- Fixed: Rebuilt `assets/map.min.js` from the source to eliminate the stray syntax error and keep parity with `map.js`.
 
 = 2.0.2 =
 - Urgent Fix: Ensure `assets/vendor` is included in distribution packages (adjusted `.distignore` rules). This prevents missing Leaflet vendor files after packaging/deploy.

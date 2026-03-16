@@ -89,7 +89,9 @@
       btn.disabled = true;
       btn.innerHTML = '<span class="dashicons dashicons-controls-repeat spin" aria-hidden="true"></span> ' + ((window.SVV_ADMIN_I18N && SVV_ADMIN_I18N.checking) || 'Checking…');
 
-      var fd = new FormData(); fd.append('action','svv_check_attrib'); fd.append('nonce', nonce);
+      var fd = new FormData();
+      fd.append('action','svv_check_attrib');
+      fd.append('nonce', (window.SVV_ADMIN_I18N && SVV_ADMIN_I18N.ajax_nonce) || '');
 
       fetch((window.SVV_ADMIN_I18N && SVV_ADMIN_I18N.ajax_url) || (window.ajaxurl || '/wp-admin/admin-ajax.php'), { method:'POST', credentials:'same-origin', body: fd })
         .then(function(r){ return r.json(); })
