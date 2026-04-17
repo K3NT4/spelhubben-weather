@@ -68,7 +68,7 @@
 }
 
 /* Grid & cards */
-.svv-grid{ display:grid; grid-template-columns:1.2fr .8fr; gap:16px; }
+.svv-grid{ display:grid; grid-template-columns:minmax(320px, 360px) minmax(0, 1fr); gap:16px; align-items:start; }
 @media (max-width:1200px){ .svv-grid{ grid-template-columns:1fr; } }
 .svv-col{ display:flex; flex-direction:column; gap:16px; }
 .svv-card{ background:var(--svv-card); border:1px solid var(--svv-border); border-radius:var(--svv-radius); padding:16px; box-shadow:var(--svv-shadow-1); transition:box-shadow .18s ease; color: var(--svv-text); }
@@ -117,12 +117,24 @@ button.svv-copy-btn.is-copied, .svv-preview-copy.is-copied{ border-color:var(--s
 .svv-tip-footer .button:focus{ box-shadow:0 0 0 3px rgba(30,79,209,0.08); }
 
 /* Builder */
-.svv-sc-builder label { display: inline-flex; align-items: center; gap: 4px; cursor: pointer; margin-right: 8px; font-size: 13px; }
-.svv-sc-builder select { border-radius: 6px; border: 1px solid var(--svv-border); background: var(--svv-card); color: var(--svv-text); padding: 2px 8px; }
+.svv-builder-grid { display:grid; grid-template-columns:repeat(auto-fit, minmax(180px, 1fr)); gap:14px 18px; margin-bottom:10px; }
+.svv-builder-group { min-width:0; }
+.svv-builder-group--wide { grid-column: span 2; }
+.svv-builder-group--full { grid-column: 1 / -1; }
+.svv-builder-options,
+.svv-builder-providers { display:flex; flex-wrap:wrap; gap:8px 12px; margin-top:6px; }
+.svv-sc-builder label { display:inline-flex; align-items:center; gap:4px; cursor:pointer; margin-right:0; font-size:13px; white-space:nowrap; }
+.svv-sc-builder select { min-width:120px; border-radius: 6px; border: 1px solid var(--svv-border); background: var(--svv-card); color: var(--svv-text); padding: 2px 8px; }
 .svv-sc-builder strong { font-size: 12px; color: var(--svv-muted); text-transform: uppercase; letter-spacing: 0.5px; }
 .svv-sc-builder .button { margin-top: 10px; }
+.svv-builder-providers label { margin-right:0; white-space:nowrap; font-size:12px; }
+.svv-builder-options label { font-size:12px; }
 .svv-badge.is-active { background: #ecfdf5; color: #065f46; border-color: #a7f3d0; }
 .svv-badge.is-inactive { background: var(--svv-bg); color: var(--svv-muted); border-color: var(--svv-border); }
+
+@media (max-width: 960px) {
+  .svv-builder-group--wide { grid-column: span 1; }
+}
 
 @media (prefers-color-scheme: dark) {
   .svv-badge.is-active { background: #064e3b; color: #a7f3d0; border-color: #065f46; }
@@ -235,4 +247,3 @@ button.svv-copy-btn.is-copied, .svv-preview-copy.is-copied{ border-color:var(--s
 .svv-field-row { display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; }
 .svv-field-row label { font-size: 13px; color: var(--svv-muted); }
 .svv-field-row input[type="number"] { width: 80px; border-radius: 6px; border: 1px solid var(--svv-border); background: var(--svv-bg); color: var(--svv-text); }
-

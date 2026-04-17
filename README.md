@@ -1,14 +1,24 @@
 # Spelhubben Weather
 
-WordPress weather plugin displaying current conditions and optional daily forecast using a simple consensus of **Open-Meteo**, **SMHI**, **Yr (MET Norway)**, **FMI (Finland)**, **Open-Weathermap**, and **Weatherapi.com**. Includes a Gutenberg block, classic widget, shortcode, optional Leaflet map, responsive layouts, multiple icon themes, and local SVG icons.
+WordPress weather plugin displaying current conditions and optional daily forecast using a simple consensus of **Open-Meteo**, **SMHI**, **Yr (MET Norway)**, **FMI (Finland)**, **OpenWeatherMap**, and **WeatherAPI.com**. Includes a Gutenberg block, classic widget, shortcode, optional Leaflet map, responsive layouts, multiple icon themes, and local SVG icons.
 
 For common questions and troubleshooting see the FAQ: [FAQ.md](FAQ.md)
 
-**Version:** 2.0.3
+**Version:** 2.0.4
 
-**Note:** Maintenance release addressing notices and admin JS nonce, plus refreshed minified map bundle and safer widget defaults.
+**Note:** Maintenance release adding provider API-key support, tightening map/cache behavior, improving the Shortcodes admin UI, and formalizing asset/release checks.
 
 ## Changelog
+
+###  2.0.4 (2026-04-17)
+- **Added:** Admin settings for OpenWeatherMap and WeatherAPI keys, with runtime requests now passing the correct key/query parameters and refusing key-required providers when keys are missing.
+- **Fixed:** Provider docs, admin text, shortcode reference, and settings guidance now match the actual 7-provider matrix and API-key requirements.
+- **Fixed:** `map_height` is now clamped in the renderer too, so shortcode/block/widget overrides consistently honor the documented 120px minimum.
+- **Fixed:** Shortcodes admin/provider docs were unified and the Quick Builder now uses the same provider list as the shortcode reference.
+- **Fixed:** Shortcodes admin layout was rebalanced so the examples column stays readable and the Quick Builder wraps more cleanly.
+- **Improved:** Provider cache keys are now normalized by provider order, which improves cache hits for logically identical provider sets.
+- **Improved:** Added a reproducible asset build flow for `map.min.js` and `style.min.css`, plus lightweight regression and release-check scripts for repo maintenance.
+- **Improved:** Clarified consent/privacy guidance for optional Leaflet/OpenStreetMap map fallback behavior.
 
 ###  2.0.3 (2026-03-16)
 - **Fixed:** Added default `units` and `yr_contact` values to options to remove undefined index notices on fresh installs.
@@ -202,15 +212,13 @@ All themes include icons for: sun, partly-cloudy (including an alternate), cloud
 ## Shortcode examples
 - `place` — place name to geocode (used if `lat`/`lon` are absent)  
 - `lat`, `lon` — coordinates; take precedence over `place`  
-- `show` — comma list of fields to display (e.g., `temp,wind,icon`)  
- - `show` — comma list of fields to display (e.g., `temp,wind,icon`). Use `wind_dir` to show wind direction arrow and label.
+- `show` — comma list of fields to display (e.g., `temp,wind,icon`). Use `wind_dir` to show wind direction arrow and label.
 - `layout` — `inline | compact | card | detailed`
 - `comparison` — `1` to show side-by-side provider comparison (ignores `layout`)  
 - `map` — `1`/`0` to show/hide map  
 - `map_height` — map height in px (min 120)  
-- `providers` — `openmeteo,smhi,yr` (comma-separated)  
-- `animate` — `1`/`0` for subtle animations  
- - `animate` — `1`/`0` for subtle animations. The renderer now accepts `1`, `true`, `yes`, or `on` as truthy values.
+- `providers` — comma-separated provider IDs. Current supported list is shown in the plugin’s Shortcodes admin page so docs and UI stay aligned.
+- `animate` — `1`/`0` for subtle animations. The renderer now accepts `1`, `true`, `yes`, or `on` as truthy values.
 - `forecast` — `none | daily`  
 - `days` — number of days (3–10) when `forecast="daily"`  
 - `class` — extra CSS class on the wrapper  
@@ -220,7 +228,8 @@ All themes include icons for: sun, partly-cloudy (including an alternate), cloud
 - **Cache TTL** — transient lifetime in minutes (default: 10, configurable)
 - **Default layout** — `inline`, `compact`, `card`, or `detailed`
 - **Icon style** — Classic, Modern Flat, Modern Gradient, Modern 2026, or Modern 3D
-- **Data providers** — enable/disable any combination of 6 sources
+- **Data providers** — enable/disable any combination of 7 sources
+- **Provider API keys** — OpenWeatherMap and WeatherAPI require API keys (stored server-side)
 - **Units** — `metric` (°C, m/s, mm), `metric_kmh` (°C, km/h, mm), or `imperial` (°F, mph, in) with optional per-unit overrides
 - **Date format** — PHP strtotime format for forecast labels
 - **Contact info** (optional) — email or URL to include in User-Agent for MET Norway API as per their guidelines
@@ -239,7 +248,30 @@ All themes include icons for: sun, partly-cloudy (including an alternate), cloud
 ### Before Release
 1. Run the **Plugin Check** plugin (wordpress.org/plugins/plugin-check/)
 2. Ensure `/readme.txt` "Stable tag" matches main file's `Version` header
-3. Update changelog in `readme.txt`
+3. Run `npm install` once locally, then `npm run build:assets` to refresh `assets/map.min.js` and `assets/style.min.css`
+4. Update changelog in `readme.txt`
+
+### Asset Build
+Source assets live in `assets/map.js` and `assets/style.css`.
+
+Use:
+```bash
+npm install
+npm run build:assets
+```
+
+This regenerates:
+- `assets/map.min.js`
+- `assets/style.min.css`
+
+### Regression Checks
+Use:
+```bash
+php tests/regression_test.php
+npm run check:release
+```
+
+The PHP check covers key renderer/provider regressions, and the release check rebuilds minified assets and verifies they are still in sync with committed files.
 
 ### Translation Updates
 Generate POT after string changes:

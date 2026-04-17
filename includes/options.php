@@ -24,6 +24,8 @@ if (!function_exists('sv_vader_default_options')) {
         'prov_fmi'           => 1,
 		'prov_openweathermap' => 1,
 		'prov_weatherapi'     => 1,
+			'owm_api_key'        => '',
+			'weatherapi_api_key' => '',
 			'temp_unit'    => '',       // optional override: C|F
 			'wind_unit'    => '',       // optional override: ms|kmh|mph|knt
 			'precip_unit'  => '',       // optional override: mm|in
@@ -96,6 +98,8 @@ if (!function_exists('sv_vader_sanitize_options')) {
         $out['prov_fmi']           = !empty($in['prov_fmi']) ? 1 : 0;
 		$out['prov_openweathermap'] = !empty($in['prov_openweathermap']) ? 1 : 0;
 		$out['prov_weatherapi']     = !empty($in['prov_weatherapi']) ? 1 : 0;
+		$out['owm_api_key']        = sanitize_text_field($in['owm_api_key'] ?? '');
+		$out['weatherapi_api_key'] = sanitize_text_field($in['weatherapi_api_key'] ?? '');
 
 		// Icon style preference
 		$allowed_icon_styles = ['classic','modern-flat','modern-gradient','modern-2026','modern-3d'];

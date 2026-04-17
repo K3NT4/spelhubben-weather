@@ -522,6 +522,17 @@ function sv_vader_field_providers() {
 		checked( 1, ! empty( $o['prov_weatherapi'] ), false ),
 		esc_html__( 'Weatherapi.com', 'spelhubben-weather' )
 	);
+	echo '<p class="description" style="margin:8px 0 6px;">' . esc_html__( 'OpenWeatherMap and WeatherAPI require API keys. Keys are stored server-side and never exposed to frontend visitors.', 'spelhubben-weather' ) . '</p>';
+	printf(
+		'<label>%s <input type="text" name="sv_vader_options[owm_api_key]" value="%s" class="regular-text" autocomplete="off" /></label><br>',
+		esc_html__( 'OpenWeatherMap API key', 'spelhubben-weather' ),
+		esc_attr( $o['owm_api_key'] ?? '' )
+	);
+	printf(
+		'<label>%s <input type="text" name="sv_vader_options[weatherapi_api_key]" value="%s" class="regular-text" autocomplete="off" /></label>',
+		esc_html__( 'WeatherAPI key', 'spelhubben-weather' ),
+		esc_attr( $o['weatherapi_api_key'] ?? '' )
+	);
 }
 
 function sv_vader_field_yr_contact() {

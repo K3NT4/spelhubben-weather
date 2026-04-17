@@ -186,13 +186,17 @@ if (!function_exists('sv_vader_fmi_current')) {
 }
 
 if (!function_exists('sv_vader_openweathermap_current')) {
-    function sv_vader_openweathermap_current($lat, $lon, $locale = 'en') {
-        // Open-Weathermap free tier (no API key required for basic requests)
+    function sv_vader_openweathermap_current($lat, $lon, $locale = 'en', $api_key = '') {
+        // OpenWeatherMap requires an API key configured in plugin settings.
+        $api_key = trim((string)$api_key);
+        if ($api_key === '') return null;
+
         $url = add_query_arg([
             'lat'   => $lat,
             'lon'   => $lon,
             'units' => 'metric',
-            'lang'  => $locale
+            'lang'  => $locale,
+            'appid' => $api_key,
         ], 'https://api.openweathermap.org/data/2.5/weather');
 
         $res = wp_remote_get($url, ['timeout' => 10]);
@@ -218,8 +222,11 @@ if (!function_exists('sv_vader_openweathermap_current')) {
 }
 
 if (!function_exists('sv_vader_weatherapi_current')) {
-    function sv_vader_weatherapi_current($lat, $lon, $locale = 'en') {
-        // Weatherapi.com free tier (no API key required)
+    function sv_vader_weatherapi_current($lat, $lon, $locale = 'en', $api_key = '') {
+        // WeatherAPI requires an API key configured in plugin settings.
+        $api_key = trim((string)$api_key);
+        if ($api_key === '') return null;
+
         $lang_map = [
             'sv' => 'sv',
             'nb' => 'no',
@@ -231,6 +238,7 @@ if (!function_exists('sv_vader_weatherapi_current')) {
         $api_lang = $lang_map[substr($locale, 0, 2)] ?? 'en';
 
         $url = add_query_arg([
+            'key'   => $api_key,
             'q'     => "$lat,$lon",
             'lang'  => $api_lang,
             'aqi'   => 'no',

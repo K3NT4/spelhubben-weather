@@ -167,6 +167,11 @@ If site uses consent banner + map is enabled, consider adding disclosure:
 "This site loads map tiles from OpenStreetMap (OSM). By using maps, you accept OSM's terms: https://www.openstreetmap.org/copyright"
 ```
 
+If external media is blocked until consent, prefer a graceful fallback for the map area:
+- Keep the weather card visible without gating weather API output behind consent.
+- Show a short placeholder note for the map until consent is granted, then allow Leaflet/OSM tiles to load.
+- Mention in the privacy policy or banner text that the optional map triggers direct browser requests to OpenStreetMap tile servers.
+
 #### For Weather Providers
 No disclosure needed - data flows are anonymous and technical (not tracking).
 
@@ -339,6 +344,7 @@ requests these tiles directly. Refer to OSM's privacy policy for details.
 If you want transparency, you can:
 - Add optional banner: "This site loads weather data from external APIs"
 - Or simply mention in Privacy Policy (recommended)
+- If you gate optional external map content, gate only the Leaflet/OSM map area and leave the rest of the widget functional.
 
 ---
 

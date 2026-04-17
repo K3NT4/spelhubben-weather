@@ -50,6 +50,7 @@ class SV_Vader_Renderer {
 		$layout = strtolower(trim($a['layout']));
 		$allowed_layouts = ['inline','compact','card','detailed'];
 		if (!in_array($layout, $allowed_layouts, true)) $layout = 'card';
+		$map_height = max(120, intval($a['map_height']));
 
 		$provider_list = array_filter(array_map('trim', explode(',', strtolower($a['providers']))));
 		$allowed = ['openmeteo','smhi','yr','metno_nowcast','fmi','openweathermap','weatherapi'];
@@ -321,7 +322,7 @@ class SV_Vader_Renderer {
 					 data-lat="<?php echo esc_attr($lat); ?>"
 					 data-lon="<?php echo esc_attr($lon); ?>"
 					 data-name="<?php echo esc_attr($name); ?>"
-					 style="height: <?php echo intval($a['map_height']); ?>px;"></div>
+					 style="height: <?php echo esc_attr($map_height); ?>px;"></div>
 
 				<div class="svv-map-attrib" role="note" aria-label="<?php echo esc_attr_x('Map data attribution', 'aria label', 'spelhubben-weather'); ?>"><?php echo wp_kses_post(SV_VADER_ATTRIB_HTML); ?></div>
 

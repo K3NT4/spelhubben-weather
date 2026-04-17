@@ -9,8 +9,18 @@ if ( ! function_exists( 'sv_vader_render_shortcodes_page' ) ) {
 	function sv_vader_render_shortcodes_page() {
 		if ( ! current_user_can( 'manage_options' ) ) return;
 
-			// Load current options so Quick Builder can default to site settings
-			$opts = sv_vader_get_options();
+		// Load current options so Quick Builder can default to site settings
+		$opts = sv_vader_get_options();
+		$provider_labels = array(
+			'openmeteo'      => __( 'Open-Meteo', 'spelhubben-weather' ),
+			'smhi'           => __( 'SMHI', 'spelhubben-weather' ),
+			'yr'             => __( 'Yr', 'spelhubben-weather' ),
+			'metno_nowcast'  => __( 'MET Nowcast', 'spelhubben-weather' ),
+			'fmi'            => __( 'FMI', 'spelhubben-weather' ),
+			'openweathermap' => __( 'OpenWeather', 'spelhubben-weather' ),
+			'weatherapi'     => __( 'WeatherAPI', 'spelhubben-weather' ),
+		);
+		$provider_csv = implode( ',', array_keys( $provider_labels ) );
 
 		// Examples (new aliases)
 		$nx1 = '[spelhubben_weather]';
@@ -22,7 +32,7 @@ if ( ! function_exists( 'sv_vader_render_shortcodes_page' ) ) {
 		$nx7 = '[spelhubben_weather place="Oslo" show_alerts="1"]';
 		$nx8 = '[spelhubben_weather map="1" map_height="400"]';
 		$nx9 = '[spelhubben_weather forecast="daily" days="10"]';
-		$nx10 = '[spelhubben_weather providers="smhi,yr"]';
+		$nx10 = '[spelhubben_weather providers="smhi,yr,metno_nowcast"]';
 		$nx11 = '[spelhubben_weather place="Stockholm" show="temp,wind,wind_dir,icon"]';
 		$nx12 = '[spelhubben_weather place="Stockholm" theme="dark" show="temp,icon" map="0"]';
 		$nx_moon = '[spelhubben_weather extras="moon"]';
@@ -43,7 +53,7 @@ if ( ! function_exists( 'sv_vader_render_shortcodes_page' ) ) {
 			array( 'label' => __( 'With weather alerts enabled', 'spelhubben-weather' ), 'code' => $nx7 ),
 			array( 'label' => __( 'Custom map height (400px)', 'spelhubben-weather' ), 'code' => $nx8 ),
 			array( 'label' => __( 'Long forecast (10 days)', 'spelhubben-weather' ), 'code' => $nx9 ),
-			array( 'label' => __( 'Specific providers only (SMHI & Yr)', 'spelhubben-weather' ), 'code' => $nx10 ),
+			array( 'label' => __( 'Specific providers only (SMHI, Yr & MET Nowcast)', 'spelhubben-weather' ), 'code' => $nx10 ),
 		);
 		// Add tide example only when tides are enabled in settings and visible in admin UI
 		if ( ! empty( $opts['tides_enabled'] ) && ! empty( $opts['tides_admin_visible'] ) ) {
@@ -153,15 +163,17 @@ if ( ! function_exists( 'sv_vader_render_shortcodes_page' ) ) {
 						<!-- BUILDER -->
 						<div class="svv-sc-builder" style="margin-top:16px; padding-top:16px; border-top:1px solid #eee;">
 							<h3 style="margin-top:0; font-size:14px;"><?php esc_html_e( 'Quick Builder', 'spelhubben-weather' ); ?></h3>
-							<div style="display:flex; flex-wrap:wrap; gap:15px; margin-bottom:10px;">
-								<div>
+							<div class="svv-builder-grid">
+								<div class="svv-builder-group svv-builder-group--wide">
 									<strong><?php esc_html_e( 'Show fields:', 'spelhubben-weather' ); ?></strong><br>
-									<label><input type="checkbox" class="svv-b-show" value="temp" checked> <?php esc_html_e( 'Temp', 'spelhubben-weather' ); ?></label>
-									<label><input type="checkbox" class="svv-b-show" value="wind" checked> <?php esc_html_e( 'Wind', 'spelhubben-weather' ); ?></label>
-									<label><input type="checkbox" class="svv-b-show" value="wind_dir" checked> <?php esc_html_e( 'Wind Dir', 'spelhubben-weather' ); ?></label>
-									<label><input type="checkbox" class="svv-b-show" value="icon" checked> <?php esc_html_e( 'Icon', 'spelhubben-weather' ); ?></label>
+									<div class="svv-builder-options">
+										<label><input type="checkbox" class="svv-b-show" value="temp" checked> <?php esc_html_e( 'Temp', 'spelhubben-weather' ); ?></label>
+										<label><input type="checkbox" class="svv-b-show" value="wind" checked> <?php esc_html_e( 'Wind', 'spelhubben-weather' ); ?></label>
+										<label><input type="checkbox" class="svv-b-show" value="wind_dir" checked> <?php esc_html_e( 'Wind Dir', 'spelhubben-weather' ); ?></label>
+										<label><input type="checkbox" class="svv-b-show" value="icon" checked> <?php esc_html_e( 'Icon', 'spelhubben-weather' ); ?></label>
+									</div>
 								</div>
-								<div>
+								<div class="svv-builder-group">
 									<strong><?php esc_html_e( 'Layout:', 'spelhubben-weather' ); ?></strong><br>
 									<select class="svv-b-layout">
 										<option value="card">Card</option>
@@ -170,7 +182,7 @@ if ( ! function_exists( 'sv_vader_render_shortcodes_page' ) ) {
 										<option value="detailed">Detailed</option>
 									</select>
 								</div>
-								<div>
+								<div class="svv-builder-group">
 									<strong><?php esc_html_e( 'Theme:', 'spelhubben-weather' ); ?></strong><br>
 									<select class="svv-b-theme">
 										<option value="auto">Auto</option>
@@ -178,23 +190,24 @@ if ( ! function_exists( 'sv_vader_render_shortcodes_page' ) ) {
 										<option value="dark">Dark</option>
 									</select>
 								</div>
-								<div>
+								<div class="svv-builder-group svv-builder-group--wide">
 									<strong><?php esc_html_e( 'Extras:', 'spelhubben-weather' ); ?></strong><br>
-									<label><input type="checkbox" class="svv-b-map" value="1"> <?php esc_html_e( 'Map', 'spelhubben-weather' ); ?></label>
-									<label><input type="checkbox" class="svv-b-animate" value="1" checked> <?php esc_html_e( 'Animate', 'spelhubben-weather' ); ?></label>
-									<label><input type="checkbox" class="svv-b-moon" value="moon"> <?php esc_html_e( 'Moon (meta)', 'spelhubben-weather' ); ?></label>
-									<label><input type="checkbox" class="svv-b-moon-daily" value="moon_daily"> <?php esc_html_e( 'Moon (daily forecast)', 'spelhubben-weather' ); ?></label>
+									<div class="svv-builder-options">
+										<label><input type="checkbox" class="svv-b-map" value="1"> <?php esc_html_e( 'Map', 'spelhubben-weather' ); ?></label>
+										<label><input type="checkbox" class="svv-b-animate" value="1" checked> <?php esc_html_e( 'Animate', 'spelhubben-weather' ); ?></label>
+										<label><input type="checkbox" class="svv-b-moon" value="moon"> <?php esc_html_e( 'Moon (meta)', 'spelhubben-weather' ); ?></label>
+										<label><input type="checkbox" class="svv-b-moon-daily" value="moon_daily"> <?php esc_html_e( 'Moon (daily forecast)', 'spelhubben-weather' ); ?></label>
+									</div>
 								</div>
-								<div style="width:100%;">
+								<div class="svv-builder-group svv-builder-group--full">
 									<strong><?php esc_html_e( 'Providers:', 'spelhubben-weather' ); ?></strong><br>
-									<label><input type="checkbox" class="svv-b-prov" value="openmeteo" checked> Open-Meteo</label>
-									<label><input type="checkbox" class="svv-b-prov" value="smhi" checked> SMHI</label>
-									<label><input type="checkbox" class="svv-b-prov" value="yr" checked> Yr</label>
-									<label><input type="checkbox" class="svv-b-prov" value="fmi"> FMI</label>
-									<label><input type="checkbox" class="svv-b-prov" value="openweathermap"> OpenWeather</label>
-									<label><input type="checkbox" class="svv-b-prov" value="weatherapi"> WeatherAPI</label>
+									<div class="svv-builder-providers">
+										<?php foreach ( $provider_labels as $provider_key => $provider_label ) : ?>
+											<label><input type="checkbox" class="svv-b-prov" value="<?php echo esc_attr( $provider_key ); ?>"<?php checked( in_array( $provider_key, array( 'openmeteo', 'smhi', 'yr' ), true ) ); ?>> <?php echo esc_html( $provider_label ); ?></label>
+										<?php endforeach; ?>
+									</div>
 								</div>
-								<div>
+								<div class="svv-builder-group">
 									<strong><?php esc_html_e( 'Wind unit (override):', 'spelhubben-weather' ); ?></strong><br>
 									<select class="svv-b-windunit">
 										<option value=""<?php echo selected( $opts['wind_unit'] ?? '', '', false ); ?>><?php esc_html_e('(use site default)', 'spelhubben-weather'); ?></option>
@@ -264,7 +277,7 @@ if ( ! function_exists( 'sv_vader_render_shortcodes_page' ) ) {
 									<tr data-group="disp"><td><code>layout</code></td><td><?php esc_html_e( 'inline | compact | card | detailed', 'spelhubben-weather' ); ?></td><td><code>layout="compact"</code></td></tr>
 									<tr data-group="disp"><td><code>map</code></td><td><?php esc_html_e( '1/0 to show/hide map', 'spelhubben-weather' ); ?></td><td><code>map="1"</code></td></tr>
 									<tr data-group="disp"><td><code>map_height</code></td><td><?php esc_html_e( 'Map height in px (min 120).', 'spelhubben-weather' ); ?></td><td><code>map_height="240"</code></td></tr>
-									<tr data-group="disp"><td><code>providers</code></td><td><?php esc_html_e( 'openmeteo,smhi,yr,metno_nowcast (comma-separated)', 'spelhubben-weather' ); ?></td><td><code>providers="smhi,yr,metno_nowcast"</code></td></tr>
+									<tr data-group="disp"><td><code>providers</code></td><td><?php echo esc_html( sprintf( __( '%s (comma-separated). Quick Builder checkboxes below use the same list.', 'spelhubben-weather' ), $provider_csv ) ); ?></td><td><code>providers="smhi,yr,metno_nowcast,fmi"</code></td></tr>
 									<tr data-group="disp"><td><code>animate</code></td><td><?php esc_html_e( '1/0 – subtle animations', 'spelhubben-weather' ); ?></td><td><code>animate="1"</code></td></tr>
 
 									<tr data-group="fc"><td><code>forecast</code></td><td><?php esc_html_e( 'none | daily', 'spelhubben-weather' ); ?></td><td><code>forecast="daily"</code></td></tr>
@@ -295,4 +308,3 @@ if ( ! function_exists( 'sv_vader_render_shortcodes_page' ) ) {
 		<?php
 	}
 }
-

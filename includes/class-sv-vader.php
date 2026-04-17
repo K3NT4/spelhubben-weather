@@ -16,6 +16,7 @@ class SV_Vader_API {
 		$ort = trim((string)$ort);
 		$lat = trim((string)$lat);
 		$lon = trim((string)$lon);
+		$providers = $this->normalize_providers($providers);
 
 		$api_lang = sv_vader_api_lang();
 		$cache_key = 'sv_vader_cons_' . md5(json_encode([$ort,$lat,$lon,$providers,$api_lang]));
@@ -36,6 +37,9 @@ class SV_Vader_API {
 		}
 
 		$samples = [];
+		$opts = sv_vader_get_options();
+		$owm_api_key = trim((string)($opts['owm_api_key'] ?? ''));
+		$weatherapi_api_key = trim((string)($opts['weatherapi_api_key'] ?? ''));
 
 		if (in_array('openmeteo', $providers, true)) {
 			$om = sv_vader_openmeteo_current($lat, $lon, $api_lang);
@@ -54,11 +58,11 @@ class SV_Vader_API {
             if ($fmi) $samples[] = $fmi;
         }
 		if (in_array('openweathermap', $providers, true)) {
-			$owm = sv_vader_openweathermap_current($lat, $lon, $api_lang);
+			$owm = sv_vader_openweathermap_current($lat, $lon, $api_lang, $owm_api_key);
 			if ($owm) $samples[] = $owm;
 		}
 		if (in_array('weatherapi', $providers, true)) {
-			$wa = sv_vader_weatherapi_current($lat, $lon, $api_lang);
+			$wa = sv_vader_weatherapi_current($lat, $lon, $api_lang, $weatherapi_api_key);
 			if ($wa) $samples[] = $wa;
 		}
 
@@ -86,6 +90,7 @@ class SV_Vader_API {
 		$ort = trim((string)$ort);
 		$lat = trim((string)$lat);
 		$lon = trim((string)$lon);
+		$providers = $this->normalize_providers($providers);
 
 		$api_lang = sv_vader_api_lang();
 		$cache_key = 'sv_vader_details_' . md5(json_encode([$ort,$lat,$lon,$providers,$api_lang]));
@@ -106,6 +111,9 @@ class SV_Vader_API {
 		}
 
 		$details = [];
+		$opts = sv_vader_get_options();
+		$owm_api_key = trim((string)($opts['owm_api_key'] ?? ''));
+		$weatherapi_api_key = trim((string)($opts['weatherapi_api_key'] ?? ''));
 
 		if (in_array('openmeteo', $providers, true)) {
 			$om = sv_vader_openmeteo_current($lat, $lon, $api_lang);
@@ -124,11 +132,11 @@ class SV_Vader_API {
             if ($fmi) $details['fmi'] = $fmi;
         }
 		if (in_array('openweathermap', $providers, true)) {
-			$owm = sv_vader_openweathermap_current($lat, $lon, $api_lang);
+			$owm = sv_vader_openweathermap_current($lat, $lon, $api_lang, $owm_api_key);
 			if ($owm) $details['openweathermap'] = $owm;
 		}
 		if (in_array('weatherapi', $providers, true)) {
-			$wa = sv_vader_weatherapi_current($lat, $lon, $api_lang);
+			$wa = sv_vader_weatherapi_current($lat, $lon, $api_lang, $weatherapi_api_key);
 			if ($wa) $details['weatherapi'] = $wa;
 		}
 
@@ -206,6 +214,23 @@ class SV_Vader_API {
 		sv_vader_cache_set($cache_key, $tides, MINUTE_IN_SECONDS * max(5, intval(sv_vader_get_options()['tide_cache_minutes'] ?? 60)));
 		sv_vader_stats_miss(1, $name, $lat, $lon);
 		return $tides;
+	}
+
+	private function normalize_providers($providers) {
+		if (!is_array($providers)) {
+			$providers = (array) $providers;
+		}
+
+		$providers = array_filter(array_map(static function ($provider) {
+			return trim(strtolower((string) $provider));
+		}, $providers), static function ($provider) {
+			return $provider !== '';
+		});
+
+		$providers = array_values(array_unique($providers));
+		sort($providers, SORT_STRING);
+
+		return $providers;
 	}
 
 	private function geocode($q) {

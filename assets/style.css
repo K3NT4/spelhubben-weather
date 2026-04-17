@@ -198,12 +198,12 @@ body.admin-color-modern .sv-vader {
   padding:calc(10px * var(--svv-scale));
   background: var(--svv-bg);
   box-shadow:0 2px 8px var(--svv-shadow);
+  transition: transform .2s ease, box-shadow .2s ease;
+}
 
 /* Moon icon styling */
 .svv-moon-icon{font-size:calc(14px * var(--svv-scale));margin-right:8px;vertical-align:middle;display:inline-block}
 .svv-moon{display:inline-flex;align-items:center;gap:6px}
-  transition: transform .2s ease, box-shadow .2s ease;
-}
 .svv-anim .svv-daycard:hover{ transform:translateY(-2px); box-shadow:0 6px 18px var(--svv-shadow); }
 .svv-daylabel{ font-weight:600; margin-bottom:calc(6px * var(--svv-scale)); }
 .svv-dayicon{ width:calc(36px * var(--svv-scale)); height:calc(36px * var(--svv-scale)); display:block; margin:calc(2px * var(--svv-scale)) 0; }

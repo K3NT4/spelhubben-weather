@@ -4,7 +4,7 @@ Tags: weather, forecast, widget, shortcode, blocks
 Requires at least: 6.8
 Tested up to: 6.9
 Requires PHP: 7.4
-Stable tag: 2.0.3
+Stable tag: 2.0.4
 Donate link: https://www.paypal.com/donate/?hosted_button_id=CV74CEXY5XEAU
 
 License: GPLv3 or later
@@ -22,15 +22,23 @@ Full license text is included in the `LICENSE` file in the plugin root.
 Feedback and bug reports can be posted here: https://github.com/K3NT4/spelhubben-weather/issues
 For common questions see the FAQ: https://github.com/K3NT4/spelhubben-weather/blob/main/Docs/FAQ.md
 For Roadmap: https://github.com/users/K3NT4/projects/2
-License: GPLv3 or later
-License URI: https://www.gnu.org/licenses/gpl-3.0.html
 
-Weather widget & block with optional map and daily forecast. Can combine Open-Meteo, SMHI, Yr/MET, FMI, Open-Weathermap, and Weatherapi.com data.
+Weather widget & block with optional map and daily forecast. Can combine Open-Meteo, SMHI, Yr/MET, MET Norway Nowcast, FMI, OpenWeatherMap, and WeatherAPI.com data.
 
 == Description ==
-This plugin displays current weather and an optional forecast. It can aggregate data from free global weather providers (Open-Meteo, SMHI, Yr/MET Norway, FMI, Open-Weathermap, and Weatherapi.com) and compute a simple consensus. Works worldwide with excellent coverage in Europe and beyond.
+This plugin displays current weather and an optional forecast. It can aggregate data from free global weather providers (Open-Meteo, SMHI, Yr/MET Norway, MET Norway Nowcast, FMI, OpenWeatherMap, and WeatherAPI.com) and compute a simple consensus. Works worldwide with excellent coverage in Europe and beyond.
 
 == Changelog ==
+
+= 2.0.4 =
+- Added: Admin settings for OpenWeatherMap and WeatherAPI keys, and runtime calls now send the correct key/query parameters.
+- Fixed: Provider docs, settings text, and shortcode guidance now match the actual 7-provider matrix and API-key requirements.
+- Fixed: `map_height` is clamped in the renderer too, so shortcode/block/widget overrides consistently honor the documented 120px minimum.
+- Fixed: Shortcodes admin/provider docs were unified and the Quick Builder now uses the same provider list as the shortcode reference.
+- Fixed: Shortcodes admin layout was rebalanced so the examples column stays readable and the Quick Builder wraps more cleanly.
+- Improved: Provider order is normalized in cache keys for better cache hit rates.
+- Improved: Added reproducible asset-build and release-check scripts; refreshed `assets/map.min.js` and added `assets/style.min.css`.
+- Improved: Privacy/consent documentation clarified for optional Leaflet/OpenStreetMap map fallback behavior.
 
 = 2.0.3 =
 - Fixed: Added default `units` and `yr_contact` options to remove undefined index notices on new installs.
@@ -51,7 +59,7 @@ This plugin displays current weather and an optional forecast. It can aggregate 
 
 **Features**
 - **Shortcode** `[spelhubben_weather]`, **Gutenberg block**, and **classic widget**
-- **6 Weather Providers:** Open-Meteo, SMHI, Yr (MET Norway), FMI, Open-Weathermap, Weatherapi.com — enable any combination
+- **7 Weather Providers:** Open-Meteo, SMHI, Yr (MET Norway), MET Norway Nowcast, FMI, OpenWeatherMap, WeatherAPI.com — enable any combination
 - **Icon Themes:** Classic, Modern Flat, Modern Gradient, Modern 2026, Modern 3D (selectable in admin settings)
 - **Multiple Layouts:** `inline`, `compact`, `card`, `detailed`
 - **Daily Forecast:** 3–10 days customizable
@@ -90,10 +98,10 @@ This plugin displays current weather and an optional forecast. It can aggregate 
 == Frequently Asked Questions ==
 
 = Where does the data come from? =
-From public APIs such as Open-Meteo, SMHI, Yr/MET Norway, and **FMI** (Finnish Meteorological Institute). You choose providers under **Settings → Spelhubben Weather** or per block/shortcode/widget via the `providers` attribute.
+From public APIs such as Open-Meteo, SMHI, Yr/MET Norway, MET Norway Nowcast, **FMI** (Finnish Meteorological Institute), OpenWeatherMap, and WeatherAPI.com. You choose providers under **Settings → Spelhubben Weather** or per block/shortcode/widget via the `providers` attribute.
 
 = Do I need an API key? =
-No. Open-Meteo, SMHI, and FMI do not require keys. For Yr/MET Norway it’s recommended to include contact info (email/URL) in **Settings → Spelhubben Weather → Yr contact/UA** so your User-Agent is compliant.
+Usually no. Open-Meteo, SMHI, Yr/MET Norway, MET Norway Nowcast, and FMI do not require keys. OpenWeatherMap and WeatherAPI.com do require API keys, and for Yr/MET Norway it’s recommended to include contact info (email/URL) in **Settings → Spelhubben Weather → Yr contact/UA** so your User-Agent is compliant.
 
 = Block, shortcode or widget — what’s the difference? =
 All three render the same UI. Use the **block** in the block editor, the **shortcode** in classic content areas, and the **widget** in sidebars (Appearance → Widgets). Each lets you override global defaults.
