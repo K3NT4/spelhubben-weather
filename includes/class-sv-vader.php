@@ -36,34 +36,17 @@ class SV_Vader_API {
 			$name = $ort;
 		}
 
-		$samples = [];
 		$opts = sv_vader_get_options();
-		$owm_api_key = trim((string)($opts['owm_api_key'] ?? ''));
-		$weatherapi_api_key = trim((string)($opts['weatherapi_api_key'] ?? ''));
-
-		if (in_array('openmeteo', $providers, true)) {
-			$om = sv_vader_openmeteo_current($lat, $lon, $api_lang);
-			if ($om) $samples[] = $om;
-		}
-		if (in_array('smhi', $providers, true)) {
-			$sm = sv_vader_smhi_current($lat, $lon);
-			if ($sm) $samples[] = $sm;
-		}
-		if (in_array('yr', $providers, true)) {
-			$yr = sv_vader_yr_current($lat, $lon, $yr_contact);
-			if ($yr) $samples[] = $yr;
-		}
-        if (in_array('fmi', $providers, true)) {
-            $fmi = sv_vader_fmi_current($lat, $lon);
-            if ($fmi) $samples[] = $fmi;
-        }
-		if (in_array('openweathermap', $providers, true)) {
-			$owm = sv_vader_openweathermap_current($lat, $lon, $api_lang, $owm_api_key);
-			if ($owm) $samples[] = $owm;
-		}
-		if (in_array('weatherapi', $providers, true)) {
-			$wa = sv_vader_weatherapi_current($lat, $lon, $api_lang, $weatherapi_api_key);
-			if ($wa) $samples[] = $wa;
+		$samples = [];
+		$attempted = 0;
+		foreach ($providers as $provider) {
+			$fetched = $this->fetch_provider_current($provider, $lat, $lon, $api_lang, $yr_contact, $opts);
+			if (($fetched['status'] ?? '') !== 'missing_key') {
+				$attempted++;
+			}
+			if (($fetched['status'] ?? '') === 'ok' && !empty($fetched['data'])) {
+				$samples[] = $fetched['data'];
+			}
 		}
 
 		if (empty($samples)) {
@@ -79,7 +62,7 @@ class SV_Vader_API {
 		], $cons);
 
 		sv_vader_cache_set($cache_key, $out, MINUTE_IN_SECONDS * $this->cache_minutes);
-		sv_vader_stats_miss(count($providers), $out['name'] ?? $ort, $lat, $lon);
+		sv_vader_stats_miss($attempted, $out['name'] ?? $ort, $lat, $lon);
 		return $out;
 	}
 
@@ -110,34 +93,17 @@ class SV_Vader_API {
 			$name = $ort;
 		}
 
-		$details = [];
 		$opts = sv_vader_get_options();
-		$owm_api_key = trim((string)($opts['owm_api_key'] ?? ''));
-		$weatherapi_api_key = trim((string)($opts['weatherapi_api_key'] ?? ''));
-
-		if (in_array('openmeteo', $providers, true)) {
-			$om = sv_vader_openmeteo_current($lat, $lon, $api_lang);
-			if ($om) $details['openmeteo'] = $om;
-		}
-		if (in_array('smhi', $providers, true)) {
-			$sm = sv_vader_smhi_current($lat, $lon);
-			if ($sm) $details['smhi'] = $sm;
-		}
-		if (in_array('yr', $providers, true)) {
-			$yr = sv_vader_yr_current($lat, $lon, $yr_contact);
-			if ($yr) $details['yr'] = $yr;
-		}
-        if (in_array('fmi', $providers, true)) {
-            $fmi = sv_vader_fmi_current($lat, $lon);
-            if ($fmi) $details['fmi'] = $fmi;
-        }
-		if (in_array('openweathermap', $providers, true)) {
-			$owm = sv_vader_openweathermap_current($lat, $lon, $api_lang, $owm_api_key);
-			if ($owm) $details['openweathermap'] = $owm;
-		}
-		if (in_array('weatherapi', $providers, true)) {
-			$wa = sv_vader_weatherapi_current($lat, $lon, $api_lang, $weatherapi_api_key);
-			if ($wa) $details['weatherapi'] = $wa;
+		$details = [];
+		$statuses = [];
+		$attempted = 0;
+		foreach ($providers as $provider) {
+			$fetched = $this->fetch_provider_current($provider, $lat, $lon, $api_lang, $yr_contact, $opts);
+			$statuses[$provider] = $fetched['status'];
+			if (($fetched['status'] ?? '') !== 'missing_key') {
+				$attempted++;
+			}
+			$details[$provider] = !empty($fetched['data']) ? $fetched['data'] : ['_status' => $fetched['status']];
 		}
 
 		$out = [
@@ -145,10 +111,11 @@ class SV_Vader_API {
 			'lat'  => $lat,
 			'lon'  => $lon,
 			'providers' => $details,
+			'provider_statuses' => $statuses,
 		];
 
 		sv_vader_cache_set($cache_key, $out, MINUTE_IN_SECONDS * $this->cache_minutes);
-		sv_vader_stats_miss(count($providers), $name ?? $ort, $lat, $lon);
+		sv_vader_stats_miss($attempted, $name ?? $ort, $lat, $lon);
 		return $out;
 	}
 
@@ -177,6 +144,36 @@ class SV_Vader_API {
 		}
 
 		$list = sv_vader_openmeteo_daily($lat, $lon, $days, $api_lang);
+		sv_vader_cache_set($cache_key, $list, MINUTE_IN_SECONDS * $this->cache_minutes);
+		sv_vader_stats_miss(1, $name, $lat, $lon);
+		return $list;
+	}
+
+	public function get_hourly_forecast($ort = '', $lat = '', $lon = '', $hours = 24) {
+		$ort = trim((string)$ort);
+		$lat = trim((string)$lat);
+		$lon = trim((string)$lon);
+		$hours = max(3, min(24, intval($hours)));
+
+		$api_lang = sv_vader_api_lang();
+		$cache_key = 'sv_vader_hourly_' . md5(json_encode([$ort,$lat,$lon,$hours,$api_lang]));
+		$cached = sv_vader_cache_get($cache_key);
+		if ($cached !== false) {
+			sv_vader_stats_hit();
+			return $cached;
+		}
+
+		if ($lat === '' || $lon === '') {
+			$coords = $this->geocode($ort);
+			if (is_wp_error($coords)) return [];
+			$lat = $coords['lat'];
+			$lon = $coords['lon'];
+			$name = $coords['name'];
+		} else {
+			$name = $ort;
+		}
+
+		$list = sv_vader_openmeteo_hourly($lat, $lon, $hours, $api_lang);
 		sv_vader_cache_set($cache_key, $list, MINUTE_IN_SECONDS * $this->cache_minutes);
 		sv_vader_stats_miss(1, $name, $lat, $lon);
 		return $list;
@@ -228,9 +225,49 @@ class SV_Vader_API {
 		});
 
 		$providers = array_values(array_unique($providers));
-		sort($providers, SORT_STRING);
+		$order = function_exists('sv_vader_provider_ids')
+			? sv_vader_provider_ids()
+			: ['openmeteo','smhi','yr','metno_nowcast','fmi','openweathermap','weatherapi'];
+		$rank = array_flip($order);
+		usort($providers, static function ($a, $b) use ($rank) {
+			$rank_a = $rank[$a] ?? PHP_INT_MAX;
+			$rank_b = $rank[$b] ?? PHP_INT_MAX;
+			if ($rank_a === $rank_b) {
+				return strcmp($a, $b);
+			}
+			return $rank_a <=> $rank_b;
+		});
 
 		return $providers;
+	}
+
+	private function fetch_provider_current($provider, $lat, $lon, $api_lang, $yr_contact, array $opts) {
+		if (function_exists('sv_vader_provider_key_missing') && sv_vader_provider_key_missing($provider, $opts)) {
+			return ['status' => 'missing_key', 'data' => null];
+		}
+
+		$data = null;
+		if ($provider === 'openmeteo') {
+			$data = sv_vader_openmeteo_current($lat, $lon, $api_lang);
+		} elseif ($provider === 'smhi') {
+			$data = sv_vader_smhi_current($lat, $lon);
+		} elseif ($provider === 'yr') {
+			$data = sv_vader_yr_current($lat, $lon, $yr_contact);
+		} elseif ($provider === 'metno_nowcast') {
+			$data = sv_vader_metno_nowcast_current($lat, $lon, $yr_contact);
+		} elseif ($provider === 'fmi') {
+			$data = sv_vader_fmi_current($lat, $lon);
+		} elseif ($provider === 'openweathermap') {
+			$data = sv_vader_openweathermap_current($lat, $lon, $api_lang, trim((string)($opts['owm_api_key'] ?? '')));
+		} elseif ($provider === 'weatherapi') {
+			$data = sv_vader_weatherapi_current($lat, $lon, $api_lang, trim((string)($opts['weatherapi_api_key'] ?? '')));
+		}
+
+		if (is_array($data) && !empty($data['_status']) && $data['_status'] !== 'ok') {
+			return ['status' => $data['_status'], 'data' => null];
+		}
+
+		return $data ? ['status' => 'ok', 'data' => $data] : ['status' => 'no_data', 'data' => null];
 	}
 
 	private function geocode($q) {

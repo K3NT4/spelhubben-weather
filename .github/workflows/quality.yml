@@ -1,0 +1,77 @@
+name: Quality checks
+
+on:
+  pull_request:
+  push:
+    branches:
+      - main
+    tags:
+      - "*"
+
+jobs:
+  php-lint:
+    name: PHP lint
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: shivammathur/setup-php@v2
+        with:
+          php-version: '7.4'
+          tools: none
+
+      - name: Lint PHP files
+        run: find . -path ./node_modules -prune -o -name '*.php' -print0 | xargs -0 -n1 php -l
+
+  regression:
+    name: Regression tests
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: shivammathur/setup-php@v2
+        with:
+          php-version: '7.4'
+          tools: none
+
+      - name: Run regression suite
+        run: php tests/regression_test.php
+
+  asset-sync:
+    name: Asset sync
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: npm
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Rebuild assets
+        run: npm run build:assets
+
+      - name: Verify generated assets are committed
+        run: git diff --exit-code -- assets/map.min.js assets/openlayers.js assets/openlayers.css assets/style.min.css
+
+  release-check:
+    name: Release checks
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: shivammathur/setup-php@v2
+        with:
+          php-version: '7.4'
+          tools: none
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: npm
+
+      - name: Run release checklist
+        run: npm run check:release

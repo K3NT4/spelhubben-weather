@@ -35,11 +35,16 @@ class SV_Vader_Widget extends WP_Widget {
             'layout'    => 'card',
             'map'       => 0,
             'mapHeight' => 240,
+            'map_engine' => 'auto',
             'animate'   => 1,
             'forecast'  => 'none',
             'days'      => 5,
+            'hourly'    => 0,
+            'hours'     => 24,
+            'tides'     => 0,
             'show_alerts' => 1,
             'theme'     => 'auto',
+            'preset'    => '',
             'class'     => 'is-widget',
             'wind_unit' => '',
         ];
@@ -64,11 +69,16 @@ class SV_Vader_Widget extends WP_Widget {
         $layout      = sanitize_text_field($instance['layout']);
         $map         = !empty($instance['map']) ? 1 : 0;
         $mapHeight   = (int) $instance['mapHeight'];
+        $map_engine  = in_array(strtolower($instance['map_engine'] ?? 'auto'), ['auto','openlayers','leaflet','static'], true) ? strtolower($instance['map_engine']) : 'auto';
         $animate     = !empty($instance['animate']) ? 1 : 0;
         $forecast    = in_array($instance['forecast'], ['none','daily'], true) ? $instance['forecast'] : 'none';
         $days        = max(1, min(14, (int) $instance['days']));
+        $hourly      = !empty($instance['hourly']) ? 1 : 0;
+        $hours       = max(3, min(24, (int) ($instance['hours'] ?? 24)));
+        $tides       = !empty($instance['tides']) ? 1 : 0;
         $show_alerts = !empty($instance['show_alerts']) ? 1 : 0;
         $theme       = in_array(strtolower($instance['theme'] ?? 'auto'), ['auto','light','dark'], true) ? strtolower($instance['theme']) : 'auto';
+        $preset      = in_array(strtolower($instance['preset'] ?? ''), ['','mini','hero','sidebar','dashboard','forecast-strip'], true) ? strtolower($instance['preset']) : '';
         $extra_cls   = isset($instance['class']) ? sanitize_html_class($instance['class'], '') : '';
         $show_moon   = !empty($instance['show_moon']) ? 1 : 0;
         $show_moon_daily = !empty($instance['show_moon_daily']) ? 1 : 0;
@@ -94,12 +104,17 @@ class SV_Vader_Widget extends WP_Widget {
                 'class'       => trim('is-widget ' . $extra_cls),
                 'map'         => $map ? '1' : '0',
                 'map_height'  => (string) $mapHeight,
+                'map_engine'  => $map_engine,
                 'animate'     => $animate ? '1' : '0',
                 'forecast'    => $forecast,
                 'days'        => (string) $days,
+                'hourly'      => $hourly ? '1' : '0',
+                'hours'       => (string) $hours,
+                'tides'       => $tides ? '1' : '0',
                 'show_alerts' => $show_alerts ? '1' : '0',
-                    'theme'       => $theme,
-                        'wind_unit'   => $instance['wind_unit'] ?? ($opts['wind_unit'] ?? ''),
+                'theme'       => $theme,
+                'preset'      => $preset,
+                'wind_unit'   => $instance['wind_unit'] ?? ($opts['wind_unit'] ?? ''),
             ]);
 
             echo wp_kses_post($html);
@@ -123,10 +138,15 @@ class SV_Vader_Widget extends WP_Widget {
             'layout'    => 'card',
             'map'       => 0,
             'mapHeight' => 240,
+            'map_engine' => 'auto',
             'animate'   => 1,
             'forecast'  => 'none',
             'days'      => 5,
+            'hourly'    => 0,
+            'hours'     => 24,
+            'tides'     => 0,
             'theme'     => 'auto',
+            'preset'    => '',
             'class'     => '',
             'wind_unit' => '',
         ];
@@ -229,6 +249,16 @@ class SV_Vader_Widget extends WP_Widget {
             </select>
         </p>
         <p>
+            <label for="<?php echo esc_attr($this->get_field_id('preset')); ?>"><?php esc_html_e('Preset:', 'spelhubben-weather'); ?></label>
+            <select id="<?php echo esc_attr($this->get_field_id('preset')); ?>"
+                    name="<?php echo esc_attr($this->get_field_name('preset')); ?>"
+                    class="widefat">
+                <?php foreach (['' => '(none)', 'mini' => 'mini', 'hero' => 'hero', 'sidebar' => 'sidebar', 'dashboard' => 'dashboard', 'forecast-strip' => 'forecast-strip'] as $val => $label): ?>
+                    <option value="<?php echo esc_attr($val); ?>" <?php selected($instance['preset'] ?? '', $val); ?>><?php echo esc_html($label); ?></option>
+                <?php endforeach; ?>
+            </select>
+        </p>
+        <p>
             <input id="<?php echo esc_attr($this->get_field_id('map')); ?>"
                    name="<?php echo esc_attr($this->get_field_name('map')); ?>"
                    type="checkbox" value="1" <?php checked($instance['map'], 1); ?>>
@@ -240,6 +270,16 @@ class SV_Vader_Widget extends WP_Widget {
                    name="<?php echo esc_attr($this->get_field_name('mapHeight')); ?>"
                    type="number" min="120" max="800" step="10"
                    value="<?php echo esc_attr((string) $instance['mapHeight']); ?>">
+        </p>
+        <p>
+            <label for="<?php echo esc_attr($this->get_field_id('map_engine')); ?>"><?php esc_html_e('Map engine:', 'spelhubben-weather'); ?></label>
+            <select id="<?php echo esc_attr($this->get_field_id('map_engine')); ?>"
+                    name="<?php echo esc_attr($this->get_field_name('map_engine')); ?>"
+                    class="widefat">
+                <?php foreach (['auto','openlayers','leaflet','static'] as $engine): ?>
+                    <option value="<?php echo esc_attr($engine); ?>" <?php selected($instance['map_engine'] ?? 'auto', $engine); ?>><?php echo esc_html($engine); ?></option>
+                <?php endforeach; ?>
+            </select>
         </p>
         <p>
             <input id="<?php echo esc_attr($this->get_field_id('animate')); ?>"
@@ -262,6 +302,25 @@ class SV_Vader_Widget extends WP_Widget {
                    name="<?php echo esc_attr($this->get_field_name('days')); ?>"
                    type="number" min="1" max="14" step="1"
                    value="<?php echo esc_attr((string) $instance['days']); ?>">
+        </p>
+        <p>
+            <input id="<?php echo esc_attr($this->get_field_id('hourly')); ?>"
+                   name="<?php echo esc_attr($this->get_field_name('hourly')); ?>"
+                   type="checkbox" value="1" <?php checked($instance['hourly'] ?? 0, 1); ?>>
+            <label for="<?php echo esc_attr($this->get_field_id('hourly')); ?>"><?php esc_html_e('Hourly forecast', 'spelhubben-weather'); ?></label>
+        </p>
+        <p>
+            <label for="<?php echo esc_attr($this->get_field_id('hours')); ?>"><?php esc_html_e('Hours (3–24):', 'spelhubben-weather'); ?></label>
+            <input id="<?php echo esc_attr($this->get_field_id('hours')); ?>"
+                   name="<?php echo esc_attr($this->get_field_name('hours')); ?>"
+                   type="number" min="3" max="24" step="1"
+                   value="<?php echo esc_attr((string) ($instance['hours'] ?? 24)); ?>">
+        </p>
+        <p>
+            <input id="<?php echo esc_attr($this->get_field_id('tides')); ?>"
+                   name="<?php echo esc_attr($this->get_field_name('tides')); ?>"
+                   type="checkbox" value="1" <?php checked($instance['tides'] ?? 0, 1); ?>>
+            <label for="<?php echo esc_attr($this->get_field_id('tides')); ?>"><?php esc_html_e('Show tides', 'spelhubben-weather'); ?></label>
         </p>
         <p>
             <input id="<?php echo esc_attr($this->get_field_id('show_alerts')); ?>"
@@ -323,13 +382,20 @@ class SV_Vader_Widget extends WP_Widget {
         $instance['layout']      = sanitize_text_field($new_instance['layout'] ?? 'card');
         $instance['map']         = !empty($new_instance['map']) ? 1 : 0;
         $instance['mapHeight']   = max(120, min(800, (int) ($new_instance['mapHeight'] ?? 240)));
+        $map_engine = strtolower(trim((string)($new_instance['map_engine'] ?? 'auto')));
+        $instance['map_engine']  = in_array($map_engine, ['auto','openlayers','leaflet','static'], true) ? $map_engine : 'auto';
         $instance['animate']     = !empty($new_instance['animate']) ? 1 : 0;
         $instance['forecast']    = in_array($new_instance['forecast'] ?? 'none', ['none','daily'], true) ? $new_instance['forecast'] : 'none';
         $instance['days']        = max(1, min(14, (int) ($new_instance['days'] ?? 5)));
+        $instance['hourly']      = !empty($new_instance['hourly']) ? 1 : 0;
+        $instance['hours']       = max(3, min(24, (int) ($new_instance['hours'] ?? 24)));
+        $instance['tides']       = !empty($new_instance['tides']) ? 1 : 0;
         $instance['show_alerts'] = !empty($new_instance['show_alerts']) ? 1 : 0;
         $instance['show_moon_daily'] = !empty($new_instance['show_moon_daily']) ? 1 : 0;
         $instance['show_moon']   = !empty($new_instance['show_moon']) ? 1 : 0;
         $instance['theme']       = in_array(strtolower($new_instance['theme'] ?? 'auto'), ['auto','light','dark'], true) ? sanitize_text_field(strtolower($new_instance['theme'])) : 'auto';
+        $preset = strtolower(trim((string)($new_instance['preset'] ?? '')));
+        $instance['preset']      = in_array($preset, ['','mini','hero','sidebar','dashboard','forecast-strip'], true) ? $preset : '';
         $instance['class']       = sanitize_html_class($new_instance['class'] ?? '', '');
         $wu = strtolower(trim((string)($new_instance['wind_unit'] ?? '')));
         $instance['wind_unit'] = in_array($wu, ['ms','kmh','mph','knt','kn'], true) ? $wu : '';

@@ -1,0 +1,22 @@
+Third-party assets used in Spelhubben Weather
+
+Spelhubben Weather is licensed under GPLv3 or later. The following bundled
+third-party assets remain under their respective licenses.
+
+Libraries
+
+- Leaflet JS/CSS
+  Source: https://leafletjs.com/
+  Version: 1.9.x
+  License: BSD 2-Clause. See licenses/leaflet-BSD-2-Clause.txt.
+
+- OpenLayers JS/CSS
+  Source: https://openlayers.org/
+  Version: 10.x
+  License: BSD 2-Clause. See licenses/openlayers-BSD-2-Clause.txt.
+
+Icons / SVG
+
+- assets/icons/*.svg
+  Source: Custom, created by Spelhubben
+  License: GPLv3 or later, same as the plugin.

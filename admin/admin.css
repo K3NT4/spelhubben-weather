@@ -69,13 +69,31 @@
 
 /* Grid & cards */
 .svv-grid{ display:grid; grid-template-columns:minmax(320px, 360px) minmax(0, 1fr); gap:16px; align-items:start; }
-@media (max-width:1200px){ .svv-grid{ grid-template-columns:1fr; } }
+.svv-grid--settings{ grid-template-columns:minmax(620px, 1fr) minmax(280px, 360px); }
+.svv-grid--shortcodes{ grid-template-columns:minmax(280px, 340px) minmax(0, 1fr); }
+.svv-grid--performance{ grid-template-columns:minmax(280px, 360px) minmax(0, 1fr); }
+@media (max-width:1200px){ .svv-grid, .svv-grid--settings, .svv-grid--shortcodes, .svv-grid--performance{ grid-template-columns:1fr; } }
 .svv-col{ display:flex; flex-direction:column; gap:16px; }
 .svv-card{ background:var(--svv-card); border:1px solid var(--svv-border); border-radius:var(--svv-radius); padding:16px; box-shadow:var(--svv-shadow-1); transition:box-shadow .18s ease; color: var(--svv-text); }
 .svv-card:hover{ box-shadow:var(--svv-shadow-2); }
 .svv-card-title{ margin:0 0 12px; font-size:1.05rem; display:flex; align-items:center; gap:8px; color: var(--svv-text); }
 .svv-card-title .dashicons{ color:var(--svv-accent); }
 .svv-tag{ margin-left:auto; font-size:11px; font-weight:normal; background:var(--svv-bg); padding:2px 8px; border-radius:6px; color:var(--svv-muted); border:1px solid var(--svv-border); }
+
+/* Settings form */
+.svv-form .form-table{ width:100%; table-layout:fixed; }
+.svv-form .form-table th{ width:170px; padding-left:0; padding-right:16px; }
+.svv-form .form-table td{ padding-right:0; min-width:0; }
+.svv-form input.regular-text{ width:min(100%, 360px); max-width:100%; }
+.svv-form select{ max-width:100%; }
+.svv-form label{ overflow-wrap:anywhere; }
+.svv-form .description{ max-width:46rem; }
+
+@media (max-width:782px){
+  .svv-form .form-table{ table-layout:auto; }
+  .svv-form .form-table th,
+  .svv-form .form-table td{ display:block; width:100%; padding-right:0; }
+}
 
 /* Search */
 .svv-search{ display:inline-flex; align-items:center; gap:6px; padding:6px 10px; background:var(--svv-card); border:1px solid var(--svv-border); border-radius:999px; }

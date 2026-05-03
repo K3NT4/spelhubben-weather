@@ -6,7 +6,7 @@ class SV_Vader_Assets {
 
     /**
      * Enqueue public-facing assets (CSS/JS) for the frontend.
-     * Only loads core stylesheet; Leaflet/map assets are loaded conditionally.
+     * Only loads core stylesheet; map engine assets are loaded conditionally.
      */
     public function enqueue_public_assets() {
 
@@ -35,6 +35,9 @@ class SV_Vader_Assets {
         // optimization plugins move or defer head scripts.
         wp_register_script('svv-leaflet-js', SV_VADER_URL . 'assets/vendor/leaflet/leaflet.js', [], '1.9.4', true);
 
+        wp_register_style('svv-openlayers-css', SV_VADER_URL . 'assets/openlayers.css', [], SV_VADER_VER);
+        wp_register_script('svv-openlayers-js', SV_VADER_URL . 'assets/openlayers.js', [], SV_VADER_VER, true);
+
         // Small inline flag executed immediately after Leaflet to aid debugging and
         // to allow other scripts to detect that Leaflet has been output.
         wp_add_inline_script('svv-leaflet-js', "window._svv_leaflet_registered = true;");
@@ -45,12 +48,11 @@ class SV_Vader_Assets {
             $map_file = 'assets/map.min.js';
         }
 
-        // Map depends on *our* Leaflet handle (svv-leaflet-js)
-        wp_register_script('sv-vader-map', SV_VADER_URL . $map_file, ['svv-leaflet-js'], SV_VADER_VER, true);
+        wp_register_script('sv-vader-map', SV_VADER_URL . $map_file, ['svv-openlayers-js', 'svv-leaflet-js'], SV_VADER_VER, true);
 
         // Enable translations for front-end scripts (if present)
         if ( function_exists( 'wp_set_script_translations' ) ) {
-            wp_set_script_translations( 'sv-vader-map', 'spelhubben-weather' );
+            wp_set_script_translations( 'sv-vader-map', 'spelhubben-weather', SV_VADER_DIR . 'languages' );
         }
         // Small helper to rotate wind direction arrows when inline styles are stripped
         wp_register_script('sv-vader-wind', SV_VADER_URL . 'assets/wind.js', [], SV_VADER_VER, true);
@@ -61,15 +63,27 @@ class SV_Vader_Assets {
             wp_enqueue_script('sv-vader-wind');
         }
 
-        // Load Leaflet assets only if shortcode is present or Gutenberg block is used
-        if ( $this->should_load_leaflet() ) {
+        // Load map assets only if shortcode is present or Gutenberg block is used.
+        if ( $this->should_load_map() ) {
+            $opts = function_exists('sv_vader_get_options') ? sv_vader_get_options() : [];
+            $engine = strtolower((string)($opts['map_engine'] ?? 'auto'));
+            if ( ! in_array($engine, ['auto','openlayers','leaflet','static'], true) ) {
+                $engine = 'auto';
+            }
+
+            // Enqueue both local engines when a map is present. The effective
+            // engine can be overridden per shortcode/block/widget instance, and
+            // this enqueue phase cannot reliably know every rendered instance.
             wp_enqueue_style('svv-leaflet-css');
             wp_enqueue_script('svv-leaflet-js');
+            wp_enqueue_style('svv-openlayers-css');
+            wp_enqueue_script('svv-openlayers-js');
             wp_enqueue_script('sv-vader-map');
 
-            // Localize only when map script is actually enqueued
+            // Localize only when map script is actually enqueued.
             wp_localize_script('sv-vader-map', 'SVV', [
                 'iconBase' => trailingslashit(SV_VADER_URL . 'assets/vendor/leaflet/images'),
+                'mapEngine' => $engine,
             ]);
 
             /**
@@ -81,9 +95,9 @@ class SV_Vader_Assets {
     }
 
     /**
-     * Check if Leaflet assets should be loaded on this page.
+     * Check if map assets should be loaded on this page.
      */
-    private function should_load_leaflet() {
+    private function should_load_map() {
         global $post;
         // Fallback: get queried object if $post is not set or not a WP_Post
         if ( ! isset( $post ) || ! is_a( $post, 'WP_Post' ) ) {

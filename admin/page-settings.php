@@ -63,7 +63,7 @@ if ( ! function_exists( 'sv_vader_render_settings_page' ) ) {
 				</a>
 			</div>
 
-			<div class="svv-grid">
+			<div class="svv-grid svv-grid--settings">
 				<div class="svv-col">
 					<div class="svv-card">
 						<h2 class="svv-card-title" style="display:flex; align-items:center; gap:8px;">
@@ -141,7 +141,7 @@ if ( ! function_exists( 'sv_vader_render_settings_page' ) ) {
 							<div class="svv-tip-badges">
 								<span class="svv-badge"><span class="dashicons dashicons-shortcode"></span><?php esc_html_e( 'Shortcode', 'spelhubben-weather' ); ?></span>
 								<span class="svv-badge"><span class="dashicons dashicons-schedule"></span><?php esc_html_e( 'Forecast', 'spelhubben-weather' ); ?></span>
-								<span class="svv-badge"><span class="dashicons dashicons-location-alt"></span><?php esc_html_e( 'Leaflet map', 'spelhubben-weather' ); ?></span>
+								<span class="svv-badge"><span class="dashicons dashicons-location-alt"></span><?php esc_html_e( 'Smart map', 'spelhubben-weather' ); ?></span>
 							</div>
 						</div>
 						<script>
@@ -149,7 +149,7 @@ if ( ! function_exists( 'sv_vader_render_settings_page' ) ) {
 							const svvTips = <?php echo wp_json_encode( array(
 								__( 'Use the Shortcodes page to quickly copy examples and see supported attributes.', 'spelhubben-weather' ),
 								__( 'Change icon style in Settings → Spelhubben Weather → Icon style to try different themes.', 'spelhubben-weather' ),
-								__( 'Enable the Leaflet map to show station locations and interactive maps.', 'spelhubben-weather' ),
+								__( 'Enable the smart map to use OpenLayers first, Leaflet legacy when selected, or a static fallback if scripts are blocked.', 'spelhubben-weather' ),
 								__( 'Shortcodes support a `layout` attribute to switch between compact and detailed views.', 'spelhubben-weather' )
 							) ); ?>;
 

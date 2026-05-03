@@ -13,6 +13,128 @@ if (!function_exists('sv_vader_check_remote_response')) {
     }
 }
 
+if (!function_exists('sv_vader_remote_error_status')) {
+    function sv_vader_remote_error_status($res, $expected_code = 200) {
+        if (is_wp_error($res)) return 'request_failed';
+        return wp_remote_retrieve_response_code($res) === $expected_code ? '' : 'request_failed';
+    }
+}
+
+if (!function_exists('sv_vader_provider_registry')) {
+    /**
+     * Canonical provider registry used by settings, renderer, diagnostics and docs.
+     */
+    function sv_vader_provider_registry() {
+        return [
+            'openmeteo' => [
+                'id' => 'openmeteo',
+                'label' => __('Open-Meteo', 'spelhubben-weather'),
+                'option_key' => 'prov_openmeteo',
+                'requires_key' => false,
+                'key_option' => '',
+                'current' => true,
+                'hourly' => true,
+                'region' => __('Global', 'spelhubben-weather'),
+            ],
+            'smhi' => [
+                'id' => 'smhi',
+                'label' => __('SMHI', 'spelhubben-weather'),
+                'option_key' => 'prov_smhi',
+                'requires_key' => false,
+                'key_option' => '',
+                'current' => true,
+                'hourly' => false,
+                'region' => __('Sweden and nearby regions', 'spelhubben-weather'),
+            ],
+            'yr' => [
+                'id' => 'yr',
+                'label' => __('Yr (MET Norway)', 'spelhubben-weather'),
+                'option_key' => 'prov_yr',
+                'requires_key' => false,
+                'key_option' => '',
+                'current' => true,
+                'hourly' => false,
+                'region' => __('Global', 'spelhubben-weather'),
+            ],
+            'metno_nowcast' => [
+                'id' => 'metno_nowcast',
+                'label' => __('MET Norway Nowcast', 'spelhubben-weather'),
+                'option_key' => 'prov_metno_nowcast',
+                'requires_key' => false,
+                'key_option' => '',
+                'current' => true,
+                'hourly' => false,
+                'region' => __('Nordic radar coverage', 'spelhubben-weather'),
+            ],
+            'fmi' => [
+                'id' => 'fmi',
+                'label' => __('FMI (Finland, Open Data)', 'spelhubben-weather'),
+                'option_key' => 'prov_fmi',
+                'requires_key' => false,
+                'key_option' => '',
+                'current' => true,
+                'hourly' => false,
+                'region' => __('Finland and nearby regions', 'spelhubben-weather'),
+            ],
+            'openweathermap' => [
+                'id' => 'openweathermap',
+                'label' => __('OpenWeatherMap', 'spelhubben-weather'),
+                'option_key' => 'prov_openweathermap',
+                'requires_key' => true,
+                'key_option' => 'owm_api_key',
+                'current' => true,
+                'hourly' => false,
+                'region' => __('Global', 'spelhubben-weather'),
+            ],
+            'weatherapi' => [
+                'id' => 'weatherapi',
+                'label' => __('WeatherAPI.com', 'spelhubben-weather'),
+                'option_key' => 'prov_weatherapi',
+                'requires_key' => true,
+                'key_option' => 'weatherapi_api_key',
+                'current' => true,
+                'hourly' => false,
+                'region' => __('Global', 'spelhubben-weather'),
+            ],
+        ];
+    }
+}
+
+if (!function_exists('sv_vader_provider_ids')) {
+    function sv_vader_provider_ids() {
+        return array_keys(sv_vader_provider_registry());
+    }
+}
+
+if (!function_exists('sv_vader_enabled_provider_ids')) {
+    function sv_vader_enabled_provider_ids($opts = null) {
+        if ($opts === null && function_exists('sv_vader_get_options')) {
+            $opts = sv_vader_get_options();
+        }
+        $opts = is_array($opts) ? $opts : [];
+        $ids = [];
+        foreach (sv_vader_provider_registry() as $id => $provider) {
+            $option_key = $provider['option_key'];
+            if (!empty($opts[$option_key])) {
+                $ids[] = $id;
+            }
+        }
+        return $ids;
+    }
+}
+
+if (!function_exists('sv_vader_provider_key_missing')) {
+    function sv_vader_provider_key_missing($provider_id, array $opts) {
+        $registry = sv_vader_provider_registry();
+        if (empty($registry[$provider_id]['requires_key'])) {
+            return false;
+        }
+
+        $key_option = $registry[$provider_id]['key_option'] ?? '';
+        return $key_option === '' || trim((string)($opts[$key_option] ?? '')) === '';
+    }
+}
+
 if (!function_exists('sv_vader_openmeteo_current')) {
     function sv_vader_openmeteo_current($lat, $lon, $locale = 'en') {
         $url = add_query_arg([
@@ -24,9 +146,10 @@ if (!function_exists('sv_vader_openmeteo_current')) {
         ], 'https://api.open-meteo.com/v1/forecast');
 
         $res = wp_remote_get($url, ['timeout' => 10]);
-        if (!sv_vader_check_remote_response($res, 200)) return null;
+        $remote_status = sv_vader_remote_error_status($res, 200);
+        if ($remote_status !== '') return ['_status' => $remote_status];
         $j = json_decode(wp_remote_retrieve_body($res), true);
-        if (empty($j['current'])) return null;
+        if (empty($j['current'])) return ['_status' => 'no_data'];
 
         $c = $j['current'];
         return [
@@ -51,9 +174,10 @@ if (!function_exists('sv_vader_smhi_current')) {
             'timeout'    => 12,
             'user-agent' => 'Spelhubben-Weather/1.0'
         ]);
-        if (is_wp_error($res) || wp_remote_retrieve_response_code($res) !== 200) return null;
+        $remote_status = sv_vader_remote_error_status($res, 200);
+        if ($remote_status !== '') return ['_status' => $remote_status];
         $j = json_decode(wp_remote_retrieve_body($res), true);
-        if (empty($j['timeSeries'][0])) return null;
+        if (empty($j['timeSeries'][0])) return ['_status' => 'no_data'];
 
         $now = current_time('timestamp', true);
         $nearest = null; $mindiff = PHP_INT_MAX;
@@ -62,7 +186,7 @@ if (!function_exists('sv_vader_smhi_current')) {
             $diff = abs($t - $now);
             if ($diff < $mindiff) { $mindiff = $diff; $nearest = $ts; }
         }
-        if (!$nearest || empty($nearest['parameters'])) return null;
+        if (!$nearest || empty($nearest['parameters'])) return ['_status' => 'no_data'];
 
         $map = [];
         foreach ($nearest['parameters'] as $p) {
@@ -95,9 +219,10 @@ if (!function_exists('sv_vader_yr_current')) {
             'timeout' => 12,
             'headers' => ['User-Agent' => $ua]
         ]);
-        if (is_wp_error($res) || wp_remote_retrieve_response_code($res) !== 200) return null;
+        $remote_status = sv_vader_remote_error_status($res, 200);
+        if ($remote_status !== '') return ['_status' => $remote_status];
         $j = json_decode(wp_remote_retrieve_body($res), true);
-        if (empty($j['properties']['timeseries'][0])) return null;
+        if (empty($j['properties']['timeseries'][0])) return ['_status' => 'no_data'];
 
         $now = current_time('timestamp', true);
         $nearest = null; $mindiff = PHP_INT_MAX;
@@ -106,7 +231,7 @@ if (!function_exists('sv_vader_yr_current')) {
             $diff = abs($t - $now);
             if ($diff < $mindiff) { $mindiff = $diff; $nearest = $ts; }
         }
-        if (!$nearest) return null;
+        if (!$nearest) return ['_status' => 'no_data'];
 
         $inst   = $nearest['data']['instant']['details'] ?? [];
         $next1h = $nearest['data']['next_1_hours']['details'] ?? [];
@@ -123,6 +248,104 @@ if (!function_exists('sv_vader_yr_current')) {
     }
 }
 
+if (!function_exists('sv_vader_metno_nowcast_current')) {
+    /**
+     * MET Norway Nowcast 2.0. Best short-term forecast in Nordic radar coverage.
+     */
+    function sv_vader_metno_nowcast_current($lat, $lon, $contactUA = '') {
+        $ua = 'Spelhubben-Weather/2.1';
+        if ($contactUA) $ua .= ' (' . $contactUA . ')';
+
+        $url = add_query_arg([
+            'lat' => $lat,
+            'lon' => $lon,
+        ], 'https://api.met.no/weatherapi/nowcast/2.0/complete');
+
+        $res = wp_remote_get($url, [
+            'timeout' => 12,
+            'headers' => [
+                'User-Agent' => $ua,
+                'Accept' => 'application/json',
+            ],
+        ]);
+
+        if (is_wp_error($res)) {
+            return ['_status' => 'request_failed'];
+        }
+
+        $code = wp_remote_retrieve_response_code($res);
+        if ($code === 404 || $code === 422) {
+            return ['_status' => 'no_coverage'];
+        }
+        if ($code !== 200) {
+            return ['_status' => 'request_failed'];
+        }
+
+        $j = json_decode(wp_remote_retrieve_body($res), true);
+        if (empty($j['properties']['timeseries'][0])) {
+            return ['_status' => 'no_data'];
+        }
+
+        $meta = $j['properties']['meta'] ?? [];
+        $coverage = strtolower((string)($meta['radar_coverage'] ?? ($meta['radarCoverage'] ?? '')));
+        $status = 'ok';
+        if (strpos($coverage, 'no coverage') !== false) {
+            $status = 'no_coverage';
+        } elseif (strpos($coverage, 'temporarily') !== false) {
+            $status = 'request_failed';
+        }
+
+        $now = current_time('timestamp', true);
+        $nearest = null; $mindiff = PHP_INT_MAX;
+        foreach ($j['properties']['timeseries'] as $ts) {
+            $t = strtotime($ts['time'] ?? '');
+            if (!$t) continue;
+            $diff = abs($t - $now);
+            if ($diff < $mindiff) { $mindiff = $diff; $nearest = $ts; }
+        }
+        if (!$nearest) return ['_status' => 'no_data'];
+
+        $inst = $nearest['data']['instant']['details'] ?? [];
+        $next1h = $nearest['data']['next_1_hours']['details'] ?? [];
+        $summary = $nearest['data']['next_1_hours']['summary'] ?? [];
+        $symbol = isset($summary['symbol_code']) ? sanitize_text_field($summary['symbol_code']) : '';
+
+        $out = [
+            'temp'     => isset($inst['air_temperature']) ? floatval($inst['air_temperature']) : null,
+            'wind'     => isset($inst['wind_speed']) ? floatval($inst['wind_speed']) : null,
+            'wind_dir' => isset($inst['wind_from_direction']) ? floatval($inst['wind_from_direction']) : null,
+            'precip'   => isset($next1h['precipitation_amount']) ? floatval($next1h['precipitation_amount']) : null,
+            'cloud'    => isset($inst['cloud_area_fraction']) ? intval(round($inst['cloud_area_fraction'])) : null,
+            'code'     => function_exists('sv_vader_symbol_code_to_wmo') ? sv_vader_symbol_code_to_wmo($symbol) : null,
+            'desc'     => $symbol ? str_replace('_', ' ', $symbol) : null,
+            '_status'  => $status,
+        ];
+
+        return ($out['temp']===null && $out['wind']===null && $out['wind_dir']===null && $out['precip']===null && $out['cloud']===null)
+            ? ['_status' => $status === 'ok' ? 'no_data' : $status]
+            : $out;
+    }
+}
+
+if (!function_exists('sv_vader_symbol_code_to_wmo')) {
+    function sv_vader_symbol_code_to_wmo($symbol) {
+        $symbol = strtolower((string)$symbol);
+        if ($symbol === '') return null;
+        if (strpos($symbol, 'thunder') !== false) return 95;
+        if (strpos($symbol, 'heavysnow') !== false) return 75;
+        if (strpos($symbol, 'snow') !== false) return 71;
+        if (strpos($symbol, 'sleet') !== false) return 66;
+        if (strpos($symbol, 'heavyrain') !== false) return 65;
+        if (strpos($symbol, 'rain') !== false) return 61;
+        if (strpos($symbol, 'fog') !== false) return 45;
+        if (strpos($symbol, 'partlycloudy') !== false) return 2;
+        if (strpos($symbol, 'cloudy') !== false) return 3;
+        if (strpos($symbol, 'fair') !== false) return 1;
+        if (strpos($symbol, 'clearsky') !== false) return 0;
+        return null;
+    }
+}
+
 /**
  * NEW: FMI (Finnish Meteorological Institute) via WFS timevaluepair
  * Uses bbox around point to pick nearest station.
@@ -132,7 +355,7 @@ if (!function_exists('sv_vader_yr_current')) {
 if (!function_exists('sv_vader_fmi_current')) {
     function sv_vader_fmi_current($lat, $lon) {
         $lat = floatval($lat); $lon = floatval($lon);
-        if (!$lat && !$lon) return null;
+        if (!$lat && !$lon) return ['_status' => 'no_data'];
 
         $d = 0.06; // ~ ca 6–7 km
         $bbox = ($lon - $d) . ',' . ($lat - $d) . ',' . ($lon + $d) . ',' . ($lat + $d) . ',epsg:4326';
@@ -147,17 +370,18 @@ if (!function_exists('sv_vader_fmi_current')) {
         ], 'https://opendata.fmi.fi/wfs');
 
         $res = wp_remote_get($url, ['timeout'=>14,'user-agent'=>'Spelhubben-Weather/1.0 (FMI WFS)']);
-        if (is_wp_error($res) || wp_remote_retrieve_response_code($res) !== 200) return null;
+        $remote_status = sv_vader_remote_error_status($res, 200);
+        if ($remote_status !== '') return ['_status' => $remote_status];
 
         $xml = wp_remote_retrieve_body($res);
-        if (!is_string($xml) || $xml==='') return null;
+        if (!is_string($xml) || $xml==='') return ['_status' => 'no_data'];
 
         // Safely load XML with LIBXML_NOCDATA to avoid entity expansion attacks
         $old_errors = libxml_use_internal_errors(true);
         $sx = simplexml_load_string($xml, null, LIBXML_NOCDATA);
         libxml_use_internal_errors($old_errors);
         
-        if (!$sx) return null;
+        if (!$sx) return ['_status' => 'no_data'];
         $sx->registerXPathNamespace('wml2','http://www.opengis.net/waterml/2.0');
         $sx->registerXPathNamespace('gml', 'http://www.opengis.net/gml/3.2');
 
@@ -181,7 +405,7 @@ if (!function_exists('sv_vader_fmi_current')) {
                 }
             }
         }
-        return ($out['temp']===null && $out['wind']===null && $out['wind_dir']===null && $out['precip']===null && $out['cloud']===null) ? null : $out;
+        return ($out['temp']===null && $out['wind']===null && $out['wind_dir']===null && $out['precip']===null && $out['cloud']===null) ? ['_status' => 'no_data'] : $out;
     }
 }
 
@@ -189,7 +413,7 @@ if (!function_exists('sv_vader_openweathermap_current')) {
     function sv_vader_openweathermap_current($lat, $lon, $locale = 'en', $api_key = '') {
         // OpenWeatherMap requires an API key configured in plugin settings.
         $api_key = trim((string)$api_key);
-        if ($api_key === '') return null;
+        if ($api_key === '') return ['_status' => 'missing_key'];
 
         $url = add_query_arg([
             'lat'   => $lat,
@@ -200,9 +424,10 @@ if (!function_exists('sv_vader_openweathermap_current')) {
         ], 'https://api.openweathermap.org/data/2.5/weather');
 
         $res = wp_remote_get($url, ['timeout' => 10]);
-        if (is_wp_error($res) || wp_remote_retrieve_response_code($res) !== 200) return null;
+        $remote_status = sv_vader_remote_error_status($res, 200);
+        if ($remote_status !== '') return ['_status' => $remote_status];
         $j = json_decode(wp_remote_retrieve_body($res), true);
-        if (empty($j['main'])) return null;
+        if (empty($j['main'])) return ['_status' => 'no_data'];
 
         $main = $j['main'];
         $wind = !empty($j['wind']) ? $j['wind'] : [];
@@ -225,7 +450,7 @@ if (!function_exists('sv_vader_weatherapi_current')) {
     function sv_vader_weatherapi_current($lat, $lon, $locale = 'en', $api_key = '') {
         // WeatherAPI requires an API key configured in plugin settings.
         $api_key = trim((string)$api_key);
-        if ($api_key === '') return null;
+        if ($api_key === '') return ['_status' => 'missing_key'];
 
         $lang_map = [
             'sv' => 'sv',
@@ -245,9 +470,10 @@ if (!function_exists('sv_vader_weatherapi_current')) {
         ], 'https://api.weatherapi.com/v1/current.json');
 
         $res = wp_remote_get($url, ['timeout' => 10]);
-        if (is_wp_error($res) || wp_remote_retrieve_response_code($res) !== 200) return null;
+        $remote_status = sv_vader_remote_error_status($res, 200);
+        if ($remote_status !== '') return ['_status' => $remote_status];
         $j = json_decode(wp_remote_retrieve_body($res), true);
-        if (empty($j['current'])) return null;
+        if (empty($j['current'])) return ['_status' => 'no_data'];
 
         $current = $j['current'];
         return [
@@ -393,6 +619,67 @@ if (!function_exists('sv_vader_openmeteo_daily')) {
         }
         return $out;
     }
+}
+
+if (!function_exists('sv_vader_openmeteo_hourly')) {
+    /**
+     * Fetch compact hourly forecast for the next N hours.
+     * Returns: [ ['time'=>'YYYY-MM-DDTHH:MM','temp'=>..,'wind'=>..,'wind_dir'=>..,'precip'=>..,'code'=>int|null,'desc'=>string], ... ]
+     */
+    function sv_vader_openmeteo_hourly($lat, $lon, $hours = 24, $locale = 'en') {
+        $hours = max(3, min(24, intval($hours)));
+        $url = add_query_arg([
+            'latitude'       => $lat,
+            'longitude'      => $lon,
+            'hourly'         => 'temperature_2m,wind_speed_10m,wind_direction_10m,weather_code,precipitation',
+            'timezone'       => 'Europe/Stockholm',
+            'forecast_hours' => $hours,
+            'lang'           => $locale,
+        ], 'https://api.open-meteo.com/v1/forecast');
+
+        $res = wp_remote_get($url, ['timeout' => 10]);
+        if (is_wp_error($res) || wp_remote_retrieve_response_code($res) !== 200) return [];
+
+        $j = json_decode(wp_remote_retrieve_body($res), true);
+        if (empty($j['hourly']['time']) || !is_array($j['hourly']['time'])) return [];
+
+        $times = $j['hourly']['time'];
+        $temps = $j['hourly']['temperature_2m'] ?? [];
+        $winds = $j['hourly']['wind_speed_10m'] ?? [];
+        $wind_dirs = $j['hourly']['wind_direction_10m'] ?? [];
+        $codes = $j['hourly']['weather_code'] ?? [];
+        $precips = $j['hourly']['precipitation'] ?? [];
+        $out = [];
+
+        foreach (array_slice($times, 0, $hours) as $i => $time) {
+            $code = isset($codes[$i]) ? intval($codes[$i]) : null;
+            $out[] = [
+                'time'     => $time,
+                'temp'     => isset($temps[$i]) ? floatval($temps[$i]) : null,
+                'wind'     => isset($winds[$i]) ? floatval($winds[$i]) : null,
+                'wind_dir' => isset($wind_dirs[$i]) ? floatval($wind_dirs[$i]) : null,
+                'precip'   => isset($precips[$i]) ? floatval($precips[$i]) : null,
+                'code'     => $code,
+                'desc'     => ($code !== null) ? sv_vader_wmo_text($code) : '',
+            ];
+        }
+
+        return $out;
+    }
+}
+
+if (!function_exists('sv_vader_provider_status_label')) {
+    function sv_vader_provider_status_label($status) {
+        $labels = [
+            'ok' => __('OK', 'spelhubben-weather'),
+            'missing_key' => __('Missing API key', 'spelhubben-weather'),
+            'no_coverage' => __('No coverage', 'spelhubben-weather'),
+            'request_failed' => __('Request failed', 'spelhubben-weather'),
+            'no_data' => __('No data', 'spelhubben-weather'),
+        ];
+        return $labels[$status] ?? __('Unknown', 'spelhubben-weather');
+    }
+}
 
 
     /**
@@ -579,4 +866,3 @@ if (!function_exists('sv_vader_openmeteo_daily')) {
         }
 
     }
-}

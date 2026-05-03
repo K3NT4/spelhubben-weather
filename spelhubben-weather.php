@@ -1,20 +1,20 @@
 <?php
 /**
  * Plugin Name: Spelhubben Weather
- * Description: Displays current weather and an optional forecast with a simple consensus across providers (Open-Meteo, SMHI, Yr/MET Norway, FMI, OpenWeatherMap, WeatherAPI). Supports shortcode + Gutenberg block + classic widget. Optional Leaflet map, subtle animations, daily forecast, and multiple layouts.
- * Version: 2.0.4
+ * Description: Displays current weather, compact hourly forecasts and optional daily forecast with provider consensus (Open-Meteo, SMHI, Yr/MET Norway, MET Nowcast, FMI, OpenWeatherMap, WeatherAPI). Supports shortcode, Gutenberg block, classic widget and local smart maps.
+ * Version: 2.1.0
  * Author: Spelhubben
  * Text Domain: spelhubben-weather
  * Domain Path: /languages
- * Requires at least: 6.9.4
+ * Requires at least: 6.8
  * Requires PHP: 7.4
  * License: GPLv3 or later
  * License URI: https://www.gnu.org/licenses/gpl-3.0.html
  */
 /*
  * Copyright (C) 2026 Spelhubben
- * Licensed under the GNU General Public License v2 (or later)
- * https://www.gnu.org/licenses/gpl-2.0.html
+ * Licensed under the GNU General Public License v3 (or later)
+ * https://www.gnu.org/licenses/gpl-3.0.html
  */
 
 if ( ! defined( 'ABSPATH' ) ) {
@@ -23,7 +23,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 
 // ── Constants (kept for backward compatibility).
 	if ( ! defined( 'SV_VADER_VER' ) ) {
-		define( 'SV_VADER_VER', '2.0.4' );
+		define( 'SV_VADER_VER', '2.1.0' );
 	}
 if ( ! defined( 'SV_VADER_DIR' ) ) {
 	define( 'SV_VADER_DIR', plugin_dir_path( __FILE__ ) );
@@ -67,6 +67,17 @@ require_once SV_VADER_DIR . 'includes/cache.php';
 require_once SV_VADER_DIR . 'includes/format.php';         // Units & formatting helpers.
 require_once SV_VADER_DIR . 'includes/class-wporg-plugins.php'; // WP.org plugin showcase.
 require_once SV_VADER_DIR . 'includes/class-sv-vader.php'; // API/service layer.
+
+if ( ! function_exists( 'sv_vader_load_plugin_textdomain' ) ) {
+	function sv_vader_load_plugin_textdomain() {
+		load_plugin_textdomain(
+			'spelhubben-weather',
+			false,
+			dirname( plugin_basename( __FILE__ ) ) . '/languages'
+		);
+	}
+}
+add_action( 'plugins_loaded', 'sv_vader_load_plugin_textdomain', 0 );
 
 // Optional integrations
 $sv_vader_vc = SV_VADER_DIR . 'includes/integrations/vc.php';

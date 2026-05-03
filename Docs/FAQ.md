@@ -15,6 +15,8 @@ Here are answers to common questions about the Spelhubben Weather plugin.
   - Simple: `[spelhubben_weather]`
   - Compact with map: `[spelhubben_weather place="Gothenburg" layout="compact" map="1"]`
   - Daily forecast (5 days): `[spelhubben_weather forecast="daily" days="5"]`
+  - Hourly forecast (24 hours): `[spelhubben_weather hourly="1" hours="24"]`
+  - OpenLayers map: `[spelhubben_weather map="1" map_engine="openlayers"]`
 
 - **Common issues & troubleshooting:**
   - Nothing appears: Make sure at least one provider is enabled in Settings.
@@ -22,11 +24,11 @@ Here are answers to common questions about the Spelhubben Weather plugin.
   - Map is not visible: Ensure `map="1"` and set `map_height="240"` (or larger) if the container is small.
   - Rate limiting / empty responses: Increase the cache TTL in Settings or reduce update frequency.
 
-- **Do I need API keys?** No for Open-Meteo, SMHI and FMI. Some providers may require a key — check Settings.
+- **Do I need API keys?** No for Open-Meteo, SMHI, Yr/MET Norway, MET Norway Nowcast and FMI. OpenWeatherMap and WeatherAPI.com require keys stored server-side in Settings.
 
 - **Languages & translations:** Includes Swedish (`sv_SE`) and Norwegian Bokmål (`nb_NO`). See the `/languages` folder for translation files.
 
-- **Privacy:** The plugin does not set cookies by itself. If you enable the map, OpenStreetMap tiles are requested client-side — mention OSM in your privacy policy if required.
+- **Privacy:** The plugin does not set cookies by itself. If you enable the map, OpenStreetMap tiles are requested client-side from local OpenLayers/Leaflet code — mention OSM in your privacy policy if required.
 
 - **Support:** For bug reports, issues or feature requests use GitHub issues: https://github.com/K3NT4/spelhubben-weather/issues
 
@@ -36,7 +38,7 @@ Here are answers to common questions about the Spelhubben Weather plugin.
 - **Control which fields show:** Use `show="temp,wind,wind_dir,icon,phase,illumination"` to tailor the display. Fields are comma-separated.
 - **Mix providers & compare:** Request specific providers with `providers="smhi,yr,openmeteo,fmi"`. Use `comparison="1"` to show side-by-side provider outputs for debugging.
 - **Wind unit overrides:** Force wind units per instance with `wind_unit="ms|kmh|mph|knt"` (e.g. `wind_unit="knt"`). The Block/Widget inspector exposes this option.
-- **Map tips:** Enable the map with `map="1"` and set height with `map_height="240"` (px). If tiles or markers don't appear, check that Leaflet assets are enqueued (they load conditionally when needed).
+- **Map tips:** Enable the map with `map="1"` and set height with `map_height="240"` (px). Use `map_engine="auto|openlayers|leaflet|static"` to control the smart map engine. If interactive scripts are blocked, the plugin shows a static fallback instead of an empty map.
 - **Caching & troubleshooting:** Increase `Cache TTL` in Settings to reduce external calls. Clear plugin cache on Settings → Performance if data looks stale or providers return errors.
 - **Animate & theme:** `animate` accepts `1`, `true`, `yes`, or `on`. Force theme per-instance with `theme="auto|light|dark"`.
 - **MET Norway contact info:** For Yr/MET Norway, set contact email/URL in Settings so your User-Agent meets their API guidelines — this prevents rate-limiting in some cases.

@@ -73,14 +73,14 @@ class SV_Vader_Plugin {
         }
 
         // Pass-through of same-name attributes
-        foreach (['lat','lon','show','layout','class','providers','forecast','days','map_height','theme','extras'] as $k) {
+        foreach (['lat','lon','show','layout','class','providers','forecast','days','hours','map_height','theme','extras','preset','map_engine'] as $k) {
             if (isset($norm[$k])) {
                 $legacy[$k] = $norm[$k];
             }
         }
 
         // Booleans that should be "1"/"0"
-        foreach (['map','animate','show_moon','show_alerts','comparison'] as $k) {
+        foreach (['map','animate','show_moon','show_alerts','comparison','hourly','tides'] as $k) {
             if (isset($norm[$k])) {
                 $val = $norm[$k];
                 $truthy = in_array(strtolower((string)$val), ['1','true','yes','y','on'], true);

@@ -62,7 +62,7 @@ if ( ! function_exists( 'sv_vader_admin_enqueue' ) ) {
 
 		// Enable JS translations for admin script when available
 		if ( function_exists( 'wp_set_script_translations' ) ) {
-			wp_set_script_translations( 'sv-vader-admin', 'spelhubben-weather' );
+			wp_set_script_translations( 'sv-vader-admin', 'spelhubben-weather', SV_VADER_DIR . 'languages' );
 		}
 		wp_localize_script( 'sv-vader-admin', 'SVV_ADMIN_I18N', array(
 			'copied'     => __( 'Copied!', 'spelhubben-weather' ),
@@ -93,13 +93,16 @@ if ( ! function_exists( 'sv_vader_admin_enqueue' ) ) {
 				'css' => array(
 					trailingslashit( SV_VADER_URL ) . 'assets/style.css',
 					trailingslashit( SV_VADER_URL ) . 'assets/vendor/leaflet/leaflet.css',
+					trailingslashit( SV_VADER_URL ) . 'assets/openlayers.css',
 				),
 				'js'  => array(
+					trailingslashit( SV_VADER_URL ) . 'assets/openlayers.js',
 					trailingslashit( SV_VADER_URL ) . 'assets/vendor/leaflet/leaflet.js',
 					trailingslashit( SV_VADER_URL ) . 'assets/map.js',
 				),
 				'svv' => array(
 					'iconBase' => trailingslashit( SV_VADER_URL ) . 'assets/vendor/leaflet/images/',
+					'mapEngine' => ( sv_vader_get_options()['map_engine'] ?? 'auto' ),
 				),
 			),
 		) );
@@ -340,6 +343,7 @@ if ( ! function_exists( 'sv_vader_register_settings' ) ) {
 		add_settings_field( 'default_layout', __( 'Default layout', 'spelhubben-weather' ), 'sv_vader_field_default_layout', 'sv_vader', 'sv_vader_main' );
 		add_settings_field( 'map_default', __( 'Show map by default', 'spelhubben-weather' ), 'sv_vader_field_map_default', 'sv_vader', 'sv_vader_main' );
 		add_settings_field( 'map_height', __( 'Map height (px)', 'spelhubben-weather' ), 'sv_vader_field_map_height', 'sv_vader', 'sv_vader_main' );
+		add_settings_field( 'map_engine', __( 'Map engine', 'spelhubben-weather' ), 'sv_vader_field_map_engine', 'sv_vader', 'sv_vader_main' );
 		add_settings_field( 'icon_style', __( 'Icon style', 'spelhubben-weather' ), 'sv_vader_field_icon_style', 'sv_vader', 'sv_vader_main' );
 		add_settings_field( 'providers', __( 'Data providers', 'spelhubben-weather' ), 'sv_vader_field_providers', 'sv_vader', 'sv_vader_main' );
 		add_settings_field( 'yr_contact', __( 'Yr contact/UA', 'spelhubben-weather' ), 'sv_vader_field_yr_contact', 'sv_vader', 'sv_vader_main' );
@@ -462,6 +466,27 @@ function sv_vader_field_map_height() {
 	);
 }
 
+function sv_vader_field_map_engine() {
+	$o = sv_vader_get_options();
+	$engines = array(
+		'auto'       => __( 'Auto (OpenLayers first, Leaflet legacy fallback)', 'spelhubben-weather' ),
+		'openlayers' => __( 'OpenLayers', 'spelhubben-weather' ),
+		'leaflet'    => __( 'Leaflet legacy', 'spelhubben-weather' ),
+		'static'     => __( 'Static fallback', 'spelhubben-weather' ),
+	);
+	echo '<select name="sv_vader_options[map_engine]">';
+	foreach ( $engines as $val => $label ) {
+		printf(
+			'<option value="%s"%s>%s</option>',
+			esc_attr( $val ),
+			selected( $o['map_engine'] ?? 'auto', $val, false ),
+			esc_html( $label )
+		);
+	}
+	echo '</select>';
+	echo '<p class="description">' . esc_html__( 'Auto uses the new OpenLayers engine first and falls back to legacy Leaflet or a static map status if an engine is unavailable.', 'spelhubben-weather' ) . '</p>';
+}
+
 function sv_vader_field_icon_style() {
 	$o = sv_vader_get_options();
 	$styles = array(
@@ -486,43 +511,17 @@ function sv_vader_field_icon_style() {
 
 function sv_vader_field_providers() {
 	$o = sv_vader_get_options();
-	printf(
-		'<label><input type="checkbox" name="sv_vader_options[prov_openmeteo]" value="1" %s/> %s</label><br>',
-		checked( 1, ! empty( $o['prov_openmeteo'] ), false ),
-		esc_html__( 'Open-Meteo', 'spelhubben-weather' )
-	);
-	printf(
-		'<label><input type="checkbox" name="sv_vader_options[prov_smhi]" value="1" %s/> %s</label><br>',
-		checked( 1, ! empty( $o['prov_smhi'] ), false ),
-		esc_html__( 'SMHI', 'spelhubben-weather' )
-	);
-	printf(
-		'<label><input type="checkbox" name="sv_vader_options[prov_yr]" value="1" %s/> %s</label><br>',
-		checked( 1, ! empty( $o['prov_yr'] ), false ),
-		esc_html__( 'Yr (MET Norway)', 'spelhubben-weather' )
-	);
-	printf(
-		'<label><input type="checkbox" name="sv_vader_options[prov_metno_nowcast]" value="1" %s/> %s</label><br>',
-		checked( 1, ! empty( $o['prov_metno_nowcast'] ), false ),
-		esc_html__( 'MET Norway Nowcast', 'spelhubben-weather' )
-	);
-    // NEW: FMI
-	printf(
-		'<label><input type="checkbox" name="sv_vader_options[prov_fmi]" value="1" %s/> %s</label><br>',
-		checked( 1, ! empty( $o['prov_fmi'] ), false ),
-		esc_html__( 'FMI (Finland, Open Data)', 'spelhubben-weather' )
-	);
-	printf(
-		'<label><input type="checkbox" name="sv_vader_options[prov_openweathermap]" value="1" %s/> %s</label><br>',
-		checked( 1, ! empty( $o['prov_openweathermap'] ), false ),
-		esc_html__( 'Open-Weathermap', 'spelhubben-weather' )
-	);
-	printf(
-		'<label><input type="checkbox" name="sv_vader_options[prov_weatherapi]" value="1" %s/> %s</label>',
-		checked( 1, ! empty( $o['prov_weatherapi'] ), false ),
-		esc_html__( 'Weatherapi.com', 'spelhubben-weather' )
-	);
-	echo '<p class="description" style="margin:8px 0 6px;">' . esc_html__( 'OpenWeatherMap and WeatherAPI require API keys. Keys are stored server-side and never exposed to frontend visitors.', 'spelhubben-weather' ) . '</p>';
+	$providers = function_exists('sv_vader_provider_registry') ? sv_vader_provider_registry() : array();
+	foreach ( $providers as $provider ) {
+		printf(
+			'<label><input type="checkbox" name="sv_vader_options[%1$s]" value="1" %2$s/> %3$s <span class="description">(%4$s)</span></label><br>',
+			esc_attr( $provider['option_key'] ),
+			checked( 1, ! empty( $o[ $provider['option_key'] ] ), false ),
+			esc_html( $provider['label'] ),
+			esc_html( $provider['region'] ?? '' )
+		);
+	}
+	echo '<p class="description" style="margin:8px 0 6px;">' . esc_html__( 'OpenWeatherMap and WeatherAPI require API keys and are disabled by default on fresh installs. Keys are stored server-side and never exposed to frontend visitors.', 'spelhubben-weather' ) . '</p>';
 	printf(
 		'<label>%s <input type="text" name="sv_vader_options[owm_api_key]" value="%s" class="regular-text" autocomplete="off" /></label><br>',
 		esc_html__( 'OpenWeatherMap API key', 'spelhubben-weather' ),

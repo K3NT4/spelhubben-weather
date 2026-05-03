@@ -27,6 +27,22 @@
     { label: __( 'knt (knots)', 'spelhubben-weather' ), value: 'knt' },
   ];
 
+  const MAP_ENGINES = [
+    { label: __( 'Auto', 'spelhubben-weather' ), value: 'auto' },
+    { label: __( 'OpenLayers', 'spelhubben-weather' ), value: 'openlayers' },
+    { label: __( 'Leaflet legacy', 'spelhubben-weather' ), value: 'leaflet' },
+    { label: __( 'Static fallback', 'spelhubben-weather' ), value: 'static' },
+  ];
+
+  const PRESETS = [
+    { label: __( '(none)', 'spelhubben-weather' ), value: '' },
+    { label: __( 'Mini', 'spelhubben-weather' ), value: 'mini' },
+    { label: __( 'Hero', 'spelhubben-weather' ), value: 'hero' },
+    { label: __( 'Sidebar', 'spelhubben-weather' ), value: 'sidebar' },
+    { label: __( 'Dashboard', 'spelhubben-weather' ), value: 'dashboard' },
+    { label: __( 'Forecast strip', 'spelhubben-weather' ), value: 'forecast-strip' },
+  ];
+
   registerBlockType( 'spelhubben-weather/spelhubben-weather', {
     edit: ( props ) => {
       const { attributes, setAttributes } = props;
@@ -70,6 +86,12 @@
               options: LAYOUTS,
               onChange: ( v ) => setAttributes( { layout: v } ),
             } ),
+            el( SelectControl, {
+              label: __( 'Preset', 'spelhubben-weather' ),
+              value: attributes.preset || '',
+              options: PRESETS,
+              onChange: ( v ) => setAttributes( { preset: v } ),
+            } ),
             el( 'div', { style: { marginBottom: '16px' } },
               el( 'label', { style: { display: 'block', marginBottom: '8px', fontWeight: '600' } }, __( 'Show fields', 'spelhubben-weather' ) ),
               [
@@ -107,6 +129,12 @@
               step: 10,
               value: attributes.mapHeight,
               onChange: ( v ) => setAttributes( { mapHeight: v } ),
+            } ),
+            el( SelectControl, {
+              label: __( 'Map engine', 'spelhubben-weather' ),
+              value: attributes.mapEngine || 'auto',
+              options: MAP_ENGINES,
+              onChange: ( v ) => setAttributes( { mapEngine: v } ),
             } ),
             el( ToggleControl, {
               label: __( 'Animations', 'spelhubben-weather' ),
@@ -163,6 +191,18 @@
                 { label: __( 'Daily', 'spelhubben-weather' ), value: 'daily' },
               ],
               onChange: ( v ) => setAttributes( { forecast: v } ),
+            } ),
+            el( ToggleControl, {
+              label: __( 'Hourly forecast', 'spelhubben-weather' ),
+              checked: !! attributes.hourly,
+              onChange: ( v ) => setAttributes( { hourly: !! v } ),
+            } ),
+            el( RangeControl, {
+              label: __( 'Hours', 'spelhubben-weather' ),
+              min: 3,
+              max: 24,
+              value: attributes.hours || 24,
+              onChange: ( v ) => setAttributes( { hours: v } ),
             } ),
             el( RangeControl, {
               label: __( 'Days', 'spelhubben-weather' ),

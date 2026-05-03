@@ -1,14 +1,26 @@
 # Spelhubben Weather
 
-WordPress weather plugin displaying current conditions and optional daily forecast using a simple consensus of **Open-Meteo**, **SMHI**, **Yr (MET Norway)**, **FMI (Finland)**, **OpenWeatherMap**, and **WeatherAPI.com**. Includes a Gutenberg block, classic widget, shortcode, optional Leaflet map, responsive layouts, multiple icon themes, and local SVG icons.
+WordPress weather plugin displaying current conditions, compact hourly forecasts and optional daily forecast using a simple consensus of **Open-Meteo**, **SMHI**, **Yr (MET Norway)**, **MET Norway Nowcast**, **FMI (Finland)**, **OpenWeatherMap**, and **WeatherAPI.com**. Includes a Gutenberg block, classic widget, shortcode, smart local map handling, responsive layouts, multiple icon themes, and local SVG icons.
 
-For common questions and troubleshooting see the FAQ: [FAQ.md](FAQ.md)
+For common questions and troubleshooting see the FAQ: [Docs/FAQ.md](Docs/FAQ.md)
 
-**Version:** 2.0.4
+**Version:** 2.1.0
 
-**Note:** Maintenance release adding provider API-key support, tightening map/cache behavior, improving the Shortcodes admin UI, and formalizing asset/release checks.
+**Note:** Stability release adding a central provider registry, real MET Norway Nowcast support, compact hourly forecasts, local-only map policy, map diagnostics, and CI/release checks. Sunrise/sunset and the full Astro panel are intentionally kept for the 2.2 feature release.
 
 ## Changelog
+
+###  2.1.0 (2026-05-03)
+- **Added:** Central provider registry shared by settings, renderer, shortcode/block/widget surfaces, diagnostics and documentation.
+- **Added:** Real MET Norway Nowcast 2.0 current-weather provider with explicit `ok`, `missing_key`, `no_coverage`, `request_failed`, and `no_data` diagnostics.
+- **Added:** Compact hourly forecast via Open-Meteo using `hourly="1"` and `hours="3-24"` (default `24`).
+- **Changed:** Removed the external Leaflet CDN fallback. Map scripts and vendor assets are now local-only.
+- **Changed:** OpenWeatherMap and WeatherAPI are disabled by default on fresh installs until API keys are configured.
+- **Added:** Smart map foundation for 2.2 with OpenLayers, Leaflet legacy mode, static fallback, `map_engine`, and map diagnostics in Performance.
+- **Improved:** Shortcode, Gutenberg block and widget parity for hourly forecast, tides, presets and map engine attributes.
+- **Fixed:** Admin settings layout no longer overlaps on wider forms, and bundled textdomain/script translations load consistently from `/languages`.
+- **Improved:** Hourly forecast time labels now use a locale-aware compact format, e.g. `13:00` for Swedish/Norwegian sites and `1:00 PM` for US English.
+- **Improved:** CI now separates PHP lint, regression tests, asset-sync checks and release checks.
 
 ###  2.0.4 (2026-04-17)
 - **Added:** Admin settings for OpenWeatherMap and WeatherAPI keys, with runtime requests now passing the correct key/query parameters and refusing key-required providers when keys are missing.
@@ -59,7 +71,7 @@ For common questions and troubleshooting see the FAQ: [FAQ.md](FAQ.md)
 - Eliminates unnecessary 404 errors on pages without weather widget
 - Added `.htaccess` files to ensure correct MIME types for static assets
 - Improved page load performance by reducing asset requests on non-weather pages
-- If the map loads in staging but not in production: exclude the plugin’s Leaflet/map scripts from “Delay JS” / “Defer JS” features in your cache/optimization plugin.
+- If the map loads in staging but not in production: exclude the plugin’s OpenLayers/Leaflet/map scripts from “Delay JS” / “Defer JS” features in your cache/optimization plugin.
 
 ### Settings Page Speed
 - **Before:** 3-15 seconds (waiting for WP.org plugin showcase)
@@ -132,18 +144,23 @@ All magic numbers are now defined in `includes/constants.php`:
 This makes the plugin easier to maintain and adjust without modifying provider functions.
 
 ### Code Quality
-- Standardized API error handling across all 6 weather providers
+- Standardized API error handling across all weather providers
 - Fixed WMO weather code duplication (fog icons now display correctly)
 - Improved widget null-safety with null-coalesce operators
 - Fixed geocoding cache to include language for locale-specific results
 
-## Local Leaflet & Vendor Assets
+## Local Map Engines & Vendor Assets
 
-WordPress.org disallows loading CSS/JS from third-party CDNs. All vendor libraries (Leaflet) are bundled locally in the plugin.
+WordPress.org disallows loading CSS/JS from third-party CDNs. The plugin therefore ships all map runtime assets locally. OpenLayers is the preferred smart map engine, Leaflet remains available as a legacy engine, and the frontend shows a static fallback with coordinates and an OpenStreetMap link if interactive scripts are blocked.
 
 **Folder structure**
 ```
 assets/
+  openlayers.css
+  openlayers.js
+  openlayers-entry.js
+  map.js
+  map.min.js
   vendor/
     leaflet/
       leaflet.css
@@ -154,25 +171,13 @@ assets/
         marker-shadow.png
 ```
 
-**PHP enqueue (excerpt)**  
-*(main file: `spelhubben-weather.php` — handles renamed for clarity; constants remain backward-compatible)*
+**Runtime policy**
 
-```php
-// In spelhubben-weather.php -> enqueue_public_assets()
-wp_enqueue_style('spelhubben-weather-style', SV_VADER_URL . 'assets/style.css', [], SV_VADER_VER);
-
-wp_register_style('leaflet-css', SV_VADER_URL . 'assets/vendor/leaflet/leaflet.css', [], '1.9.4');
-wp_enqueue_style('leaflet-css');
-
-wp_register_script('leaflet-js', SV_VADER_URL . 'assets/vendor/leaflet/leaflet.js', [], '1.9.4', true);
-wp_enqueue_script('leaflet-js');
-
-wp_register_script('spelhubben-weather-map', SV_VADER_URL . 'assets/map.js', ['leaflet-js'], SV_VADER_VER, true);
-wp_localize_script('spelhubben-weather-map', 'SVV', [
-  'iconBase' => trailingslashit(SV_VADER_URL . 'assets/vendor/leaflet/images'),
-]);
-wp_enqueue_script('spelhubben-weather-map');
-```
+- `map_engine="auto"` uses OpenLayers first, then Leaflet legacy, then static fallback.
+- `map_engine="openlayers"` forces OpenLayers.
+- `map_engine="leaflet"` forces legacy Leaflet.
+- `map_engine="static"` disables the interactive engine and shows the fallback view.
+- No map JavaScript or CSS is loaded from `unpkg`, jsDelivr, or other third-party CDNs.
 
 ## Shortcode examples
 ```text
@@ -182,6 +187,9 @@ wp_enqueue_script('spelhubben-weather-map');
 [spelhubben_weather place="Umeå" layout="detailed" forecast="daily" days="5" providers="smhi,yr,openmeteo,fmi"]
 [spelhubben_weather place="Stockholm" comparison="1" providers="openmeteo,smhi,yr,fmi,openweathermap,weatherapi"]
 [spelhubben_weather place="Stockholm" show="temp,wind,wind_dir,icon" layout="compact" animate="1"]
+[spelhubben_weather hourly="1" hours="24" layout="compact"]
+[spelhubben_weather map="1" map_engine="openlayers"]
+[spelhubben_weather preset="dashboard" hourly="1" map="1"]
 ```
 
 ## Tide data FAQ
@@ -214,21 +222,27 @@ All themes include icons for: sun, partly-cloudy (including an alternate), cloud
 - `lat`, `lon` — coordinates; take precedence over `place`  
 - `show` — comma list of fields to display (e.g., `temp,wind,icon`). Use `wind_dir` to show wind direction arrow and label.
 - `layout` — `inline | compact | card | detailed`
+- `preset` — `mini | hero | sidebar | dashboard | forecast-strip` for 2.2-oriented presentation presets
 - `comparison` — `1` to show side-by-side provider comparison (ignores `layout`)  
 - `map` — `1`/`0` to show/hide map  
+- `map_engine` — `auto | openlayers | leaflet | static`
 - `map_height` — map height in px (min 120)  
 - `providers` — comma-separated provider IDs. Current supported list is shown in the plugin’s Shortcodes admin page so docs and UI stay aligned.
 - `animate` — `1`/`0` for subtle animations. The renderer now accepts `1`, `true`, `yes`, or `on` as truthy values.
 - `forecast` — `none | daily`  
 - `days` — number of days (3–10) when `forecast="daily"`  
+- `hourly` — `1` to show the compact hourly forecast
+- `hours` — number of hours (3–24) when `hourly="1"`. Hour labels follow the active site locale.
+- `extras` — `moon`, `moon_daily`, or `tides` for existing extra panels. Sunrise/sunset is planned for 2.2, not 2.1.
 - `class` — extra CSS class on the wrapper  
 
 ## Admin Settings
 - **Default place** — fallback location (e.g., Stockholm)
 - **Cache TTL** — transient lifetime in minutes (default: 10, configurable)
 - **Default layout** — `inline`, `compact`, `card`, or `detailed`
+- **Map engine** — `Auto`, `OpenLayers`, `Leaflet legacy`, or `Static fallback`
 - **Icon style** — Classic, Modern Flat, Modern Gradient, Modern 2026, or Modern 3D
-- **Data providers** — enable/disable any combination of 7 sources
+- **Data providers** — enable/disable any combination of 7 sources. Key-required providers stay disabled on fresh installs until configured.
 - **Provider API keys** — OpenWeatherMap and WeatherAPI require API keys (stored server-side)
 - **Units** — `metric` (°C, m/s, mm), `metric_kmh` (°C, km/h, mm), or `imperial` (°F, mph, in) with optional per-unit overrides
 - **Date format** — PHP strtotime format for forecast labels
@@ -237,6 +251,7 @@ All themes include icons for: sun, partly-cloudy (including an alternate), cloud
 ### Admin UI improvements (settings)
 - **Tips panel:** New rotating tips in the Settings page that show short, localizable guidance for admins. Tips rotate at a readable interval and include actionable buttons for `Shortcodes`, `Alerts` and `Performance`.
 - **Reset to defaults:** A secure "Reset to defaults" button on the General settings card (nonce-protected) allowing administrators to restore plugin defaults quickly; a success notice confirms the reset.
+- **Layout stability:** The Settings, Shortcodes and Performance pages now use page-specific admin grids so long settings forms, provider labels and translated text do not overlap neighboring cards.
 - **UI polish:** Compact action buttons, centered layout for actions and badges, improved spacing, and accessibility improvements (aria-live for tip updates). All new admin strings are translation-ready.
 
 ## Development
@@ -248,11 +263,11 @@ All themes include icons for: sun, partly-cloudy (including an alternate), cloud
 ### Before Release
 1. Run the **Plugin Check** plugin (wordpress.org/plugins/plugin-check/)
 2. Ensure `/readme.txt` "Stable tag" matches main file's `Version` header
-3. Run `npm install` once locally, then `npm run build:assets` to refresh `assets/map.min.js` and `assets/style.min.css`
+3. Run `npm install` once locally, then `npm run build:assets` to refresh `assets/openlayers.js`, `assets/openlayers.css`, `assets/map.min.js`, and `assets/style.min.css`
 4. Update changelog in `readme.txt`
 
 ### Asset Build
-Source assets live in `assets/map.js` and `assets/style.css`.
+Source assets live in `assets/openlayers-entry.js`, `assets/map.js` and `assets/style.css`.
 
 Use:
 ```bash
@@ -261,6 +276,8 @@ npm run build:assets
 ```
 
 This regenerates:
+- `assets/openlayers.js`
+- `assets/openlayers.css`
 - `assets/map.min.js`
 - `assets/style.min.css`
 
@@ -279,11 +296,13 @@ Generate POT after string changes:
 wp i18n make-pot . languages/spelhubben-weather.pot --slug=spelhubben-weather
 ```
 
+Keep the bundled `.po`, `.mo`, `.l10n.php`, and block editor JSON files in `/languages` synchronized before release.
+
 Translations are available on [translate.wordpress.org](https://translate.wordpress.org/projects/wp-plugins/spelhubben-weather/)
 
 ## Version History
 
-###  1.9.8 (Current)
+###  1.9.8
 - **Fixed:** Fixed an issue where the Leaflet map could fail to load on live/optimized sites due to script handle conflicts with themes or other plugins.
 - **Improved:** Renamed Leaflet asset handles to unique, plugin-specific names to prevent collisions and ensure correct dependency resolution.
 - **Improved:** Removed forced defer handling for Leaflet/map scripts to avoid broken load order when caching/optimization plugins are active.
@@ -295,7 +314,7 @@ Translations are available on [translate.wordpress.org](https://translate.wordpr
  - **Experimental:** Tide support added for testing — opt-in feature. Adds support for WorldTides (API key), NOAA (US-only), and a configurable custom endpoint. Shortcode support via `extras="tides"` or `tides="1"`. Admin visibility can be toggled while rolling out to selected users. Responses are cached; configure TTL in Settings.
 
 ### 1.9.5
- - **New:** Moon phase support — `phase` and `illumination` available in renderer, shortcodes, block and widget.
+ - **New:** Moon phase support via `extras="moon"` and daily moon information via `extras="moon_daily"`.
 
 ### 1.9.4
  - **Fixed:** Wind direction arrow rotation corrected to match compass degrees.
@@ -361,10 +380,11 @@ Translations are available on [translate.wordpress.org](https://translate.wordpr
   - Open-Meteo (weather, geocoding) — public APIs, no authentication
   - SMHI (Swedish Meteorological Institute) — public weather API
   - MET Norway/Yr (weather) — public API, optional contact info
+  - MET Norway Nowcast — public short-range nowcast API, optional contact info
   - FMI (Finnish Meteorological Institute) — public API
   - OpenWeatherMap (if enabled) — requires API key (stored server-side)
   - WeatherAPI.com (if enabled) — requires API key (stored server-side)
-  - OpenStreetMap (maps only) — client-side tile requests
+  - OpenStreetMap (maps only) — client-side tile requests from local OpenLayers/Leaflet code
 
   ### Tide data (tidvatten)
 
@@ -422,13 +442,14 @@ The repository includes comprehensive documentation for developers:
 These files are included in the repository root for developer reference but are not deployed with the plugin to WordPress.org.
 - Code: GPLv3 or later
 - Leaflet (bundled): BSD-2-Clause
+- OpenLayers (bundled): BSD-2-Clause
 - Icons: local SVG created for this plugin
 
 ## Trademarks (no affiliation)
-Open-Meteo, SMHI, Yr, MET Norway, Leaflet, and OpenStreetMap are trademarks or project names of their respective owners. This plugin is not affiliated with or endorsed by them.
+Open-Meteo, SMHI, Yr, MET Norway, OpenLayers, Leaflet, and OpenStreetMap are trademarks or project names of their respective owners. This plugin is not affiliated with or endorsed by them.
 
 ## License
 
-This program is free software; you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free Software Foundation; either version 2 of the License, or (at your option) any later version.
+This program is free software; you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free Software Foundation; either version 3 of the License, or (at your option) any later version.
 
 Full license text is included in the `LICENSE` file in the plugin root.

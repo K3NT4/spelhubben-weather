@@ -11,15 +11,11 @@ if ( ! function_exists( 'sv_vader_render_shortcodes_page' ) ) {
 
 		// Load current options so Quick Builder can default to site settings
 		$opts = sv_vader_get_options();
-		$provider_labels = array(
-			'openmeteo'      => __( 'Open-Meteo', 'spelhubben-weather' ),
-			'smhi'           => __( 'SMHI', 'spelhubben-weather' ),
-			'yr'             => __( 'Yr', 'spelhubben-weather' ),
-			'metno_nowcast'  => __( 'MET Nowcast', 'spelhubben-weather' ),
-			'fmi'            => __( 'FMI', 'spelhubben-weather' ),
-			'openweathermap' => __( 'OpenWeather', 'spelhubben-weather' ),
-			'weatherapi'     => __( 'WeatherAPI', 'spelhubben-weather' ),
-		);
+		$provider_labels = array();
+		$provider_registry = function_exists('sv_vader_provider_registry') ? sv_vader_provider_registry() : array();
+		foreach ( $provider_registry as $provider_key => $provider ) {
+			$provider_labels[ $provider_key ] = $provider['label'];
+		}
 		$provider_csv = implode( ',', array_keys( $provider_labels ) );
 
 		// Examples (new aliases)
@@ -38,6 +34,9 @@ if ( ! function_exists( 'sv_vader_render_shortcodes_page' ) ) {
 		$nx_moon = '[spelhubben_weather extras="moon"]';
 		$nx_moon_daily = '[spelhubben_weather forecast="daily" days="7" extras="moon_daily"]';
 		$nx_tides = '[spelhubben_weather extras="tides"]';
+		$nx_hourly = '[spelhubben_weather hourly="1" hours="24" layout="compact"]';
+		$nx_map_engine = '[spelhubben_weather map="1" map_engine="openlayers"]';
+		$nx_preset = '[spelhubben_weather preset="dashboard" hourly="1" map="1"]';
 
 		$new_examples = array(
 			array( 'label' => __( 'Basic example', 'spelhubben-weather' ), 'code' => $nx1 ),
@@ -49,6 +48,9 @@ if ( ! function_exists( 'sv_vader_render_shortcodes_page' ) ) {
 			array( 'label' => __( 'Force dark theme (example)', 'spelhubben-weather' ), 'code' => $nx12 ),
 			array( 'label' => __( 'Show moon phase (example)', 'spelhubben-weather' ), 'code' => $nx_moon ),
 			array( 'label' => __( 'Show moon in daily forecast (example)', 'spelhubben-weather' ), 'code' => $nx_moon_daily ),
+			array( 'label' => __( 'Hourly forecast (24h)', 'spelhubben-weather' ), 'code' => $nx_hourly ),
+			array( 'label' => __( 'OpenLayers map engine', 'spelhubben-weather' ), 'code' => $nx_map_engine ),
+			array( 'label' => __( 'Dashboard preset', 'spelhubben-weather' ), 'code' => $nx_preset ),
 			array( 'label' => __( 'Provider comparison mode', 'spelhubben-weather' ), 'code' => $nx6 ),
 			array( 'label' => __( 'With weather alerts enabled', 'spelhubben-weather' ), 'code' => $nx7 ),
 			array( 'label' => __( 'Custom map height (400px)', 'spelhubben-weather' ), 'code' => $nx8 ),
@@ -90,7 +92,7 @@ if ( ! function_exists( 'sv_vader_render_shortcodes_page' ) ) {
 				</button>
 			</div>
 
-			<div class="svv-grid">
+			<div class="svv-grid svv-grid--shortcodes">
 				<!-- LEFT: Examples -->
 				<div class="svv-col">
 					<div class="svv-card">
@@ -195,9 +197,15 @@ if ( ! function_exists( 'sv_vader_render_shortcodes_page' ) ) {
 									<div class="svv-builder-options">
 										<label><input type="checkbox" class="svv-b-map" value="1"> <?php esc_html_e( 'Map', 'spelhubben-weather' ); ?></label>
 										<label><input type="checkbox" class="svv-b-animate" value="1" checked> <?php esc_html_e( 'Animate', 'spelhubben-weather' ); ?></label>
+										<label><input type="checkbox" class="svv-b-hourly" value="1"> <?php esc_html_e( 'Hourly forecast', 'spelhubben-weather' ); ?></label>
+										<label><input type="checkbox" class="svv-b-tides" value="1"> <?php esc_html_e( 'Tides', 'spelhubben-weather' ); ?></label>
 										<label><input type="checkbox" class="svv-b-moon" value="moon"> <?php esc_html_e( 'Moon (meta)', 'spelhubben-weather' ); ?></label>
 										<label><input type="checkbox" class="svv-b-moon-daily" value="moon_daily"> <?php esc_html_e( 'Moon (daily forecast)', 'spelhubben-weather' ); ?></label>
 									</div>
+								</div>
+								<div class="svv-builder-group">
+									<strong><?php esc_html_e( 'Hours:', 'spelhubben-weather' ); ?></strong><br>
+									<input type="number" class="svv-b-hours" min="3" max="24" step="1" value="24" style="width:90px">
 								</div>
 								<div class="svv-builder-group svv-builder-group--full">
 									<strong><?php esc_html_e( 'Providers:', 'spelhubben-weather' ); ?></strong><br>
@@ -206,6 +214,26 @@ if ( ! function_exists( 'sv_vader_render_shortcodes_page' ) ) {
 											<label><input type="checkbox" class="svv-b-prov" value="<?php echo esc_attr( $provider_key ); ?>"<?php checked( in_array( $provider_key, array( 'openmeteo', 'smhi', 'yr' ), true ) ); ?>> <?php echo esc_html( $provider_label ); ?></label>
 										<?php endforeach; ?>
 									</div>
+								</div>
+								<div class="svv-builder-group">
+									<strong><?php esc_html_e( 'Preset:', 'spelhubben-weather' ); ?></strong><br>
+									<select class="svv-b-preset">
+										<option value=""><?php esc_html_e( '(none)', 'spelhubben-weather' ); ?></option>
+										<option value="mini">mini</option>
+										<option value="hero">hero</option>
+										<option value="sidebar">sidebar</option>
+										<option value="dashboard">dashboard</option>
+										<option value="forecast-strip">forecast-strip</option>
+									</select>
+								</div>
+								<div class="svv-builder-group">
+									<strong><?php esc_html_e( 'Map engine:', 'spelhubben-weather' ); ?></strong><br>
+									<select class="svv-b-mapengine">
+										<option value="auto">auto</option>
+										<option value="openlayers">openlayers</option>
+										<option value="leaflet">leaflet</option>
+										<option value="static">static</option>
+									</select>
 								</div>
 								<div class="svv-builder-group">
 									<strong><?php esc_html_e( 'Wind unit (override):', 'spelhubben-weather' ); ?></strong><br>
@@ -230,6 +258,7 @@ if ( ! function_exists( 'sv_vader_render_shortcodes_page' ) ) {
   							<iframe class="svv-live-frame"
           							title="<?php echo esc_attr__( 'Shortcode live preview', 'spelhubben-weather' ); ?>"></iframe>
 						</div>
+					</div>
 
 					<!-- ATTRIBUTES -->
 					<div class="svv-card">
@@ -277,11 +306,15 @@ if ( ! function_exists( 'sv_vader_render_shortcodes_page' ) ) {
 									<tr data-group="disp"><td><code>layout</code></td><td><?php esc_html_e( 'inline | compact | card | detailed', 'spelhubben-weather' ); ?></td><td><code>layout="compact"</code></td></tr>
 									<tr data-group="disp"><td><code>map</code></td><td><?php esc_html_e( '1/0 to show/hide map', 'spelhubben-weather' ); ?></td><td><code>map="1"</code></td></tr>
 									<tr data-group="disp"><td><code>map_height</code></td><td><?php esc_html_e( 'Map height in px (min 120).', 'spelhubben-weather' ); ?></td><td><code>map_height="240"</code></td></tr>
+									<tr data-group="disp"><td><code>map_engine</code></td><td><?php esc_html_e( 'auto | openlayers | leaflet | static', 'spelhubben-weather' ); ?></td><td><code>map_engine="openlayers"</code></td></tr>
 									<tr data-group="disp"><td><code>providers</code></td><td><?php echo esc_html( sprintf( __( '%s (comma-separated). Quick Builder checkboxes below use the same list.', 'spelhubben-weather' ), $provider_csv ) ); ?></td><td><code>providers="smhi,yr,metno_nowcast,fmi"</code></td></tr>
 									<tr data-group="disp"><td><code>animate</code></td><td><?php esc_html_e( '1/0 – subtle animations', 'spelhubben-weather' ); ?></td><td><code>animate="1"</code></td></tr>
+									<tr data-group="disp"><td><code>preset</code></td><td><?php esc_html_e( 'mini | hero | sidebar | dashboard | forecast-strip', 'spelhubben-weather' ); ?></td><td><code>preset="dashboard"</code></td></tr>
 
 									<tr data-group="fc"><td><code>forecast</code></td><td><?php esc_html_e( 'none | daily', 'spelhubben-weather' ); ?></td><td><code>forecast="daily"</code></td></tr>
 									<tr data-group="fc"><td><code>days</code></td><td><?php esc_html_e( 'Number of days in the forecast (3–10)', 'spelhubben-weather' ); ?></td><td><code>days="5"</code></td></tr>
+									<tr data-group="fc"><td><code>hourly</code></td><td><?php esc_html_e( '1/0 to show compact hourly forecast', 'spelhubben-weather' ); ?></td><td><code>hourly="1"</code></td></tr>
+									<tr data-group="fc"><td><code>hours</code></td><td><?php esc_html_e( 'Number of hours in hourly forecast (3–24)', 'spelhubben-weather' ); ?></td><td><code>hours="24"</code></td></tr>
 
 									<tr data-group="uf"><td><code>units</code></td><td><?php esc_html_e( 'Preset: metric | metric_kmh | imperial', 'spelhubben-weather' ); ?></td><td><code>units="metric_kmh"</code></td></tr>
 									<tr data-group="uf"><td><code>temp_unit</code></td><td><?php esc_html_e( 'Override temperature unit', 'spelhubben-weather' ); ?></td><td><code>temp_unit="F"</code></td></tr>
@@ -289,7 +322,7 @@ if ( ! function_exists( 'sv_vader_render_shortcodes_page' ) ) {
 									<tr data-group="uf"><td><code>precip_unit</code></td><td><?php esc_html_e( 'Override precipitation unit', 'spelhubben-weather' ); ?></td><td><code>precip_unit="in"</code></td></tr>
 									<tr data-group="uf"><td><code>date_format</code></td><td><?php esc_html_e( 'Forecast date label (PHP date)', 'spelhubben-weather' ); ?></td><td><code>date_format="D j/n"</code></td></tr>
 									<tr data-group="disp"><td><code>theme</code></td><td><?php esc_html_e( 'auto | light | dark — force display theme (auto uses site/browser preference)', 'spelhubben-weather' ); ?></td><td><code>theme="dark"</code></td></tr>
-									<tr data-group="disp"><td><code>extras</code></td><td><?php esc_html_e( 'Comma-separated extra features. Supported: moon, moon_daily', 'spelhubben-weather' ); ?></td><td><code>extras="moon,moon_daily"</code></td></tr>
+									<tr data-group="disp"><td><code>extras</code></td><td><?php esc_html_e( 'Comma-separated extra features. Supported: moon, moon_daily, tides', 'spelhubben-weather' ); ?></td><td><code>extras="moon,moon_daily"</code></td></tr>
 									<tr data-group="disp"><td><code>show_moon</code></td><td><?php esc_html_e( 'Legacy boolean to show moon in meta area (1/0). Use extras="moon" instead.', 'spelhubben-weather' ); ?></td><td><code>show_moon="1"</code></td></tr>
 								</tbody>
 							</table>

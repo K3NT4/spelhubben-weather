@@ -14,6 +14,7 @@ if (!function_exists('sv_vader_default_options')) {
 			'default_layout' => 'card',
 			'map_default'    => 1,
 			'map_height'     => 240,
+			'map_engine'     => 'auto', // auto|openlayers|leaflet|static
 			'icon_style'     => 'classic',  // classic | modern-flat | modern-gradient
 
 			// Data providers
@@ -22,8 +23,8 @@ if (!function_exists('sv_vader_default_options')) {
 			'prov_yr'            => 1,
 			'prov_metno_nowcast' => 1,
         'prov_fmi'           => 1,
-		'prov_openweathermap' => 1,
-		'prov_weatherapi'     => 1,
+		'prov_openweathermap' => 0,
+		'prov_weatherapi'     => 0,
 			'owm_api_key'        => '',
 			'weatherapi_api_key' => '',
 			'temp_unit'    => '',       // optional override: C|F
@@ -90,6 +91,8 @@ if (!function_exists('sv_vader_sanitize_options')) {
 
 		$out['map_default'] = !empty($in['map_default']) ? 1 : 0;
 		$out['map_height']  = max(120, intval($in['map_height'] ?? $def['map_height']));
+		$map_engine = strtolower(trim((string)($in['map_engine'] ?? $def['map_engine'])));
+		$out['map_engine'] = in_array($map_engine, ['auto','openlayers','leaflet','static'], true) ? $map_engine : 'auto';
 
 		$out['prov_openmeteo']     = !empty($in['prov_openmeteo']) ? 1 : 0;
 		$out['prov_smhi']          = !empty($in['prov_smhi']) ? 1 : 0;

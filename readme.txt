@@ -4,17 +4,17 @@ Tags: weather, forecast, widget, shortcode, blocks
 Requires at least: 6.8
 Tested up to: 6.9
 Requires PHP: 7.4
-Stable tag: 2.0.4
+Stable tag: 2.1.0
 Donate link: https://www.paypal.com/donate/?hosted_button_id=CV74CEXY5XEAU
 
 License: GPLv3 or later
 License URI: https://www.gnu.org/licenses/gpl-3.0.html
 
-Weather widget, Gutenberg block and shortcode with optional map and multi-provider forecasts.
+Weather widget, Gutenberg block and shortcode with hourly forecasts, smart local maps and multi-provider forecasts.
 
 == License ==
 
-This program is free software; you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free Software Foundation; either version 2 of the License, or (at your option) any later version.
+This program is free software; you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free Software Foundation; either version 3 of the License, or (at your option) any later version.
 
 Full license text is included in the `LICENSE` file in the plugin root.
 
@@ -29,6 +29,18 @@ Weather widget & block with optional map and daily forecast. Can combine Open-Me
 This plugin displays current weather and an optional forecast. It can aggregate data from free global weather providers (Open-Meteo, SMHI, Yr/MET Norway, MET Norway Nowcast, FMI, OpenWeatherMap, and WeatherAPI.com) and compute a simple consensus. Works worldwide with excellent coverage in Europe and beyond.
 
 == Changelog ==
+
+= 2.1.0 =
+- Added: Central provider registry shared by settings, renderer, shortcode/block/widget surfaces, diagnostics and documentation.
+- Added: Real MET Norway Nowcast 2.0 current-weather provider with explicit `ok`, `missing_key`, `no_coverage`, `request_failed`, and `no_data` diagnostics.
+- Added: Compact hourly forecast via Open-Meteo using `hourly="1"` and `hours="3-24"` (default `24`).
+- Changed: Removed the external Leaflet CDN fallback. Map scripts and vendor assets are now local-only.
+- Changed: OpenWeatherMap and WeatherAPI are disabled by default on fresh installs until API keys are configured.
+- Added: Smart map foundation with OpenLayers, Leaflet legacy mode, static fallback, `map_engine`, and map diagnostics in Performance.
+- Improved: Shortcode, Gutenberg block and widget parity for hourly forecast, tides, presets and map engine attributes.
+- Fixed: Admin settings layout no longer overlaps on wider forms, and bundled textdomain/script translations load consistently from `/languages`.
+- Improved: Hourly forecast time labels now use a locale-aware compact format, e.g. `13:00` for Swedish/Norwegian sites and `1:00 PM` for US English.
+- Improved: CI now separates PHP lint, regression tests, asset-sync checks and release checks.
 
 = 2.0.4 =
 - Added: Admin settings for OpenWeatherMap and WeatherAPI keys, and runtime calls now send the correct key/query parameters.
@@ -64,14 +76,15 @@ This plugin displays current weather and an optional forecast. It can aggregate 
 - **Multiple Layouts:** `inline`, `compact`, `card`, `detailed`
 - **Daily Forecast:** 3–10 days customizable
 - **Provider Comparison:** Side-by-side data from all enabled providers
-- **Leaflet Map:** OpenStreetMap tiles with proper attribution (ODbL)
- - **Wind direction display:** Rotated arrow with cardinal labels (optional via `show=wind_dir`)
+- **Smart Map:** OpenLayers by default, Leaflet legacy mode, static fallback and OpenStreetMap attribution (ODbL)
+- **Hourly Forecast:** compact 3–24 hour timeline powered by Open-Meteo with locale-aware time labels
+- **Wind direction display:** Rotated arrow with cardinal labels (optional via `show=wind_dir`)
 - **Local Icons:** SVG icons (no CDN dependency), responsive scaling
 - **Performance:** 6-30x faster settings page, lazy-loaded plugin showcase, optimized caching
 - **Fully GDPR Compliant:** No cookies, no tracking, no personal data collection
-- **Translation-Ready:** English base strings, Swedish and Norwegian translations included
+- **Translation-Ready:** English base strings, Swedish and Norwegian Bokmål translations included
 
-*Not affiliated with Open-Meteo, SMHI, Yr/MET Norway, FMI, Leaflet, or OpenStreetMap. Names are used for descriptive purposes only. Map data © OpenStreetMap contributors (ODbL).*
+*Not affiliated with Open-Meteo, SMHI, Yr/MET Norway, MET Norway Nowcast, FMI, OpenLayers, Leaflet, or OpenStreetMap. Names are used for descriptive purposes only. Map data © OpenStreetMap contributors (ODbL).*
 
 == Installation ==
 1. Upload/activate the plugin.
@@ -89,7 +102,10 @@ This plugin displays current weather and an optional forecast. It can aggregate 
   - Compact with map & animation: `[spelhubben_weather place="Gothenburg" layout="compact" map="1" animate="1"]`
   - Inline no map: `[spelhubben_weather lat="57.7089" lon="11.9746" layout="inline" map="0" show="temp,icon"]`
   - Detailed + daily forecast (5 days) + provider mix: `[spelhubben_weather place="Umeå" layout="detailed" forecast="daily" days="5" providers="smhi,yr,openmeteo,fmi"]`
-   - With wind direction: `[spelhubben_weather place="Stockholm" show="temp,wind,wind_dir,icon" layout="compact" animate="1"]`
+  - With wind direction: `[spelhubben_weather place="Stockholm" show="temp,wind,wind_dir,icon" layout="compact" animate="1"]`
+  - Compact hourly forecast: `[spelhubben_weather hourly="1" hours="24" layout="compact"]`
+  - OpenLayers map engine: `[spelhubben_weather map="1" map_engine="openlayers"]`
+  - Dashboard preset: `[spelhubben_weather preset="dashboard" hourly="1" map="1"]`
 
 = Classic Widget =
 - Go to **Appearance → Widgets** → add **Spelhubben Weather**.
@@ -110,7 +126,7 @@ All three render the same UI. Use the **block** in the block editor, the **short
 
 = Tide (experimental) =
 
-If you're testing tide support in version 1.9.7:
+If you're testing experimental tide support:
 
 - **Enabling:** Turn on `Tides` in Settings → Spelhubben Weather and select a provider (WorldTides, NOAA or Custom endpoint). WorldTides typically requires an API key.
 - **Shortcode:** Use `extras="tides"` or `tides="1"` to show tide events, e.g. `[spelhubben_weather place="Gothenburg" extras="tides"]`.
@@ -118,7 +134,7 @@ If you're testing tide support in version 1.9.7:
 - **Troubleshooting:** Use `tests/tide_test.php` to validate provider responses and caching. Ensure provider settings and API key are correct; tide results are cached according to the configured TTL.
 
 If `lat` and `lon` are provided they take precedence. Otherwise the plugin geocodes the `place` string (e.g. `place="Umeå"`). Set a global default place in settings.
-rontend assets are registered
+
 = What fields can I show/hide? =
 Use `show="temp,wind,icon"` (comma separated). Defaults are set in settings. Add `wind_dir` to show wind direction arrow and label.
 
@@ -132,7 +148,10 @@ Example: `[spelhubben_weather place="Stockholm" comparison="1" providers="openme
 The plugin offers multiple themes: **Classic** (traditional), **Modern Flat** (clean, minimalist), **Modern Gradient** (contemporary with subtle gradients), **Modern 2026** (duotone/stroke modern style), and **Modern 3D** (subtle gradients + drop-shadows). Choose in **Settings → Spelhubben Weather → Icon style**. All themes include icons for sun, partly-cloudy (including alternate), cloud, fog, rain, sleet, snow, storm/thunder, and hail where applicable.
 
 = How do I enable the map and set its size? =
-`map="1"` shows a Leaflet map (OpenStreetMap). Control height with `map_height="240"` (px). Global defaults exist in settings.
+`map="1"` shows a smart OpenStreetMap-powered map. By default `map_engine="auto"` tries OpenLayers first, then Leaflet legacy, then a static fallback with coordinates and an OSM link. You can force `map_engine="openlayers|leaflet|static"`. Control height with `map_height="240"` (px). Global defaults exist in settings.
+
+= How do I get an hourly forecast? =
+Set `hourly="1"` and optionally `hours="3–24"`. Example: `hourly="1" hours="24"`. Hour labels follow the active site locale, such as 24-hour time for Swedish/Norwegian sites.
 
 = How do I enable animations? =
 `animate="1"` adds subtle UI animation. Global default is in settings. The renderer also accepts `true`, `yes`, or `on` as truthy values for convenience.
@@ -140,8 +159,8 @@ The plugin offers multiple themes: **Classic** (traditional), **Modern Flat** (c
 = How do I get a daily forecast? =
 Set `forecast="daily"` and `days="3–10"`. Example: `forecast="daily" days="5"`.
 
-= How do i use Moon phase? =
-Use the new `phase` and `illumination` fields to show moon information. Example shortcode: `[spelhubben_weather show="temp,icon,phase,illumination"]` — available in Block inspector and Widget options as well.
+= How do I use moon phase? =
+Use `extras="moon"` to show moon phase in the weather meta area. Use `extras="moon_daily"` together with `forecast="daily"` to show moon information in the daily forecast. Example: `[spelhubben_weather extras="moon"]`.
 
 = Can I mix providers and get a consensus? =
 Yes. Set `providers="smhi,yr,openmeteo,fmi"` (order doesn’t matter). The plugin calculates a simple consensus across available providers for the displayed fields.
@@ -153,13 +172,13 @@ Pick a preset with `units="metric|metric_kmh|imperial"`. You can override parts 
 Responses are cached with WordPress transients. Change TTL (minutes) in settings. Clear via the **Clear cache** button on the Performance page (Settings → Performance) or by changing attributes (which creates a new cache key).
 
 = Does it work without JavaScript? =
-Yes, rendering is server-side. The map (Leaflet) requires JS.
+Yes, rendering is server-side. Interactive maps require JS, but the map area can fall back to a static status with coordinates and an OpenStreetMap link.
 
 = Translations? =
-The plugin is fully translatable. **Included translations:** **Swedish (sv_SE), Norwegian (nb_NO)**. Strings are also available on translate.wordpress.org. Ship `.pot/.po/.mo` in `/languages`.
+The plugin is fully translatable. **Included translations:** **Swedish (sv_SE), Norwegian Bokmål (nb_NO)**. Strings are also available on translate.wordpress.org. Bundled translation files live in `/languages` and include `.pot`, `.po`, `.mo`, `.l10n.php`, and block editor JSON files.
 
 = GDPR / privacy? =
-The plugin does not set cookies by itself. If you enable the map, Leaflet/OpenStreetMap tiles are requested client-side. Mention OSM in your privacy notice if needed.
+The plugin does not set cookies by itself. If you enable the map, OpenStreetMap tiles are requested client-side by the local OpenLayers/Leaflet runtime. Mention OSM in your privacy notice if needed.
 
 = Troubleshooting tips =
 - Nothing shows: check that at least one provider is selected in settings.
@@ -198,10 +217,7 @@ If you need to add or modify translations locally:
 
 4. **Place files in the plugin**:
    - Store both `.po` and `.mo` files in `/languages/`
-   - Also generate a `.l10n.php` file (WordPress 6.0+):
-     ```
-     wp i18n make-json languages/spelhubben-weather-de_DE.po --no-purge
-     ```
+   - If you bundle translations with the plugin, also keep generated `.l10n.php` files and block editor JSON files in sync with the PO/MO files.
 
 5. **Activate your translation**:
    - Change your WordPress language to match the locale code (Settings → General → Site Language)
@@ -238,7 +254,7 @@ languages/
 5. Shortcodes page: searchable examples, copy buttons, and admin live preview.
 6. Performance page: cache statistics, API usage and "Clear cache" action.
 
-== Changelog ==
+== Older Changelog ==
 
 = 2.0.0 =
 * FIX: Leaflet map now loads correctly on paginated, archive and guest pages where the global `$post` may be unavailable. Asset loader now scans the main query for shortcodes/blocks and enqueues Leaflet assets accordingly.
@@ -258,7 +274,7 @@ languages/
 - **Experimental:** Tide support added for testing — opt-in feature. Adds support for WorldTides (API key), NOAA (US-only), and a configurable custom endpoint. Shortcode support via `extras="tides"` or `tides="1"`. Admin visibility can be toggled while rolling out to selected users. Responses are cached; configure TTL in Settings.
 
 - = 1.9.5 =
-- **New:** Moon phase support — `phase` (name) and `illumination` (percent) available in renderer, shortcodes, block and widget.
+- **New:** Moon phase support via `extras="moon"` and daily moon information via `extras="moon_daily"`.
 
 - = 1.9.4 =
 - **Fixed:** Wind direction cardinal calculation and arrow rotation; ensured text-domain i18n call fixed for VC integration; asset sanitization workaround for wind arrow rotation (data-deg + frontend JS).
@@ -378,7 +394,7 @@ languages/
 
 == Upgrade Notice ==
 = 1.9.5 =
-Added moon phase support (phase + illumination) in renderer, shortcodes, block and widget.
+Added moon phase support via `extras="moon"` and daily moon information via `extras="moon_daily"`.
 
 = 1.8.5 =
 Performance optimization release with conditional asset loading. Fixes 404 errors and MIME type warnings for Leaflet on non-weather pages. Recommended for all users.

@@ -2,14 +2,17 @@
   "name": "spelhubben-weather",
   "private": true,
   "scripts": {
+    "build:openlayers": "esbuild assets/openlayers-entry.js --bundle --format=iife --global-name=SVVOpenLayers --outfile=assets/openlayers.js",
     "build:map": "terser assets/map.js --compress --mangle -o assets/map.min.js",
     "build:style": "cleancss -O2 -o assets/style.min.css assets/style.css",
-    "build:assets": "npm run build:map && npm run build:style",
+    "build:assets": "npm run build:openlayers && npm run build:map && npm run build:style",
     "test:php": "php tests/regression_test.php",
     "check:release": "bash scripts/release-check.sh"
   },
   "devDependencies": {
     "clean-css-cli": "^5.6.3",
+    "esbuild": "^0.28.0",
+    "ol": "^10.9.0",
     "terser": "^5.44.0"
   }
 }

@@ -34,20 +34,21 @@ if ( ! function_exists( 'sv_vader_render_performance_page' ) ) {
 		$today_stats = $stats['per_day'][ $today ] ?? [ 'hits' => 0, 'misses' => 0, 'api_calls' => 0 ];
 
 		$providers = [];
-		foreach ( [
-			'openmeteo'      => 'Open-Meteo',
-			'smhi'           => 'SMHI',
-			'yr'             => 'Yr/MET Norway',
-			'metno_nowcast'  => 'MET Norway Nowcast',
-			'fmi'            => 'FMI',
-			'openweathermap' => 'OpenWeatherMap',
-			'weatherapi'     => 'WeatherAPI',
-		] as $key => $label ) {
-			$flag = $opts[ 'prov_' . $key ] ?? 0;
-			$providers[] = [ 'label' => $label, 'active' => (bool) $flag ];
+		$registry = function_exists('sv_vader_provider_registry') ? sv_vader_provider_registry() : [];
+		foreach ( $registry as $provider ) {
+			$flag = $opts[ $provider['option_key'] ] ?? 0;
+			$providers[] = [
+				'label' => $provider['label'],
+				'active' => (bool) $flag,
+				'key_required' => ! empty( $provider['requires_key'] ),
+				'key_missing' => function_exists('sv_vader_provider_key_missing') ? sv_vader_provider_key_missing($provider['id'], $opts) : false,
+			];
 		}
 
 		$recent = is_array( $stats['recent'] ) ? $stats['recent'] : [];
+		$map_engine = $opts['map_engine'] ?? 'auto';
+		$openlayers_ok = file_exists( SV_VADER_DIR . 'assets/openlayers.js' ) && file_exists( SV_VADER_DIR . 'assets/openlayers.css' );
+		$leaflet_ok = file_exists( SV_VADER_DIR . 'assets/vendor/leaflet/leaflet.js' ) && file_exists( SV_VADER_DIR . 'assets/vendor/leaflet/leaflet.css' );
 		?>
 		<div class="wrap svv-admin-wrap">
 			<h1 class="svv-page-title"><?php esc_html_e( 'Spelhubben Weather – Performance', 'spelhubben-weather' ); ?></h1>
@@ -70,7 +71,7 @@ if ( ! function_exists( 'sv_vader_render_performance_page' ) ) {
 				</form>
 			</div>
 
-			<div class="svv-grid">
+			<div class="svv-grid svv-grid--performance">
 				<div class="svv-col">
 					<div class="svv-card">
 						<h2 class="svv-card-title"><span class="dashicons dashicons-dashboard"></span><?php esc_html_e( 'Cache & API', 'spelhubben-weather' ); ?></h2>
@@ -88,9 +89,22 @@ if ( ! function_exists( 'sv_vader_render_performance_page' ) ) {
 							<?php foreach ( $providers as $p ) : ?>
 								<span class="svv-badge <?php echo esc_attr( $p['active'] ? 'is-active' : 'is-inactive' ); ?>">
 									<?php echo $p['active'] ? '●' : '○'; ?> <?php echo esc_html( $p['label'] ); ?>
+									<?php if ( $p['active'] && $p['key_missing'] ) : ?>
+										<?php echo esc_html__( '(missing key)', 'spelhubben-weather' ); ?>
+									<?php endif; ?>
 								</span>
 							<?php endforeach; ?>
 						</div>
+					</div>
+
+					<div class="svv-card">
+						<h2 class="svv-card-title"><span class="dashicons dashicons-location-alt"></span><?php esc_html_e( 'Map diagnostics', 'spelhubben-weather' ); ?></h2>
+						<ul class="svv-kv-list">
+							<li><span><?php esc_html_e( 'Configured engine', 'spelhubben-weather' ); ?></span><strong><?php echo esc_html( $map_engine ); ?></strong></li>
+							<li><span><?php esc_html_e( 'OpenLayers assets', 'spelhubben-weather' ); ?></span><strong><?php echo esc_html( $openlayers_ok ? __( 'OK', 'spelhubben-weather' ) : __( 'Missing', 'spelhubben-weather' ) ); ?></strong></li>
+							<li><span><?php esc_html_e( 'Leaflet legacy assets', 'spelhubben-weather' ); ?></span><strong><?php echo esc_html( $leaflet_ok ? __( 'OK', 'spelhubben-weather' ) : __( 'Missing', 'spelhubben-weather' ) ); ?></strong></li>
+						</ul>
+						<p class="description"><?php esc_html_e( 'If a cache or optimization plugin delays scripts, set the map engine to Static fallback temporarily or exclude Spelhubben Weather map assets from delay/defer rules.', 'spelhubben-weather' ); ?></p>
 					</div>
 				</div>
 

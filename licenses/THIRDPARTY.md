@@ -13,3 +13,7 @@ SV Väder is licensed under GPLv3 or later. The following third-party assets are
   - Source: https://leafletjs.com/
   - Version: 1.9.x
   - License: BSD 2-Clause (see `/licenses/leaflet-BSD-2-Clause.txt`)
+- OpenLayers JS/CSS (bundled locally)
+  - Source: https://openlayers.org/
+  - Version: 10.x
+  - License: BSD 2-Clause (see `/licenses/openlayers-BSD-2-Clause.txt`)

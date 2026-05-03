@@ -174,6 +174,10 @@ body.admin-color-modern .sv-vader {
 
 /* Karta */
 .svv-map{width:100%;height:240px;border:1px solid var(--svv-border);border-radius:var(--svv-radius);overflow:hidden;margin-top:calc(10px * var(--svv-scale))}
+.svv-map-fallback{height:100%;min-height:120px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:6px;padding:12px;text-align:center;background:rgba(248,250,252,.92);color:var(--svv-text)}
+.svv-map-fallback span{font-size:13px;color:var(--svv-muted)}
+.svv-map-fallback small{font-size:12px;color:var(--svv-muted)}
+.svv-map-fallback a{color:var(--svv-accent);text-decoration:none;font-weight:600}
 .svv-map-attrib{margin-top:calc(6px * var(--svv-scale));font-size:calc(12px * var(--svv-scale));opacity:.8;color:var(--svv-muted)}
 .svv-map-attrib a{text-decoration:none;color:inherit}
 .svv-map-link{margin-top:calc(2px * var(--svv-scale));font-size:calc(13px * var(--svv-scale))}
@@ -211,6 +215,41 @@ body.admin-color-modern .sv-vader {
 .svv-tmax{ font-weight:600 }
 .svv-tmin{ opacity:.7; color:var(--svv-muted); }
 .svv-daydesc{ font-size:calc(12px * var(--svv-scale)); opacity:.8; color:var(--svv-muted); }
+
+/* Kompakt timprognos */
+.svv-hourly{
+  display:grid;
+  grid-auto-flow:column;
+  grid-auto-columns:minmax(76px, 1fr);
+  gap:calc(8px * var(--svv-scale));
+  margin-top:calc(12px * var(--svv-scale));
+  overflow-x:auto;
+  padding-bottom:4px;
+}
+.svv-hour{
+  border:1px solid var(--svv-border);
+  border-radius:var(--svv-radius);
+  padding:calc(8px * var(--svv-scale));
+  min-width:76px;
+  background:var(--svv-bg);
+  text-align:center;
+}
+.svv-hour-time{font-size:calc(12px * var(--svv-scale));font-weight:600;color:var(--svv-muted)}
+.svv-hour-icon{width:calc(28px * var(--svv-scale));height:calc(28px * var(--svv-scale));margin:4px auto;display:block}
+.svv-hour-temp{font-size:calc(18px * var(--svv-scale));font-weight:700}
+.svv-hour-meta{display:flex;flex-direction:column;gap:2px;font-size:calc(11px * var(--svv-scale));color:var(--svv-muted)}
+
+/* 2.2 preset-grund */
+.svv-preset-mini{display:inline-flex;width:auto;padding:8px 12px}
+.svv-preset-mini .svv-map,
+.svv-preset-mini .svv-forecast,
+.svv-preset-mini .svv-hourly{display:none}
+.svv-preset-hero{padding:22px;min-height:220px}
+.svv-preset-hero .svv-temp{font-size:calc(42px * var(--svv-scale))}
+.svv-preset-sidebar{max-width:360px}
+.svv-preset-dashboard .svv-hourly,
+.svv-preset-dashboard .svv-forecast{margin-top:16px}
+.svv-preset-forecast-strip .svv-forecast{grid-auto-flow:column;grid-auto-columns:minmax(96px, 1fr);overflow-x:auto}
 
 /* Extra snävt: tvinga 2 kolumner om det blir för kompakt */
 @media (max-width: 320px){

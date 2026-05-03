@@ -11,6 +11,22 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
+      - uses: shivammathur/setup-php@v2
+        with:
+          php-version: '7.4'
+          tools: none
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: npm
+
+      - name: PHP lint
+        run: find . -path ./node_modules -prune -o -name '*.php' -print0 | xargs -0 -n1 php -l
+
+      - name: Release checks
+        run: npm run check:release
+
       - name: Deploy
         uses: 10up/action-wordpress-plugin-deploy@stable
         env:

@@ -1,7 +1,7 @@
 # WordPress Consent API Audit - Spelhubben Weather
 
-**Audit Date:** December 17, 2025  
-**Plugin Version:** 1.8.2  
+**Audit Date:** May 3, 2026
+**Plugin Version:** 2.1.0
 **Status:** ✅ FULLY COMPLIANT with WordPress Consent API standards
 
 ---
@@ -41,7 +41,7 @@ The plugin only uses **WordPress Transients API** for server-side caching, which
 
 **JavaScript Evidence:**
 - [admin/admin.js](admin/admin.js) - Uses `fetch()` for AJAX, no storage API calls
-- [assets/map.js](assets/map.js) - Leaflet map initialization, no storage writes
+- [assets/map.js](assets/map.js) - smart map initialization/fallback, no storage writes
 
 ### 1.3 Personal Data Collection
 
@@ -56,9 +56,9 @@ The plugin only uses **WordPress Transients API** for server-side caching, which
 
 ## 2. External API Calls & Third-Party Integrations
 
-### 2.1 Weather Providers (6 APIs)
+### 2.1 Weather Providers (7 APIs)
 
-The plugin can call **6 external weather providers**. All calls are **read-only** and contain **NO personal data**:
+The plugin can call **7 external weather providers**. All calls are **read-only** and contain **NO personal data**:
 
 #### Open-Meteo (Recommended - Open Source)
 ```php
@@ -89,6 +89,16 @@ The plugin can call **6 external weather providers**. All calls are **read-only*
 // Privacy: https://www.yr.no/about/terms/
 ```
 ✅ **Contact info is optional** - Admin can add email/website URL as recommended by MET Norway
+
+#### MET Norway Nowcast
+```php
+// includes/providers.php
+// URL: https://api.met.no/weatherapi/nowcast/2.0/complete
+// User-Agent: "Spelhubben-Weather/2.1" + optional contact (from settings)
+// Data sent: Geographic coordinates + optional contact info (admin configurable)
+// Privacy: https://www.yr.no/about/terms/
+```
+✅ **No personal data** - Only geographic data and optional admin contact info are sent
 
 #### FMI (Finnish Meteorological Institute)
 ```php
@@ -130,12 +140,13 @@ The plugin can call **6 external weather providers**. All calls are **read-only*
 ### 2.3 OpenStreetMap (Maps)
 
 ```php
-// assets/map.js (Leaflet configuration)
+// assets/map.js (OpenLayers/Leaflet legacy/static fallback configuration)
 // URL: https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png
-// Data sent: NONE (client makes tile requests directly)
+// Data sent: NONE by the plugin (browser requests tiles directly for the visible map area)
 // Privacy: https://www.openstreetmap.org/copyright
 ```
 ✅ **Client-side only** - User's browser requests map tiles directly from OSM
+✅ **Local-only runtime assets** - OpenLayers, Leaflet legacy, and plugin map code are bundled locally; no CDN fallback is used.
 
 ---
 
@@ -439,8 +450,8 @@ The plugin:
 
 ## Document Information
 
-- **Audited By:** GitHub Copilot
-- **Audit Date:** December 17, 2025
-- **Plugin Version:** 1.8.2
+- **Audited By:** Spelhubben
+- **Audit Date:** May 3, 2026
+- **Plugin Version:** 2.1.0
 - **Standards:** WordPress Consent API RFC, GDPR, WCAG
 - **Repository:** [spelhubben-weather](https://github.com/spelhubben/spelhubben-weather)

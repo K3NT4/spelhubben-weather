@@ -18,8 +18,10 @@ class SV_Vader_Block {
 			[
 				'render_callback' => function( $attrs ) {
 					$opts = sv_vader_get_options();
+					$place = trim( (string) ( $attrs['place'] ?? '' ) );
+					$ort   = trim( (string) ( $attrs['ort'] ?? '' ) );
 					$atts = [
-						'ort'        => $attrs['ort'] ?? ( $attrs['place'] ?? $opts['default_ort'] ),
+						'ort'        => $place !== '' ? $place : ( $ort !== '' ? $ort : $opts['default_ort'] ),
 						'lat'        => $attrs['lat'] ?? '',
 						'lon'        => $attrs['lon'] ?? '',
 						'show'       => $attrs['show'] ?? $opts['default_show'],
@@ -27,9 +29,13 @@ class SV_Vader_Block {
 						'class'      => 'is-block',
 						'map'        => ! empty( $attrs['map'] ) ? '1' : ( $opts['map_default'] ? '1' : '0' ),
 						'map_height' => isset( $attrs['mapHeight'] ) ? (string) intval( $attrs['mapHeight'] ) : (string) $opts['map_height'],
+						'map_engine' => $attrs['mapEngine'] ?? ( $opts['map_engine'] ?? 'auto' ),
 						'animate'    => ! empty( $attrs['animate'] ) ? '1' : '0',
 						'forecast'   => isset( $attrs['forecast'] ) ? $attrs['forecast'] : 'none',
+						'hourly'     => ! empty( $attrs['hourly'] ) ? '1' : '0',
+						'hours'      => isset( $attrs['hours'] ) ? (string) intval( $attrs['hours'] ) : '24',
 						'theme'      => $attrs['theme'] ?? 'auto',
+						'preset'     => $attrs['preset'] ?? '',
 						'days'       => isset( $attrs['days'] ) ? (string) intval( $attrs['days'] ) : '5',
 
 						'units'       => $attrs['units']       ?? $opts['units'],
@@ -38,11 +44,20 @@ class SV_Vader_Block {
 						'precip_unit' => $attrs['precip_unit'] ?? $opts['precip_unit'],
 						'date_format' => $attrs['date_format'] ?? $opts['date_format'],
 						'show_alerts' => isset( $attrs['showAlerts'] ) ? ( $attrs['showAlerts'] ? '1' : '0' ) : (string) $opts['show_alerts'],
+						'tides'      => ! empty( $attrs['tides'] ) ? '1' : '0',
 					];
 					return $this->renderer->render_shortcode( $atts );
 				},
 			]
 		);
+
+		if ( function_exists( 'wp_set_script_translations' ) ) {
+			wp_set_script_translations(
+				'spelhubben-weather-spelhubben-weather-editor-script',
+				'spelhubben-weather',
+				dirname( __DIR__ ) . '/languages'
+			);
+		}
 
 		register_block_type(
 			'sv/vader',
@@ -50,8 +65,10 @@ class SV_Vader_Block {
 				'api_version'     => 2,
 				'render_callback' => function( $attrs ) {
 					$opts = sv_vader_get_options();
+					$place = trim( (string) ( $attrs['place'] ?? '' ) );
+					$ort   = trim( (string) ( $attrs['ort'] ?? '' ) );
 					$atts = [
-						'ort'         => $attrs['ort'] ?? $opts['default_ort'],
+						'ort'         => $place !== '' ? $place : ( $ort !== '' ? $ort : $opts['default_ort'] ),
 						'lat'         => $attrs['lat'] ?? '',
 						'lon'         => $attrs['lon'] ?? '',
 						'show'        => $attrs['show'] ?? $opts['default_show'],
@@ -59,11 +76,16 @@ class SV_Vader_Block {
 						'class'       => 'is-block',
 						'map'         => ! empty( $attrs['map'] ) ? '1' : ( $opts['map_default'] ? '1' : '0' ),
 						'map_height'  => isset( $attrs['mapHeight'] ) ? (string) intval( $attrs['mapHeight'] ) : (string) $opts['map_height'],
+						'map_engine'  => $attrs['mapEngine'] ?? ( $opts['map_engine'] ?? 'auto' ),
 						'animate'     => ! empty( $attrs['animate'] ) ? '1' : '0',
 						'forecast'    => isset( $attrs['forecast'] ) ? $attrs['forecast'] : 'none',
+						'hourly'      => ! empty( $attrs['hourly'] ) ? '1' : '0',
+						'hours'       => isset( $attrs['hours'] ) ? (string) intval( $attrs['hours'] ) : '24',
 						'theme'       => $attrs['theme'] ?? 'auto',
+						'preset'      => $attrs['preset'] ?? '',
 						'days'        => isset( $attrs['days'] ) ? (string) intval( $attrs['days'] ) : '5',
 						'show_alerts' => isset( $attrs['showAlerts'] ) ? ( $attrs['showAlerts'] ? '1' : '0' ) : (string) $opts['show_alerts'],
+						'tides'       => ! empty( $attrs['tides'] ) ? '1' : '0',
 						'units'       => $opts['units'],
 						'temp_unit'   => $opts['temp_unit'],
 						'wind_unit'   => $opts['wind_unit'],

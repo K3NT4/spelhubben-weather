@@ -2,188 +2,175 @@
 (function () {
   'use strict';
 
-  // Ensure Leaflet is available. If not, dynamically load the bundled Leaflet
-  // and call queued initializers once it has loaded. This helps when
-  // optimization plugins change script order or add `defer`/`async`.
-  function ensureLeafletLoaded(cb){
-    if (typeof L !== 'undefined' && L && L.map) return cb();
-
-    if (window._svv_leaflet_loader) {
-      window._svv_leaflet_loader.callbacks.push(cb);
-      return;
-    }
-
-    window._svv_leaflet_loader = { callbacks: [cb] };
-
-    // Try to derive base plugin URL from current script src (map.js/map.min.js)
-    var scripts = document.getElementsByTagName('script');
-    var base = '';
-    for (var i = 0; i < scripts.length; i++){
-      var src = scripts[i].src || '';
-      if (src.indexOf('assets/map') !== -1 || src.indexOf('/map.js') !== -1 || src.indexOf('/map.min.js') !== -1) {
-        base = src.split('assets/')[0];
-        break;
-      }
-    }
-
-    var localJs = base ? (base + 'assets/vendor/leaflet/leaflet.js') : 'assets/vendor/leaflet/leaflet.js';
-    var localCss = base ? (base + 'assets/vendor/leaflet/leaflet.css') : 'assets/vendor/leaflet/leaflet.css';
-
-    // CDN fallbacks (Leaflet v1.9.4)
-    var cdnJs  = 'https://unpkg.com/leaflet@1.9.4/dist/leaflet.js';
-    var cdnCss = 'https://unpkg.com/leaflet@1.9.4/dist/leaflet.css';
-
-    // Helper: ensure a stylesheet is present; try local then CDN on error.
-    function ensureLeafletCss() {
-      // If any leaflet css present, skip
-      if (document.querySelector('link[href*="leaflet.css"]')) return;
-      var l = document.createElement('link');
-      l.rel = 'stylesheet';
-      l.href = localCss;
-      l.onerror = function(){
-        console.warn('SVV: failed to load local Leaflet CSS, falling back to CDN');
-        l.href = cdnCss;
-      };
-      (document.head || document.documentElement).appendChild(l);
-    }
-
-    // Load script with CDN fallback on error
-    var triedCdn = false;
-    function loadLeaflet(src){
-      var s = document.createElement('script');
-      s.src = src;
-      s.async = false;
-      s.onload = function(){
-        try{
-          window._svv_leaflet_loader.callbacks.forEach(function(f){ try{ f(); }catch(e){ console.error(e); } });
-        }finally{
-          delete window._svv_leaflet_loader;
-        }
-      };
-      s.onerror = function(){
-        if (!triedCdn) {
-          triedCdn = true;
-          console.warn('SVV: failed to load local Leaflet, attempting CDN fallback');
-          // ensure CSS fallback too
-          ensureLeafletCss();
-          // try CDN next
-          loadLeaflet(cdnJs);
-          return;
-        }
-        console.error('SVV: failed to load Leaflet from both local and CDN', src);
-        try{ window._svv_leaflet_loader.callbacks.forEach(function(f){ try{ f(); }catch(e){} }); }catch(e){}
-        delete window._svv_leaflet_loader;
-      };
-      (document.head || document.documentElement).appendChild(s);
-    }
-
-    // Start by ensuring CSS and trying local JS
-    ensureLeafletCss();
-    loadLeaflet(localJs);
-  }
-
-  // (Optional) Point Leaflet default icons to local files.
-  // Harmless to keep even when we don't place markers.
-  if (window.SVV && SVV.iconBase && window.L && L.Icon && L.Icon.Default) {
-    L.Icon.Default.mergeOptions({
-      iconUrl:       SVV.iconBase + 'marker-icon.png',
-      iconRetinaUrl: SVV.iconBase + 'marker-icon-2x.png',
-      shadowUrl:     SVV.iconBase + 'marker-shadow.png'
-    });
-  }
-
-  // Helpers
-  function debounce(fn, ms){
-    let timeoutId = null;
-    return function(...args) {
+  function debounce(fn, ms) {
+    var timeoutId = null;
+    return function () {
+      var args = arguments;
       if (timeoutId) clearTimeout(timeoutId);
-      timeoutId = setTimeout(() => fn.apply(null, args), ms);
+      timeoutId = setTimeout(function () { fn.apply(null, args); }, ms);
     };
   }
 
-  // Compute a scale factor based on actual card width
-  function computeScale(w){
-    const minW = 160, maxW = 520;
-    const scale = (w - minW) / (maxW - minW);
-    return Math.max(0.8, Math.min(1.3, scale));
+  function recordMapEvent(el, code, message) {
+    window.SVV_MAP_DIAGNOSTICS = window.SVV_MAP_DIAGNOSTICS || [];
+    window.SVV_MAP_DIAGNOSTICS.push({
+      code: code,
+      message: message,
+      name: el.getAttribute('data-name') || '',
+      lat: el.getAttribute('data-lat') || '',
+      lon: el.getAttribute('data-lon') || '',
+      time: new Date().toISOString()
+    });
+    if (window.console && console.warn) {
+      console.warn(code + ': ' + message, el);
+    }
   }
 
-  // --- Initialize maps WITHOUT a marker ---
-  function initMap(el){
-    if (el.dataset.inited) return;
+  function osmUrl(lat, lon) {
+    return 'https://www.openstreetmap.org/?mlat=' + encodeURIComponent(lat) +
+      '&mlon=' + encodeURIComponent(lon) + '#map=12/' +
+      encodeURIComponent(lat) + '/' + encodeURIComponent(lon);
+  }
 
-    // Retry guard (prevents infinite console spam if Leaflet never loads)
-    const tries = parseInt(el.dataset.svvLeafletTries || '0', 10);
-    if (tries > 20) { // ~10s total with 500ms interval
-      console.error('Leaflet failed to load after multiple retries. Giving up for element:', el);
-      el.dataset.svvLeafletFailed = '1';
-      el.dataset.inited = '1'; // lock
+  function showFallback(el, code, message) {
+    var lat = el.getAttribute('data-lat') || '';
+    var lon = el.getAttribute('data-lon') || '';
+    var name = el.getAttribute('data-name') || '';
 
-      // Show a small inline error message so site visitors know why the map is blank.
-      if (!el.querySelector('.svv-map-error')) {
-        var err = document.createElement('div');
-        err.className = 'svv-map-error';
-        err.textContent = 'Kartan kunde inte laddas. Vänligen kontrollera om ett annonsblockerande tillägg eller script-optimering blockerar kartbiblioteket.';
-        err.style.cssText = 'padding:12px;border-radius:6px;background:#fff8f0;color:#7a2a00;border:1px solid #ffd7c2;font-size:13px;text-align:center;margin:8px;';
-        el.appendChild(err);
-      }
+    el.dataset.svvMapFailed = '1';
+    el.dataset.inited = '1';
+    el.innerHTML = '';
 
-      return;
+    var box = document.createElement('div');
+    box.className = 'svv-map-fallback';
+    box.setAttribute('role', 'status');
+
+    var title = document.createElement('strong');
+    title.textContent = name || 'Map location';
+    box.appendChild(title);
+
+    var text = document.createElement('span');
+    text.textContent = message;
+    box.appendChild(text);
+
+    if (lat && lon) {
+      var coords = document.createElement('small');
+      coords.textContent = lat + ', ' + lon;
+      box.appendChild(coords);
+
+      var link = document.createElement('a');
+      link.href = osmUrl(lat, lon);
+      link.target = '_blank';
+      link.rel = 'noopener noreferrer';
+      link.textContent = 'OpenStreetMap';
+      box.appendChild(link);
     }
 
+    el.appendChild(box);
+    recordMapEvent(el, code, message);
+  }
+
+  function hasUsableHeight(el) {
+    var computedHeight = window.getComputedStyle(el).height;
+    return computedHeight && computedHeight !== '0px' && computedHeight !== 'auto';
+  }
+
+  function initOpenLayers(el, lat, lon) {
+    if (!window.SVVOpenLayers || typeof window.SVVOpenLayers.createMap !== 'function') {
+      return false;
+    }
+
+    var map = window.SVVOpenLayers.createMap(el, { lat: lat, lon: lon, zoom: 12 });
+    el._svvMap = map;
+    el._svvMapEngine = 'openlayers';
+    return true;
+  }
+
+  function initLeaflet(el, lat, lon) {
+    if (typeof window.L === 'undefined' || !window.L.map) {
+      return false;
+    }
+
+    if (window.SVV && window.SVV.iconBase && window.L.Icon && window.L.Icon.Default) {
+      window.L.Icon.Default.mergeOptions({
+        iconUrl: window.SVV.iconBase + 'marker-icon.png',
+        iconRetinaUrl: window.SVV.iconBase + 'marker-icon-2x.png',
+        shadowUrl: window.SVV.iconBase + 'marker-shadow.png'
+      });
+    }
+
+    var map = window.L.map(el, { scrollWheelZoom: false, attributionControl: false });
+    el._svvMap = map;
+    el._svvMapEngine = 'leaflet';
+    map.setView([lat, lon], 12);
+    window.L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', { maxZoom: 19 }).addTo(map);
+    setTimeout(function () { map.invalidateSize(); }, 200);
+    return true;
+  }
+
+  function initMap(el) {
+    if (el.dataset.inited) return;
     el.dataset.inited = '1';
 
-    // Check if Leaflet is loaded
-    if (typeof L === 'undefined' || !L.map) {
-      console.warn('Leaflet not loaded yet, retrying...', el);
-      setTimeout(() => {
-        el.dataset.svvLeafletTries = String(tries + 1);
-        delete el.dataset.inited;
-        initMap(el);
-      }, 500);
-      return;
-    }
-
-    const lat  = parseFloat(el.getAttribute('data-lat'));
-    const lon  = parseFloat(el.getAttribute('data-lon'));
+    var lat = parseFloat(el.getAttribute('data-lat'));
+    var lon = parseFloat(el.getAttribute('data-lon'));
     if (isNaN(lat) || isNaN(lon)) {
-      console.warn('Missing or invalid lat/lon for map', el);
+      showFallback(el, 'SVV_MAP_INVALID_COORDS', 'Map coordinates are missing or invalid.');
       return;
     }
 
-    // Ensure element has a computed height before initializing
-    const computedHeight = window.getComputedStyle(el).height;
-    if (!computedHeight || computedHeight === '0px' || computedHeight === 'auto') {
-      console.warn('Map element has no height, retrying...', el);
-      setTimeout(() => {
-        delete el.dataset.inited;
-        initMap(el);
-      }, 500);
+    if (!hasUsableHeight(el)) {
+      delete el.dataset.inited;
+      setTimeout(function () { initMap(el); }, 300);
+      return;
+    }
+
+    var requested = (el.getAttribute('data-engine') || (window.SVV && window.SVV.mapEngine) || 'auto').toLowerCase();
+    if (['auto', 'openlayers', 'leaflet', 'static'].indexOf(requested) === -1) {
+      requested = 'auto';
+    }
+
+    if (requested === 'static') {
+      showFallback(el, 'SVV_MAP_STATIC_MODE', 'Interactive map is disabled for this weather block.');
       return;
     }
 
     try {
-      const map = L.map(el, { scrollWheelZoom:false, attributionControl:false });
-      el._svvMap = map;
-
-      map.setView([lat, lon], 12);
-      L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', { maxZoom:19 }).addTo(map);
-
-      setTimeout(()=>map.invalidateSize(), 200);
+      if ((requested === 'auto' || requested === 'openlayers') && initOpenLayers(el, lat, lon)) {
+        return;
+      }
     } catch (e) {
-      console.error('Error initializing map:', e);
-      delete el.dataset.inited;
+      recordMapEvent(el, 'SVV_MAP_OPENLAYERS_INIT_FAIL', e && e.message ? e.message : 'OpenLayers failed to initialize.');
+      if (requested === 'openlayers') {
+        showFallback(el, 'SVV_MAP_OPENLAYERS_INIT_FAIL', 'OpenLayers could not initialize on this page.');
+        return;
+      }
     }
+
+    try {
+      if ((requested === 'auto' || requested === 'leaflet') && initLeaflet(el, lat, lon)) {
+        return;
+      }
+    } catch (e2) {
+      recordMapEvent(el, 'SVV_MAP_LEAFLET_INIT_FAIL', e2 && e2.message ? e2.message : 'Leaflet failed to initialize.');
+      if (requested === 'leaflet') {
+        showFallback(el, 'SVV_MAP_LEAFLET_INIT_FAIL', 'Leaflet could not initialize on this page.');
+        return;
+      }
+    }
+
+    showFallback(el, 'SVV_MAP_ENGINE_UNAVAILABLE', 'No local interactive map engine was available.');
   }
 
-  // Lazy-initialize maps when they enter the viewport using IntersectionObserver.
-  function scanMapsLazy(){
-    const maps = Array.from(document.querySelectorAll('.svv-map'));
+  function scanMapsLazy(root) {
+    var scope = root && root.querySelectorAll ? root : document;
+    var maps = Array.prototype.slice.call(scope.querySelectorAll('.svv-map'));
+    if (root && root.matches && root.matches('.svv-map')) maps.unshift(root);
     if (!maps.length) return;
 
     if ('IntersectionObserver' in window) {
-      const io = new IntersectionObserver(function(entries){
-        entries.forEach(function(entry){
+      var io = new IntersectionObserver(function (entries) {
+        entries.forEach(function (entry) {
           if (entry.isIntersecting) {
             initMap(entry.target);
             io.unobserve(entry.target);
@@ -191,9 +178,8 @@
         });
       }, { root: null, rootMargin: '200px', threshold: 0.01 });
 
-      maps.forEach(function(m){
-        if (m.dataset.inited) return;
-        io.observe(m);
+      maps.forEach(function (m) {
+        if (!m.dataset.inited) io.observe(m);
       });
       return;
     }
@@ -201,70 +187,81 @@
     maps.forEach(initMap);
   }
 
-  // Initialize map scanning once Leaflet is available (or immediately if present).
-  ensureLeafletLoaded(function(){
-    if (document.readyState === 'loading') {
-      document.addEventListener('DOMContentLoaded', scanMapsLazy);
-    } else { scanMapsLazy(); }
+  function computeScale(w) {
+    var minW = 160, maxW = 520;
+    var scale = (w - minW) / (maxW - minW);
+    return Math.max(0.8, Math.min(1.3, scale));
+  }
 
-    new MutationObserver(scanMapsLazy).observe(document.documentElement, { childList:true, subtree:true });
-  });
-
-  // --- Responsive scaling for the card ---
-  const attachRO = debounce(function(){
+  var attachRO = debounce(function () {
     if (!('ResizeObserver' in window)) return;
 
-    document.querySelectorAll('.sv-vader[data-svv-ro="1"], .spelhubben-weather[data-svv-ro="1"]').forEach(function(card){
+    document.querySelectorAll('.sv-vader[data-svv-ro="1"], .spelhubben-weather[data-svv-ro="1"]').forEach(function (card) {
       if (card._svvObserved) return;
       card._svvObserved = true;
 
-      const applyScale = ()=>{
-        const w = (card.getBoundingClientRect().width || card.clientWidth || 0);
+      var applyScale = function () {
+        var w = (card.getBoundingClientRect().width || card.clientWidth || 0);
         if (!w) return;
         card.style.setProperty('--svv-scale', computeScale(w).toFixed(3));
 
         if (card._svvLastW && Math.abs(w - card._svvLastW) > 2) {
-          const m = card.querySelector('.svv-map');
-          if (m && m._svvMap) m._svvMap.invalidateSize();
+          var m = card.querySelector('.svv-map');
+          if (m && m._svvMap) {
+            if (m._svvMapEngine === 'leaflet' && m._svvMap.invalidateSize) m._svvMap.invalidateSize();
+            if (m._svvMapEngine === 'openlayers' && m._svvMap.updateSize) m._svvMap.updateSize();
+          }
         }
         card._svvLastW = w;
       };
 
       applyScale();
-      const ro = new ResizeObserver(debounce(applyScale, 60));
+      var ro = new ResizeObserver(debounce(applyScale, 60));
       ro.observe(card);
-
       card._svvResizeObserver = ro;
     });
   }, 50);
 
-  if (document.readyState === 'loading') {
-    document.addEventListener('DOMContentLoaded', attachRO);
-  } else { attachRO(); }
+  function cleanupNode(node) {
+    if (!node || node.nodeType !== 1) return;
+    var cards = node.querySelectorAll ? node.querySelectorAll('.sv-vader[data-svv-ro="1"], .spelhubben-weather[data-svv-ro="1"]') : [];
+    Array.prototype.forEach.call(cards, function (card) {
+      if (card._svvResizeObserver) {
+        card._svvResizeObserver.disconnect();
+        delete card._svvResizeObserver;
+      }
+      var mapEl = card.querySelector('.svv-map');
+      if (mapEl && mapEl._svvMap) {
+        if (mapEl._svvMapEngine === 'leaflet' && mapEl._svvMap.remove) mapEl._svvMap.remove();
+        if (mapEl._svvMapEngine === 'openlayers' && mapEl._svvMap.setTarget) mapEl._svvMap.setTarget(null);
+        delete mapEl._svvMap;
+      }
+      delete card._svvObserved;
+    });
+  }
 
-  const mutationObserver = new MutationObserver(function(mutations){
-    mutations.forEach(function(m){
-      if (m.removedNodes.length) {
-        m.removedNodes.forEach(function(node){
+  function boot() {
+    scanMapsLazy(document);
+    attachRO();
+
+    new MutationObserver(function (mutations) {
+      var shouldAttach = false;
+      mutations.forEach(function (mutation) {
+        Array.prototype.forEach.call(mutation.addedNodes, function (node) {
           if (node.nodeType === 1) {
-            const cards = node.querySelectorAll ? node.querySelectorAll('.sv-vader[data-svv-ro="1"], .spelhubben-weather[data-svv-ro="1"]') : [];
-            cards.forEach(function(card){
-              if (card._svvResizeObserver) {
-                card._svvResizeObserver.disconnect();
-                delete card._svvResizeObserver;
-              }
-              if (card._svvMap) {
-                card._svvMap.remove();
-                delete card._svvMap;
-              }
-              delete card._svvObserved;
-            });
+            scanMapsLazy(node);
+            shouldAttach = true;
           }
         });
-      }
-    });
-    attachRO();
-  });
+        Array.prototype.forEach.call(mutation.removedNodes, cleanupNode);
+      });
+      if (shouldAttach) attachRO();
+    }).observe(document.documentElement, { childList: true, subtree: true });
+  }
 
-  mutationObserver.observe(document.documentElement, { childList:true, subtree: true });
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', boot);
+  } else {
+    boot();
+  }
 })();

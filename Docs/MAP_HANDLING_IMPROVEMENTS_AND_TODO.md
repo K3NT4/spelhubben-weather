@@ -1,7 +1,7 @@
 # Map Handling Improvements and TODO
 
-Date: 2026-04-17
-Scope: Spelhubben Weather map handling (Leaflet loading, rendering, performance, compliance, tests)
+Date: 2026-05-03
+Scope: Spelhubben Weather map handling (OpenLayers, Leaflet legacy, static fallback, rendering, performance, compliance, tests)
 
 ## Goal
 
@@ -12,17 +12,17 @@ Improve map reliability, performance, compliance clarity, and maintainability wi
 ### 1) Compliance and privacy clarity for Leaflet fallback
 
 Current situation:
-- The runtime can fall back to external CDN (unpkg) for Leaflet JS/CSS if local files fail.
-- Consent/compliance documentation focuses on OSM tile loading and may not fully describe CDN fallback behavior.
+- The runtime no longer falls back to external CDNs for Leaflet JS/CSS.
+- OpenLayers and Leaflet assets are bundled locally, and the map runtime shows a static fallback if an interactive engine cannot initialize.
 
 Why this matters:
 - External fallback adds additional third-party requests that may need clearer disclosure.
 - Documentation mismatch can create legal/compliance risk and support confusion.
 
 Improve by:
-- Defining explicit policy: either strictly self-hosted Leaflet only, or allow CDN fallback with documented rationale.
-- Updating consent/compliance docs to match runtime behavior exactly.
-- Adding admin-facing note if fallback remains enabled.
+- Keeping the explicit policy: strictly self-hosted map runtime assets only.
+- Updating consent/compliance docs whenever map runtime behavior changes.
+- Keeping admin diagnostics aligned with the local asset policy.
 
 Relevant files:
 - assets/map.js
@@ -35,15 +35,14 @@ Relevant files:
 
 Current situation:
 - Options sanitization clamps map height to a minimum (120).
-- Shortcode-render path prints map_height directly as intval(), which allows too-small values from shortcode attrs.
+- Renderer, shortcode, block and widget paths now clamp map height to the documented minimum.
 
 Why this matters:
 - Invalid/small heights can lead to poor UX and map init issues.
 - Inconsistency between settings, docs, and runtime behavior.
 
 Improve by:
-- Applying min clamp in renderer too (e.g. max(120, intval($a['map_height']))).
-- Keeping docs and block controls aligned to same bounds.
+- Keeping docs and block/widget controls aligned to the same bounds as future UI changes land.
 
 Relevant files:
 - includes/class-renderer.php
@@ -55,17 +54,16 @@ Relevant files:
 ### 3) Reduce expensive global map rescans
 
 Current situation:
-- A document-wide MutationObserver triggers map scans on many DOM updates.
-- A second observer exists for card resize/lifecycle logic.
+- Map initialization now scans added nodes instead of blindly rescanning the full document on every DOM update.
+- A ResizeObserver remains for card scaling and map resize handling.
 
 Why this matters:
 - Can be expensive on dynamic pages (page builders, widgets, infinite scroll).
 - Unnecessary repeated scans can hurt performance.
 
 Improve by:
-- Scoping observer to likely plugin containers when possible.
-- Debouncing/throttling observer callbacks.
-- Avoiding full document scans when mutation target has no map candidates.
+- Keep future map changes scoped to added nodes or plugin containers.
+- Avoid reintroducing full document scans when mutation target has no map candidates.
 - Optionally batching init attempts via requestAnimationFrame.
 
 Relevant files:
@@ -94,19 +92,17 @@ Relevant files:
 ### 5) Add map-focused test coverage
 
 Current situation:
-- Existing test folder focuses on tide feature only.
-- No dedicated test for map init, fallback behavior, or observer performance boundaries.
+- `tests/regression_test.php` covers map height clamping, local-only map runtime policy, minified asset drift, and per-instance map engine asset loading.
+- Browser-level map lifecycle and fallback behavior still need fuller coverage.
 
 Why this matters:
 - Regressions in map loading are easy to miss.
 - Hard to safely refactor map lifecycle/performance logic.
 
 Improve by:
-- Adding at least one map smoke test path.
-- Adding scenario tests for:
+- Adding browser-level scenario tests for:
   - Leaflet present vs missing
   - Invalid lat/lon
-  - Too-small map height
   - Dynamic DOM insertion/removal
   - Fallback policy behavior (enabled/disabled)
 
@@ -141,21 +137,21 @@ Use this as the implementation checklist.
 
 ## P0 (Do first)
 
-- [ ] Decide fallback policy for Leaflet (self-hosted only vs CDN fallback).
-- [ ] Align docs with actual behavior in consent/compliance documentation.
-- [ ] Enforce map_height min clamp in renderer shortcode path.
+- [x] Decide fallback policy for Leaflet/OpenLayers runtime assets (self-hosted only).
+- [x] Align docs with actual behavior in consent/compliance documentation.
+- [x] Enforce map_height min clamp in renderer shortcode path.
 
 ## P1 (Next)
 
-- [ ] Refactor MutationObserver logic to reduce global rescans.
-- [ ] Add debounce/batching for map scan callback.
+- [x] Refactor MutationObserver logic to reduce global rescans.
+- [x] Add debounce/batching for map scan callback.
 - [ ] Fix CSS block structure for daycard/moon selectors.
 
 ## P2 (Then)
 
 - [ ] Add map smoke test(s) in tests folder.
 - [ ] Add scenario tests for map lifecycle and fallback cases.
-- [ ] Improve map error observability (structured console output/debug mode).
+- [x] Improve map error observability with structured map diagnostics and frontend fallback events.
 
 ## Suggested Implementation Order
 
