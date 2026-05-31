@@ -62,7 +62,7 @@ class SV_Vader_Block {
 		register_block_type(
 			'sv/vader',
 			[
-				'api_version'     => 2,
+				'api_version'     => 3,
 				'render_callback' => function( $attrs ) {
 					$opts = sv_vader_get_options();
 					$place = trim( (string) ( $attrs['place'] ?? '' ) );

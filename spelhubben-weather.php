@@ -2,7 +2,7 @@
 /**
  * Plugin Name: Spelhubben Weather
  * Description: Displays current weather, compact hourly forecasts and optional daily forecast with provider consensus (Open-Meteo, SMHI, Yr/MET Norway, MET Nowcast, FMI, OpenWeatherMap, WeatherAPI). Supports shortcode, Gutenberg block, classic widget and local smart maps.
- * Version: 2.1.0
+ * Version: 2.1.1
  * Author: Spelhubben
  * Text Domain: spelhubben-weather
  * Domain Path: /languages
@@ -22,11 +22,17 @@ if ( ! defined( 'ABSPATH' ) ) {
 }
 
 // ── Constants (kept for backward compatibility).
-	if ( ! defined( 'SV_VADER_VER' ) ) {
-		define( 'SV_VADER_VER', '2.1.0' );
-	}
+if ( ! defined( 'SV_VADER_FILE' ) ) {
+	define( 'SV_VADER_FILE', __FILE__ );
+}
+if ( ! defined( 'SV_VADER_PATH' ) ) {
+	define( 'SV_VADER_PATH', plugin_dir_path( __FILE__ ) );
+}
+if ( ! defined( 'SV_VADER_VER' ) ) {
+	define( 'SV_VADER_VER', '2.1.1' );
+}
 if ( ! defined( 'SV_VADER_DIR' ) ) {
-	define( 'SV_VADER_DIR', plugin_dir_path( __FILE__ ) );
+	define( 'SV_VADER_DIR', SV_VADER_PATH );
 }
 if ( ! defined( 'SV_VADER_URL' ) ) {
 	define( 'SV_VADER_URL', plugin_dir_url( __FILE__ ) );
@@ -97,15 +103,6 @@ $sv_vader_widget_file = SV_VADER_DIR . 'includes/Widget/class-widget.php';
 if ( file_exists( $sv_vader_widget_file ) ) {
 	require_once $sv_vader_widget_file;
 }
-
-// ── Register widget (namespaced variant preferred).
-add_action('widgets_init', static function () {
-	if ( class_exists('\SV_Vader\Widget\Widget') ) {
-		register_widget('\SV_Vader\Widget\Widget');
-	} elseif ( class_exists('SV_Vader_Widget') ) {
-		register_widget('SV_Vader_Widget');
-	}
-});
 
 // ── Bootstrap plugin (main plugin class lives in includes/class-plugin.php).
 add_action('plugins_loaded', static function () {

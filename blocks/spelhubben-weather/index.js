@@ -4,7 +4,7 @@
   const { registerBlockType } = wp.blocks;
   const { InspectorControls, useBlockProps } = wp.blockEditor || wp.editor;
   const { PanelBody, TextControl, ToggleControl, SelectControl, RangeControl } = wp.components;
-  const ServerSideRender = wp.serverSideRender || ( wp.serverSideRender && wp.serverSideRender.default ) || null;
+  const ServerSideRender = wp.serverSideRender && wp.serverSideRender.default ? wp.serverSideRender.default : ( wp.serverSideRender || null );
 
   const LAYOUTS = [
     { label: __( 'Inline', 'spelhubben-weather' ), value: 'inline' },

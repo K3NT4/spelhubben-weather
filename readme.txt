@@ -2,9 +2,9 @@
 Contributors: spelhubben
 Tags: weather, forecast, widget, shortcode, blocks
 Requires at least: 6.8
-Tested up to: 6.9
+Tested up to: 7.0
 Requires PHP: 7.4
-Stable tag: 2.1.0
+Stable tag: 2.1.1
 Donate link: https://www.paypal.com/donate/?hosted_button_id=CV74CEXY5XEAU
 
 License: GPLv3 or later
@@ -29,6 +29,11 @@ Weather widget & block with optional map and daily forecast. Can combine Open-Me
 This plugin displays current weather and an optional forecast. It can aggregate data from free global weather providers (Open-Meteo, SMHI, Yr/MET Norway, MET Norway Nowcast, FMI, OpenWeatherMap, and WeatherAPI.com) and compute a simple consensus. Works worldwide with excellent coverage in Europe and beyond.
 
 == Changelog ==
+
+= 2.1.1 =
+- Improved: WordPress 7.0 compatibility by moving the Gutenberg block and legacy block registration to Block API v3.
+- Fixed: Block editor previews now load Spelhubben Weather content assets inside the iframed editor.
+- Improved: Plugin metadata and asset versions now target WordPress 7.0 while keeping the minimum requirements at WordPress 6.8 and PHP 7.4.
 
 = 2.1.0 =
 - Added: Central provider registry shared by settings, renderer, shortcode/block/widget surfaces, diagnostics and documentation.

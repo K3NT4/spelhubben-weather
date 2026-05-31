@@ -528,12 +528,12 @@ if ( ! class_exists( 'SV_Vader_WPOrg_Plugins' ) ) {
 		 */
 		private function get_current_plugin_slug() {
 			// Get the current plugin's file path (spelhubben-weather.php)
-			$plugin_file = defined( 'SV_VADER_FILE' ) ? SV_VADER_FILE : __FILE__;
-			
-			// Extract directory name as plugin slug
-			$plugin_dir = basename( dirname( dirname( $plugin_file ) ) );
-			
-			return $plugin_dir;
+			if ( defined( 'SV_VADER_FILE' ) ) {
+				return basename( dirname( SV_VADER_FILE ) );
+			}
+
+			// Fallback when this class is loaded in isolation from includes/.
+			return basename( dirname( dirname( __FILE__ ) ) );
 		}
 	}
 }

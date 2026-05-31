@@ -4,11 +4,72 @@ if (!defined('ABSPATH')) exit;
 
 class SV_Vader_Assets {
 
+    private $registered = false;
+
+    public function __construct() {
+        add_action( 'enqueue_block_assets', [ $this, 'enqueue_block_content_assets' ] );
+    }
+
     /**
      * Enqueue public-facing assets (CSS/JS) for the frontend.
      * Only loads core stylesheet; map engine assets are loaded conditionally.
      */
     public function enqueue_public_assets() {
+        $this->register_assets();
+
+        // Load core style only when plugin output is present on the page
+        if ( $this->should_load_assets() ) {
+            wp_enqueue_style('sv-vader-style');
+            wp_enqueue_script('sv-vader-wind');
+        }
+
+        // Load map assets only if shortcode is present or Gutenberg block is used.
+        if ( $this->should_load_map() ) {
+            $opts = function_exists('sv_vader_get_options') ? sv_vader_get_options() : [];
+            $engine = strtolower((string)($opts['map_engine'] ?? 'auto'));
+            if ( ! in_array($engine, ['auto','openlayers','leaflet','static'], true) ) {
+                $engine = 'auto';
+            }
+
+            $this->enqueue_map_assets($engine);
+
+            /**
+             * NOTE:
+             * Do NOT force "defer" here. Defer/Delay/Async is best left to caching/optimization plugins,
+             * otherwise we risk Leaflet loading after our map script on some live setups.
+             */
+        }
+    }
+
+    /**
+     * Enqueue block content assets inside the block editor iframe in WordPress 7.0+.
+     */
+    public function enqueue_block_content_assets() {
+        if ( function_exists( 'is_admin' ) && ! is_admin() ) {
+            return;
+        }
+
+        $this->register_assets();
+
+        wp_enqueue_style('sv-vader-style');
+        wp_enqueue_script('sv-vader-wind');
+
+        $opts = function_exists('sv_vader_get_options') ? sv_vader_get_options() : [];
+        $engine = strtolower((string)($opts['map_engine'] ?? 'auto'));
+        if ( ! in_array($engine, ['auto','openlayers','leaflet','static'], true) ) {
+            $engine = 'auto';
+        }
+
+        $this->enqueue_map_assets($engine);
+    }
+
+    /**
+     * Register shared asset handles once so frontend and editor enqueue paths agree.
+     */
+    private function register_assets() {
+        if ( $this->registered ) {
+            return;
+        }
 
         // Core plugin stylesheet - register, enqueue only when used on the page
         // Prefer minified file when present and WP_DEBUG is not enabled
@@ -57,41 +118,27 @@ class SV_Vader_Assets {
         // Small helper to rotate wind direction arrows when inline styles are stripped
         wp_register_script('sv-vader-wind', SV_VADER_URL . 'assets/wind.js', [], SV_VADER_VER, true);
 
-        // Load core style only when plugin output is present on the page
-        if ( $this->should_load_assets() ) {
-            wp_enqueue_style('sv-vader-style');
-            wp_enqueue_script('sv-vader-wind');
-        }
+        $this->registered = true;
+    }
 
-        // Load map assets only if shortcode is present or Gutenberg block is used.
-        if ( $this->should_load_map() ) {
-            $opts = function_exists('sv_vader_get_options') ? sv_vader_get_options() : [];
-            $engine = strtolower((string)($opts['map_engine'] ?? 'auto'));
-            if ( ! in_array($engine, ['auto','openlayers','leaflet','static'], true) ) {
-                $engine = 'auto';
-            }
+    /**
+     * Enqueue all local map engines because each rendered instance can override engine.
+     */
+    private function enqueue_map_assets($engine = 'auto') {
+        // Enqueue both local engines when a map is present. The effective
+        // engine can be overridden per shortcode/block/widget instance, and
+        // this enqueue phase cannot reliably know every rendered instance.
+        wp_enqueue_style('svv-leaflet-css');
+        wp_enqueue_script('svv-leaflet-js');
+        wp_enqueue_style('svv-openlayers-css');
+        wp_enqueue_script('svv-openlayers-js');
+        wp_enqueue_script('sv-vader-map');
 
-            // Enqueue both local engines when a map is present. The effective
-            // engine can be overridden per shortcode/block/widget instance, and
-            // this enqueue phase cannot reliably know every rendered instance.
-            wp_enqueue_style('svv-leaflet-css');
-            wp_enqueue_script('svv-leaflet-js');
-            wp_enqueue_style('svv-openlayers-css');
-            wp_enqueue_script('svv-openlayers-js');
-            wp_enqueue_script('sv-vader-map');
-
-            // Localize only when map script is actually enqueued.
-            wp_localize_script('sv-vader-map', 'SVV', [
-                'iconBase' => trailingslashit(SV_VADER_URL . 'assets/vendor/leaflet/images'),
-                'mapEngine' => $engine,
-            ]);
-
-            /**
-             * NOTE:
-             * Do NOT force "defer" here. Defer/Delay/Async is best left to caching/optimization plugins,
-             * otherwise we risk Leaflet loading after our map script on some live setups.
-             */
-        }
+        // Localize only when map script is actually enqueued.
+        wp_localize_script('sv-vader-map', 'SVV', [
+            'iconBase' => trailingslashit(SV_VADER_URL . 'assets/vendor/leaflet/images'),
+            'mapEngine' => $engine,
+        ]);
     }
 
     /**

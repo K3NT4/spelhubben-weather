@@ -416,6 +416,7 @@ $map_min_js = file_get_contents(__DIR__ . '/../assets/map.min.js');
 assert_true(strpos($map_min_js, 'unpkg.com') === false, 'minified map runtime does not contain external Leaflet CDN fallback');
 
 $block_json = json_decode((string) file_get_contents(__DIR__ . '/../blocks/spelhubben-weather/block.json'), true);
+assert_true(($block_json['apiVersion'] ?? null) === 3, 'main block uses Block API version 3 for WordPress 7.0 iframe compatibility');
 assert_true(isset($block_json['attributes']['hourly']), 'block declares hourly attribute');
 assert_true(isset($block_json['attributes']['hours']), 'block declares hours attribute');
 assert_true(isset($block_json['attributes']['tides']), 'block declares tides attribute');
@@ -430,7 +431,7 @@ if (!defined('SV_VADER_DIR')) {
 	define('SV_VADER_DIR', dirname(__DIR__) . '/');
 }
 if (!defined('SV_VADER_VER')) {
-	define('SV_VADER_VER', '2.1.0-test');
+	define('SV_VADER_VER', '2.1.1-test');
 }
 
 if (!function_exists('trailingslashit')) {
@@ -478,6 +479,13 @@ if (!function_exists('wp_localize_script')) {
 if (!function_exists('wp_set_script_translations')) {
 	function wp_set_script_translations($handle, $domain = 'default', $path = null) {
 		$GLOBALS['svv_translated_scripts'][] = $handle;
+	}
+}
+
+if (!function_exists('add_action')) {
+	function add_action($hook_name, $callback, $priority = 10, $accepted_args = 1) {
+		$GLOBALS['svv_registered_actions'][] = [$hook_name, $callback, $priority, $accepted_args];
+		return true;
 	}
 }
 
@@ -546,6 +554,27 @@ assert_true(strpos($main_plugin, 'load_plugin_textdomain') !== false && strpos($
 assert_true(strpos($admin_php, "wp_set_script_translations( 'sv-vader-admin', 'spelhubben-weather', SV_VADER_DIR . 'languages' )") !== false, 'admin script translations use bundled language path');
 assert_true(strpos($assets_php, "wp_set_script_translations( 'sv-vader-map', 'spelhubben-weather', SV_VADER_DIR . 'languages' )") !== false, 'map script translations use bundled language path');
 assert_true(strpos($block_php, 'spelhubben-weather-spelhubben-weather-editor-script') !== false && strpos($block_php, "dirname( __DIR__ ) . '/languages'") !== false, 'block editor translations use bundled language path');
+assert_true(strpos($assets_php, "add_action( 'enqueue_block_assets'") !== false, 'block content assets hook into enqueue_block_assets for iframed editor previews');
+assert_true(strpos($main_plugin, "define( 'SV_VADER_FILE', __FILE__ )") !== false, 'main plugin defines stable plugin file constant');
+assert_true(strpos($main_plugin, "define( 'SV_VADER_PATH', plugin_dir_path( __FILE__ ) )") !== false, 'main plugin defines stable plugin path constant');
+assert_true(strpos(file_get_contents(__DIR__ . '/../blocks/spelhubben-weather/index.js'), 'wp.serverSideRender.default' ) !== false, 'block editor handles default-exported ServerSideRender module');
+
+$wporg_slug_script = <<<PHP
+<?php
+define('ABSPATH', '{$plugin_root}/');
+define('SV_VADER_FILE', '{$plugin_root}/spelhubben-weather.php');
+require_once '{$plugin_root}/includes/class-wporg-plugins.php';
+\$wporg = new SV_Vader_WPOrg_Plugins();
+\$method = new ReflectionMethod(\$wporg, 'get_current_plugin_slug');
+\$method->setAccessible(true);
+echo \$method->invoke(\$wporg);
+PHP;
+
+$wporg_slug_tmp = tempnam(sys_get_temp_dir(), 'svv-wporg-slug-');
+file_put_contents($wporg_slug_tmp, $wporg_slug_script);
+$wporg_slug = trim((string) shell_exec(escapeshellarg(PHP_BINARY) . ' ' . escapeshellarg($wporg_slug_tmp)));
+@unlink($wporg_slug_tmp);
+assert_true($wporg_slug === 'spelhubben-weather', 'WP.org plugin showcase resolves current plugin slug from stable plugin file constant');
 
 assert_true(file_exists(__DIR__ . '/../blocks/spelhubben-weather/index.asset.php'), 'block editor script declares WordPress dependencies');
 
@@ -569,5 +598,15 @@ $callback = $GLOBALS['svv_registered_blocks'][$main_block_key]['render_callback'
 assert_true(is_callable($callback), 'main block render callback registered');
 $callback(['ort' => 'Stockholm', 'place' => 'Gothenburg']);
 assert_true(($capturing_renderer->atts['ort'] ?? '') === 'Gothenburg', 'block render prefers non-empty place over default ort');
+assert_true(($GLOBALS['svv_registered_blocks']['sv/vader']['api_version'] ?? null) === 3, 'legacy block uses Block API version 3 for WordPress 7.0 iframe compatibility');
+
+$GLOBALS['svv_enqueued_styles'] = [];
+$GLOBALS['svv_enqueued_scripts'] = [];
+$assets->enqueue_block_content_assets();
+assert_true(in_array('sv-vader-style', $GLOBALS['svv_enqueued_styles'], true), 'editor block content enqueues weather card stylesheet');
+assert_true(in_array('sv-vader-wind', $GLOBALS['svv_enqueued_scripts'], true), 'editor block content enqueues wind helper script');
+assert_true(in_array('svv-openlayers-css', $GLOBALS['svv_enqueued_styles'], true), 'editor block content enqueues OpenLayers CSS for map previews');
+assert_true(in_array('svv-openlayers-js', $GLOBALS['svv_enqueued_scripts'], true), 'editor block content enqueues OpenLayers JS for map previews');
+assert_true(in_array('sv-vader-map', $GLOBALS['svv_enqueued_scripts'], true), 'editor block content enqueues map runtime for map previews');
 
 echo "All regression checks passed.\n";
