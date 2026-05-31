@@ -4,13 +4,13 @@ WordPress weather plugin displaying current conditions, compact hourly forecasts
 
 For common questions and troubleshooting see the FAQ: [Docs/FAQ.md](Docs/FAQ.md)
 
-**Version:** 2.1.1
+**Version:** 2.1.2
 
 **Note:** WordPress 7.0 compatibility release. The Gutenberg block now uses Block API v3 and editor previews load the plugin's content assets inside the iframed block editor.
 
 ## Changelog
 
-###  2.1.1 (2026-05-31)
+###  2.1.2 (2026-05-31)
 - **Improved:** WordPress 7.0 compatibility by moving the Gutenberg block and legacy block registration to Block API v3.
 - **Fixed:** Block editor previews now load Spelhubben Weather content assets inside the iframed editor.
 - **Improved:** Plugin metadata and asset versions now target WordPress 7.0 while keeping the minimum requirements at WordPress 6.8 and PHP 7.4.

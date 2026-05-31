@@ -4,7 +4,7 @@ Tags: weather, forecast, widget, shortcode, blocks
 Requires at least: 6.8
 Tested up to: 7.0
 Requires PHP: 7.4
-Stable tag: 2.1.1
+Stable tag: 2.1.2
 Donate link: https://www.paypal.com/donate/?hosted_button_id=CV74CEXY5XEAU
 
 License: GPLv3 or later
@@ -30,7 +30,7 @@ This plugin displays current weather and an optional forecast. It can aggregate 
 
 == Changelog ==
 
-= 2.1.1 =
+= 2.1.2 =
 - Improved: WordPress 7.0 compatibility by moving the Gutenberg block and legacy block registration to Block API v3.
 - Fixed: Block editor previews now load Spelhubben Weather content assets inside the iframed editor.
 - Improved: Plugin metadata and asset versions now target WordPress 7.0 while keeping the minimum requirements at WordPress 6.8 and PHP 7.4.

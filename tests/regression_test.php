@@ -431,7 +431,7 @@ if (!defined('SV_VADER_DIR')) {
 	define('SV_VADER_DIR', dirname(__DIR__) . '/');
 }
 if (!defined('SV_VADER_VER')) {
-	define('SV_VADER_VER', '2.1.1-test');
+	define('SV_VADER_VER', '2.1.2-test');
 }
 
 if (!function_exists('trailingslashit')) {
