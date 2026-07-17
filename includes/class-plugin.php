@@ -25,15 +25,6 @@ class SV_Vader_Plugin {
         add_action('init',               [$this->block, 'register_patterns'], 15);
         add_action('wp_enqueue_scripts', [$this, 'enqueue_public_assets_wrapper']);
 
-        if (is_admin()) {
-            if (function_exists('sv_vader_register_admin_menu')) {
-                add_action('admin_menu', 'sv_vader_register_admin_menu');
-            }
-            if (function_exists('sv_vader_register_settings')) {
-                add_action('admin_init', 'sv_vader_register_settings');
-            }
-        }
-
         add_action('widgets_init', [$this, 'register_widget']);
 
         // Update the plugin basename to the new main file

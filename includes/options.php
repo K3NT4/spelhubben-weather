@@ -75,6 +75,9 @@ if (!function_exists('sv_vader_sanitize_options')) {
 	function sv_vader_sanitize_options($in) : array {
 		$def = sv_vader_default_options();
 		$out = [];
+		$in  = is_array($in) ? $in : [];
+		$current = get_option('sv_vader_options', []);
+		$current = wp_parse_args(is_array($current) ? $current : [], $def);
 
 		$out['default_ort']    = sanitize_text_field($in['default_ort'] ?? $def['default_ort']);
 		$out['cache_minutes']  = max(1, intval($in['cache_minutes'] ?? $def['cache_minutes']));
@@ -129,21 +132,24 @@ if (!function_exists('sv_vader_sanitize_options')) {
 		$out['cache_salt'] = sanitize_text_field($in['cache_salt'] ?? $def['cache_salt']);
 
 		// Alert Thresholds
-		$out['alert_cold_extreme']  = floatval($in['alert_cold_extreme']  ?? $def['alert_cold_extreme']);
-		$out['alert_cold_freezing'] = floatval($in['alert_cold_freezing'] ?? $def['alert_cold_freezing']);
-		$out['alert_heat_extreme']  = floatval($in['alert_heat_extreme']  ?? $def['alert_heat_extreme']);
-		$out['alert_heat_warm']     = floatval($in['alert_heat_warm']     ?? $def['alert_heat_warm']);
-		$out['alert_wind_storm']    = floatval($in['alert_wind_storm']    ?? $def['alert_wind_storm']);
-		$out['alert_wind_strong']   = floatval($in['alert_wind_strong']   ?? $def['alert_wind_strong']);
-		$out['alert_precip_heavy']  = floatval($in['alert_precip_heavy']  ?? $def['alert_precip_heavy']);
+		// Alert settings are edited on a separate admin page. Preserve them when
+		// the main settings form, which does not contain these fields, is saved.
+		$out['alert_cold_extreme']  = floatval($in['alert_cold_extreme']  ?? $current['alert_cold_extreme']);
+		$out['alert_cold_freezing'] = floatval($in['alert_cold_freezing'] ?? $current['alert_cold_freezing']);
+		$out['alert_heat_extreme']  = floatval($in['alert_heat_extreme']  ?? $current['alert_heat_extreme']);
+		$out['alert_heat_warm']     = floatval($in['alert_heat_warm']     ?? $current['alert_heat_warm']);
+		$out['alert_wind_storm']    = floatval($in['alert_wind_storm']    ?? $current['alert_wind_storm']);
+		$out['alert_wind_strong']   = floatval($in['alert_wind_strong']   ?? $current['alert_wind_strong']);
+		$out['alert_precip_heavy']  = floatval($in['alert_precip_heavy']  ?? $current['alert_precip_heavy']);
+		$out['show_alerts']         = !empty($in['show_alerts'] ?? $current['show_alerts']) ? 1 : 0;
 
 		// Tides
 		$out['tides_enabled'] = !empty($in['tides_enabled']) ? 1 : 0;
-		$prov = strtolower(trim((string)($in['tide_provider'] ?? $def['tide_provider'] ?? 'custom')));
+		$prov = strtolower(trim((string)($in['tide_provider'] ?? $current['tide_provider'] ?? 'custom')));
 		$out['tide_provider'] = in_array($prov, ['worldtides','noaa','custom'], true) ? $prov : 'custom';
-		$out['tide_api_key'] = sanitize_text_field($in['tide_api_key'] ?? '');
-		$out['tide_custom_endpoint'] = esc_url_raw(trim((string)($in['tide_custom_endpoint'] ?? '')));
-		$out['tide_cache_minutes'] = max(5, intval($in['tide_cache_minutes'] ?? $def['tide_cache_minutes'] ?? 60));
+		$out['tide_api_key'] = sanitize_text_field($in['tide_api_key'] ?? $current['tide_api_key']);
+		$out['tide_custom_endpoint'] = esc_url_raw(trim((string)($in['tide_custom_endpoint'] ?? $current['tide_custom_endpoint'])));
+		$out['tide_cache_minutes'] = max(5, intval($in['tide_cache_minutes'] ?? $current['tide_cache_minutes'] ?? 60));
 		// Admin visibility toggle for tide UI (helps disable admin notices/examples during rollout)
 		$out['tides_admin_visible'] = !empty($in['tides_admin_visible']) ? 1 : 0;
 

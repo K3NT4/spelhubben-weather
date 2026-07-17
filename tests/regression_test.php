@@ -363,6 +363,19 @@ assert_true($sanitized['map_height'] === 120, 'options sanitizer clamps map heig
 assert_true($sanitized['default_layout'] === 'card', 'options sanitizer falls back to card layout for invalid layout');
 assert_true($sanitized['owm_api_key'] === 'test-owm' && $sanitized['weatherapi_api_key'] === 'test-wa', 'options sanitizer keeps API keys trimmed');
 
+$GLOBALS['svv_test_options'] = [
+	'alert_cold_extreme'   => -22,
+	'show_alerts'          => 0,
+	'tide_provider'        => 'noaa',
+	'tide_api_key'         => 'saved-key',
+	'tide_custom_endpoint' => 'https://example.test/tides',
+	'tide_cache_minutes'   => 90,
+];
+$preserved = sv_vader_sanitize_options(['default_ort' => 'Umeå']);
+assert_true($preserved['alert_cold_extreme'] === -22.0 && $preserved['show_alerts'] === 0, 'main settings save preserves separately managed alert settings');
+assert_true($preserved['tide_provider'] === 'noaa' && $preserved['tide_api_key'] === 'saved-key' && $preserved['tide_cache_minutes'] === 90, 'main settings save preserves hidden tide provider settings');
+unset($GLOBALS['svv_test_options']);
+
 $html_hourly = $renderer->render_shortcode([
 	'ort' => 'Stockholm',
 	'layout' => 'card',
@@ -545,12 +558,23 @@ $main_plugin = file_get_contents(__DIR__ . '/../spelhubben-weather.php');
 $admin_php = file_get_contents(__DIR__ . '/../admin/admin.php');
 $assets_php = file_get_contents(__DIR__ . '/../includes/class-assets.php');
 $block_php = file_get_contents(__DIR__ . '/../includes/class-block.php');
+$plugin_class_php = file_get_contents(__DIR__ . '/../includes/class-plugin.php');
+$options_php = file_get_contents(__DIR__ . '/../includes/options.php');
 assert_true(strpos($settings_page, 'svv-grid--settings') !== false, 'settings page uses wide settings grid');
 assert_true(strpos($shortcodes_page, 'svv-grid--shortcodes') !== false, 'shortcodes page uses shortcodes grid');
 assert_true(strpos($performance_page, 'svv-grid--performance') !== false, 'performance page uses performance grid');
 assert_true(strpos($admin_css, '.svv-grid--settings') !== false && strpos($admin_css, 'minmax(620px, 1fr)') !== false, 'admin CSS keeps settings form column wide enough');
 assert_true(strpos($admin_css, '.svv-form .form-table') !== false && strpos($admin_css, 'table-layout:fixed') !== false, 'admin CSS constrains settings form table layout');
 assert_true(strpos($main_plugin, 'load_plugin_textdomain') !== false && strpos($main_plugin, "dirname( plugin_basename( __FILE__ ) ) . '/languages'") !== false, 'plugin loads bundled text domain');
+assert_true(strpos($main_plugin, "add_action( 'init', 'sv_vader_load_plugin_textdomain', 0 )") !== false, 'plugin defers bundled text domain setup until init');
+assert_true(strpos($plugin_class_php, "add_action('admin_menu', 'sv_vader_register_admin_menu')") === false, 'plugin does not register the admin menu twice');
+assert_true(strpos($plugin_class_php, "add_action('admin_init', 'sv_vader_register_settings')") === false, 'plugin does not register settings twice');
+assert_true(substr_count($block_php, "isset( \$attrs['map'] ) ? ( \$attrs['map'] ? '1' : '0' )") === 2, 'block map toggle can explicitly override the global map default');
+assert_true(strpos($options_php, "\$out['show_alerts']") !== false, 'options sanitizer preserves the global alert toggle');
+assert_true(strpos($options_php, "\$current['alert_cold_extreme']") !== false, 'main settings save preserves thresholds managed on the alerts page');
+assert_true(strpos($options_php, "\$current['tide_custom_endpoint']") !== false, 'main settings save preserves hidden tide provider settings');
+assert_true(substr_count($widget_code, "'show_moon_daily' => 0") >= 2, 'widget form defines a default for daily moon display');
+assert_true(substr_count($widget_code, "'show_alerts' => 1") >= 2, 'widget form defines a default for weather alerts');
 assert_true(strpos($admin_php, "wp_set_script_translations( 'sv-vader-admin', 'spelhubben-weather', SV_VADER_DIR . 'languages' )") !== false, 'admin script translations use bundled language path');
 assert_true(strpos($assets_php, "wp_set_script_translations( 'sv-vader-map', 'spelhubben-weather', SV_VADER_DIR . 'languages' )") !== false, 'map script translations use bundled language path');
 assert_true(strpos($block_php, 'spelhubben-weather-spelhubben-weather-editor-script') !== false && strpos($block_php, "dirname( __DIR__ ) . '/languages'") !== false, 'block editor translations use bundled language path');

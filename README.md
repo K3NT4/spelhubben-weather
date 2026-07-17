@@ -4,11 +4,19 @@ WordPress weather plugin displaying current conditions, compact hourly forecasts
 
 For common questions and troubleshooting see the FAQ: [Docs/FAQ.md](Docs/FAQ.md)
 
-**Version:** 2.1.2
+**Version:** 2.1.3
 
 **Note:** WordPress 7.0 compatibility release. The Gutenberg block now uses Block API v3 and editor previews load the plugin's content assets inside the iframed block editor.
 
 ## Changelog
+
+###  2.1.3 (2026-07-17)
+- **Fixed:** Gutenberg blocks can explicitly disable the map even when maps are enabled globally.
+- **Fixed:** Admin menus and settings are no longer registered twice.
+- **Fixed:** Saving the main settings page now preserves alert thresholds and hidden tide provider settings.
+- **Fixed:** Classic widget forms no longer emit PHP warnings for missing alert or daily moon defaults.
+- **Improved:** Translation loading now runs on `init` for WordPress 6.7+ compatibility.
+- **Improved:** Added regression coverage for the WordPress compatibility fixes.
 
 ###  2.1.2 (2026-05-31)
 - **Improved:** WordPress 7.0 compatibility by moving the Gutenberg block and legacy block registration to Block API v3.
