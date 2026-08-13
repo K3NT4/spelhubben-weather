@@ -153,6 +153,9 @@ if ( ! function_exists( 'sv_vader_handle_import_settings' ) ) {
 			exit;
 		}
 
+		// The upload metadata is validated field-by-field below. The temporary
+		// filename must remain untouched for is_uploaded_file().
+		// phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotSanitized
 		$file = $_FILES['svv_import_file'];
 
 		// Basic structure validation
@@ -523,12 +526,12 @@ function sv_vader_field_providers() {
 	}
 	echo '<p class="description" style="margin:8px 0 6px;">' . esc_html__( 'OpenWeatherMap and WeatherAPI require API keys and are disabled by default on fresh installs. Keys are stored server-side and never exposed to frontend visitors.', 'spelhubben-weather' ) . '</p>';
 	printf(
-		'<label>%s <input type="text" name="sv_vader_options[owm_api_key]" value="%s" class="regular-text" autocomplete="off" /></label><br>',
+		'<label>%s <input type="password" name="sv_vader_options[owm_api_key]" value="%s" class="regular-text" autocomplete="new-password" spellcheck="false" /></label><br>',
 		esc_html__( 'OpenWeatherMap API key', 'spelhubben-weather' ),
 		esc_attr( $o['owm_api_key'] ?? '' )
 	);
 	printf(
-		'<label>%s <input type="text" name="sv_vader_options[weatherapi_api_key]" value="%s" class="regular-text" autocomplete="off" /></label>',
+		'<label>%s <input type="password" name="sv_vader_options[weatherapi_api_key]" value="%s" class="regular-text" autocomplete="new-password" spellcheck="false" /></label>',
 		esc_html__( 'WeatherAPI key', 'spelhubben-weather' ),
 		esc_attr( $o['weatherapi_api_key'] ?? '' )
 	);
@@ -572,16 +575,19 @@ function sv_vader_field_tide_settings() {
 	</select>
 	<p class="description"><?php esc_html_e( 'Choose a tide provider or use a custom API endpoint.', 'spelhubben-weather' ); ?></p>
 	<p style="margin-top:8px;">
-		<label><?php esc_html_e( 'API key (if required)', 'spelhubben-weather' ); ?> <input type="text" name="sv_vader_options[tide_api_key]" value="<?php echo esc_attr( $o['tide_api_key'] ?? '' ); ?>" class="regular-text" /></label>
+		<label><?php esc_html_e( 'API key (if required)', 'spelhubben-weather' ); ?> <input type="password" name="sv_vader_options[tide_api_key]" value="<?php echo esc_attr( $o['tide_api_key'] ?? '' ); ?>" class="regular-text" autocomplete="new-password" spellcheck="false" /></label>
 	</p>
 	<p>
-		<label><?php esc_html_e( 'Custom endpoint', 'spelhubben-weather' ); ?> <input type="text" name="sv_vader_options[tide_custom_endpoint]" value="<?php echo esc_attr( $o['tide_custom_endpoint'] ?? '' ); ?>" class="regular-text" placeholder="https://example.com/tides" /></label>
+		<label><?php esc_html_e( 'Custom endpoint', 'spelhubben-weather' ); ?> <input type="url" name="sv_vader_options[tide_custom_endpoint]" value="<?php echo esc_attr( $o['tide_custom_endpoint'] ?? '' ); ?>" class="regular-text" placeholder="https://example.com/tides" inputmode="url" /></label>
 	</p>
 	<p>
 		<label><?php esc_html_e( 'Cache TTL (minutes)', 'spelhubben-weather' ); ?> <input type="number" min="5" name="sv_vader_options[tide_cache_minutes]" value="<?php echo intval( $o['tide_cache_minutes'] ?? 60 ); ?>" class="small-text" /></label>
 	</p>
 	<p class="description" style="margin-top:8px;">
-		<?php echo sprintf( wp_kses_post( __('Need an API key? See <a href="%s" target="_blank" rel="noopener noreferrer">WorldTides</a> (commercial) or NOAA docs for US stations: <a href="%s" target="_blank" rel="noopener noreferrer">NOAA Tides & Currents API</a>.', 'spelhubben-weather') ), esc_url('https://www.worldtides.info'), esc_url('https://api.tidesandcurrents.noaa.gov') ); ?>
+		<?php
+		/* translators: 1: WorldTides URL, 2: NOAA Tides & Currents API URL. */
+		echo sprintf( wp_kses_post( __('Need an API key? See <a href="%1$s" target="_blank" rel="noopener noreferrer">WorldTides</a> (commercial) or NOAA docs for US stations: <a href="%2$s" target="_blank" rel="noopener noreferrer">NOAA Tides & Currents API</a>.', 'spelhubben-weather') ), esc_url('https://www.worldtides.info'), esc_url('https://api.tidesandcurrents.noaa.gov') );
+		?>
 	</p>
 	<?php
 }

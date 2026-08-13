@@ -4,11 +4,19 @@ WordPress weather plugin displaying current conditions, compact hourly forecasts
 
 For common questions and troubleshooting see the FAQ: [Docs/FAQ.md](Docs/FAQ.md)
 
-**Version:** 2.1.3
+**Version:** 2.1.4
 
-**Note:** WordPress 7.0 compatibility release. The Gutenberg block now uses Block API v3 and editor previews load the plugin's content assets inside the iframed block editor.
+**Note:** WordPress 7.1 compatibility and security release. The Gutenberg block uses Block API v3 and loads the plugin's content assets inside the iframed block editor.
 
 ## Changelog
+
+###  2.1.4 (2026-08-13)
+- **Security:** Custom tide endpoints now require HTTPS and use WordPress's SSRF-safe HTTP client, blocking private and loopback network targets.
+- **Security:** API key fields are masked and opt out of browser credential autofill.
+- **Security:** Hardened generated moon markup output and resolved WordPress Plugin Check security and internationalization findings.
+- **Compatibility:** Verified plugin activation, Gutenberg block insertion in the iframed editor, server-side block rendering, shortcodes, maps, frontend assets, and browser JavaScript with WordPress 7.1 RC2.
+- **Maintenance:** Replaced the deprecated clean-css/glob build chain with esbuild, refreshed the dependency lockfile, and confirmed that npm reports no vulnerabilities or deprecated packages.
+- **Documentation:** Updated the release notes and `Tested up to` metadata for WordPress 7.1. Obsolete live-demo links are no longer included because the hosted demo is unavailable.
 
 ###  2.1.3 (2026-07-17)
 - **Fixed:** Gutenberg blocks can explicitly disable the map even when maps are enabled globally.
@@ -76,7 +84,7 @@ For common questions and troubleshooting see the FAQ: [Docs/FAQ.md](Docs/FAQ.md)
 - **Improved:** Kept Leaflet/map assets conditionally loaded only on pages where the widget/block/shortcode is actually rendered.
 
 ### v1.9.7 (2026-01-30)
- - **Experimental:** Tide (tidvatten) support added for testing — opt-in feature. Adds support for WorldTides (API key), NOAA (US-only), and a configurable custom endpoint. Shortcode support via `extras="tides"` or `tides="1"`. Admin visibility can be toggled while rolling out to selected users. Responses are cached; configure TTL in Settings.
+ - **Experimental:** Tide support added for testing — opt-in feature. Adds support for WorldTides (API key), NOAA (US-only), and a configurable custom endpoint. Shortcode support via `extras="tides"` or `tides="1"`. Admin visibility can be toggled while rolling out to selected users. Responses are cached; configure TTL in Settings.
 
 
 ### Asset Loading Optimization
@@ -399,16 +407,16 @@ Translations are available on [translate.wordpress.org](https://translate.wordpr
   - WeatherAPI.com (if enabled) — requires API key (stored server-side)
   - OpenStreetMap (maps only) — client-side tile requests from local OpenLayers/Leaflet code
 
-  ### Tide data (tidvatten)
+  ### Tide data
 
   - **WorldTides** — Global tide API (https://www.worldtides.info). Often requires an API key and may have paid tiers for higher limits. If you choose WorldTides, add your API key in the plugin Settings (Spelhubben Weather → Tide provider).
   - **NOAA CO-OPS** — Free tide/station data for US coastal locations only. NOAA requires station lookup (not implemented automatically); use a custom endpoint or NOAA station ID when relevant.
-  - **Custom endpoint** — If you operate a tide API or proxy (e.g., internal service) you can enter a custom endpoint URL in Settings. The plugin will call the endpoint with `lat` and `lon` query params, and will accept common JSON shapes including `extremes`, `events` or `data` arrays with `time`/`date`, `type` and optional `height` fields. If your endpoint requires a key, set it in the `API key` field in Settings.
+  - **Custom endpoint** — If you operate a public tide API or proxy you can enter an HTTPS endpoint URL in Settings. Private and loopback network targets are blocked to prevent SSRF. The plugin calls the endpoint with `lat` and `lon` query parameters and accepts common JSON shapes including `extremes`, `events` or `data` arrays with `time`/`date`, `type` and optional `height` fields. If your endpoint requires a key, set it in the `API key` field in Settings.
 
   How to enable tides:
 
   - Go to Settings → Spelhubben Weather.
-  - Under "Tides (tidvatten)" enable tide data and choose a provider (`WorldTides`, `NOAA` or `Custom`).
+  - Under "Tides" enable tide data and choose a provider (`WorldTides`, `NOAA` or `Custom`).
   - Add API key if required (WorldTides) and/or a `Custom endpoint` URL.
   - In shortcodes add `extras="tides"` or `tides="1"` to show tide events. In the Gutenberg block, enable "Show tides" in the block inspector.
 

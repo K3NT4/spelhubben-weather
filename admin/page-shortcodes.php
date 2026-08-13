@@ -307,6 +307,7 @@ if ( ! function_exists( 'sv_vader_render_shortcodes_page' ) ) {
 									<tr data-group="disp"><td><code>map</code></td><td><?php esc_html_e( '1/0 to show/hide map', 'spelhubben-weather' ); ?></td><td><code>map="1"</code></td></tr>
 									<tr data-group="disp"><td><code>map_height</code></td><td><?php esc_html_e( 'Map height in px (min 120).', 'spelhubben-weather' ); ?></td><td><code>map_height="240"</code></td></tr>
 									<tr data-group="disp"><td><code>map_engine</code></td><td><?php esc_html_e( 'auto | openlayers | leaflet | static', 'spelhubben-weather' ); ?></td><td><code>map_engine="openlayers"</code></td></tr>
+									<?php /* translators: %s: comma-separated provider identifiers. */ ?>
 									<tr data-group="disp"><td><code>providers</code></td><td><?php echo esc_html( sprintf( __( '%s (comma-separated). Quick Builder checkboxes below use the same list.', 'spelhubben-weather' ), $provider_csv ) ); ?></td><td><code>providers="smhi,yr,metno_nowcast,fmi"</code></td></tr>
 									<tr data-group="disp"><td><code>animate</code></td><td><?php esc_html_e( '1/0 – subtle animations', 'spelhubben-weather' ); ?></td><td><code>animate="1"</code></td></tr>
 									<tr data-group="disp"><td><code>preset</code></td><td><?php esc_html_e( 'mini | hero | sidebar | dashboard | forecast-strip', 'spelhubben-weather' ); ?></td><td><code>preset="dashboard"</code></td></tr>

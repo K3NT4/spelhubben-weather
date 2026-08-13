@@ -9,6 +9,9 @@ if ( ! function_exists( 'sv_vader_render_settings_page' ) ) {
 	function sv_vader_render_settings_page() {
 		if ( ! current_user_can( 'manage_options' ) ) return;
 
+		// These query parameters only select escaped, informational notices. They
+		// do not trigger writes or reveal data, so a second nonce is unnecessary.
+		// phpcs:disable WordPress.Security.NonceVerification.Recommended, WordPress.Security.ValidatedSanitizedInput.InputNotSanitized
 		// Import status notices
 		if ( isset( $_GET['svv_import_status'] ) ) {
 			$status = sanitize_text_field( wp_unslash( $_GET['svv_import_status'] ) );
@@ -26,8 +29,9 @@ if ( ! function_exists( 'sv_vader_render_settings_page' ) ) {
 					if ( $reset === 'ok' ) {
 						echo '<div class="notice notice-success is-dismissible"><p>' . esc_html__( 'Settings reset to defaults.', 'spelhubben-weather' ) . '</p></div>';
 					}
-				}
+			}
 		}
+		// phpcs:enable WordPress.Security.NonceVerification.Recommended, WordPress.Security.ValidatedSanitizedInput.InputNotSanitized
 		?>
 		<div class="wrap svv-admin-wrap">
 			<h1 class="svv-page-title"><?php esc_html_e( 'Spelhubben Weather – Settings', 'spelhubben-weather' ); ?></h1>

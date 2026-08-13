@@ -148,7 +148,13 @@ if (!function_exists('sv_vader_sanitize_options')) {
 		$prov = strtolower(trim((string)($in['tide_provider'] ?? $current['tide_provider'] ?? 'custom')));
 		$out['tide_provider'] = in_array($prov, ['worldtides','noaa','custom'], true) ? $prov : 'custom';
 		$out['tide_api_key'] = sanitize_text_field($in['tide_api_key'] ?? $current['tide_api_key']);
-		$out['tide_custom_endpoint'] = esc_url_raw(trim((string)($in['tide_custom_endpoint'] ?? $current['tide_custom_endpoint'])));
+		$tide_endpoint = esc_url_raw(
+			trim((string)($in['tide_custom_endpoint'] ?? $current['tide_custom_endpoint'])),
+			['https']
+		);
+		$out['tide_custom_endpoint'] = 'https' === wp_parse_url($tide_endpoint, PHP_URL_SCHEME)
+			? $tide_endpoint
+			: '';
 		$out['tide_cache_minutes'] = max(5, intval($in['tide_cache_minutes'] ?? $current['tide_cache_minutes'] ?? 60));
 		// Admin visibility toggle for tide UI (helps disable admin notices/examples during rollout)
 		$out['tides_admin_visible'] = !empty($in['tides_admin_visible']) ? 1 : 0;

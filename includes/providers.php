@@ -766,7 +766,10 @@ if (!function_exists('sv_vader_provider_status_label')) {
             $url = add_query_arg(['lat' => $lat, 'lon' => $lon], $endpoint);
             if ($key !== '') $url = add_query_arg(['api_key' => $key], $url);
 
-            $res = wp_remote_get($url, ['timeout' => 12]);
+            // The endpoint is administrator-configurable. Use WordPress' safe
+            // HTTP client to reject loopback/private-network targets and reduce
+            // the risk of server-side request forgery (SSRF).
+            $res = wp_safe_remote_get($url, ['timeout' => 12]);
             if (is_wp_error($res) || wp_remote_retrieve_response_code($res) !== 200) return null;
             $j = json_decode(wp_remote_retrieve_body($res), true);
             if (!$j || !is_array($j)) return null;
@@ -857,7 +860,7 @@ if (!function_exists('sv_vader_provider_status_label')) {
                 $type = isset($p['type']) ? (strtoupper($p['type']) === 'H' ? 'high' : 'low') : null;
                 $val = isset($p['v']) ? floatval($p['v']) : (isset($p['value']) ? floatval($p['value']) : null);
                 if ($t) {
-                    $iso = date('c', strtotime($t));
+                    $iso = gmdate('c', strtotime($t));
                     $events[] = ['time' => $iso, 'type' => $type ?? 'event', 'height' => $val];
                 }
             }

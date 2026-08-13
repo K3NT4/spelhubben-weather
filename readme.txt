@@ -2,9 +2,9 @@
 Contributors: spelhubben
 Tags: weather, forecast, widget, shortcode, blocks
 Requires at least: 6.8
-Tested up to: 7.0
+Tested up to: 7.1
 Requires PHP: 7.4
-Stable tag: 2.1.3
+Stable tag: 2.1.4
 Donate link: https://www.paypal.com/donate/?hosted_button_id=CV74CEXY5XEAU
 
 License: GPLv3 or later
@@ -29,6 +29,14 @@ Weather widget & block with optional map and daily forecast. Can combine Open-Me
 This plugin displays current weather and an optional forecast. It can aggregate data from free global weather providers (Open-Meteo, SMHI, Yr/MET Norway, MET Norway Nowcast, FMI, OpenWeatherMap, and WeatherAPI.com) and compute a simple consensus. Works worldwide with excellent coverage in Europe and beyond.
 
 == Changelog ==
+
+= 2.1.4 =
+- Security: Custom tide endpoints now require HTTPS and use WordPress's SSRF-safe HTTP client, blocking private and loopback network targets.
+- Security: API key fields are masked and opt out of browser credential autofill.
+- Security: Hardened generated moon markup output and resolved WordPress Plugin Check security and internationalization findings.
+- Compatibility: Verified plugin activation, Gutenberg block insertion in the iframed editor, server-side block rendering, shortcodes, maps, frontend assets, and browser JavaScript with WordPress 7.1 RC2.
+- Maintenance: Replaced the deprecated clean-css/glob build chain with esbuild, refreshed the dependency lockfile, and confirmed that npm reports no vulnerabilities or deprecated packages.
+- Documentation: Updated the release notes and Tested up to metadata for WordPress 7.1. Obsolete live-demo links are no longer included because the hosted demo is unavailable.
 
 = 2.1.3 =
 - Fixed: Gutenberg blocks can explicitly disable the map even when maps are enabled globally.

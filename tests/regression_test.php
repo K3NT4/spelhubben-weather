@@ -53,6 +53,12 @@ if (!function_exists('esc_url_raw')) {
 	}
 }
 
+if (!function_exists('wp_parse_url')) {
+	function wp_parse_url($url, $component = -1) {
+		return parse_url($url, $component);
+	}
+}
+
 if (!function_exists('esc_textarea')) {
 	function esc_textarea($text) {
 		return htmlspecialchars((string) $text, ENT_QUOTES, 'UTF-8');
@@ -363,6 +369,11 @@ assert_true($sanitized['map_height'] === 120, 'options sanitizer clamps map heig
 assert_true($sanitized['default_layout'] === 'card', 'options sanitizer falls back to card layout for invalid layout');
 assert_true($sanitized['owm_api_key'] === 'test-owm' && $sanitized['weatherapi_api_key'] === 'test-wa', 'options sanitizer keeps API keys trimmed');
 
+$secure_endpoint = sv_vader_sanitize_options(['tide_custom_endpoint' => 'https://api.example.test/tides']);
+$insecure_endpoint = sv_vader_sanitize_options(['tide_custom_endpoint' => 'http://api.example.test/tides']);
+assert_true($secure_endpoint['tide_custom_endpoint'] === 'https://api.example.test/tides', 'options sanitizer preserves HTTPS tide endpoints');
+assert_true($insecure_endpoint['tide_custom_endpoint'] === '', 'options sanitizer rejects non-HTTPS tide endpoints');
+
 $GLOBALS['svv_test_options'] = [
 	'alert_cold_extreme'   => -22,
 	'show_alerts'          => 0,
@@ -560,6 +571,7 @@ $assets_php = file_get_contents(__DIR__ . '/../includes/class-assets.php');
 $block_php = file_get_contents(__DIR__ . '/../includes/class-block.php');
 $plugin_class_php = file_get_contents(__DIR__ . '/../includes/class-plugin.php');
 $options_php = file_get_contents(__DIR__ . '/../includes/options.php');
+$providers_php = file_get_contents(__DIR__ . '/../includes/providers.php');
 assert_true(strpos($settings_page, 'svv-grid--settings') !== false, 'settings page uses wide settings grid');
 assert_true(strpos($shortcodes_page, 'svv-grid--shortcodes') !== false, 'shortcodes page uses shortcodes grid');
 assert_true(strpos($performance_page, 'svv-grid--performance') !== false, 'performance page uses performance grid');
@@ -579,6 +591,8 @@ assert_true(strpos($admin_php, "wp_set_script_translations( 'sv-vader-admin', 's
 assert_true(strpos($assets_php, "wp_set_script_translations( 'sv-vader-map', 'spelhubben-weather', SV_VADER_DIR . 'languages' )") !== false, 'map script translations use bundled language path');
 assert_true(strpos($block_php, 'spelhubben-weather-spelhubben-weather-editor-script') !== false && strpos($block_php, "dirname( __DIR__ ) . '/languages'") !== false, 'block editor translations use bundled language path');
 assert_true(strpos($assets_php, "add_action( 'enqueue_block_assets'") !== false, 'block content assets hook into enqueue_block_assets for iframed editor previews');
+$custom_tide_provider = substr($providers_php, strpos($providers_php, 'function sv_vader_tide_custom'), 1500);
+assert_true(strpos($custom_tide_provider, 'wp_safe_remote_get($url' ) !== false, 'custom tide endpoint uses the SSRF-safe WordPress HTTP client');
 assert_true(strpos($main_plugin, "define( 'SV_VADER_FILE', __FILE__ )") !== false, 'main plugin defines stable plugin file constant');
 assert_true(strpos($main_plugin, "define( 'SV_VADER_PATH', plugin_dir_path( __FILE__ ) )") !== false, 'main plugin defines stable plugin path constant');
 assert_true(strpos(file_get_contents(__DIR__ . '/../blocks/spelhubben-weather/index.js'), 'wp.serverSideRender.default' ) !== false, 'block editor handles default-exported ServerSideRender module');

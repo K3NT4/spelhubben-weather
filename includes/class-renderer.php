@@ -125,6 +125,7 @@ class SV_Vader_Renderer {
 		if ($show_moon) {
 			if ($moon) {
 				$icon = function_exists('sv_vader_moon_icon') ? sv_vader_moon_icon(intval($moon['phase_index'] ?? 0)) : '';
+				/* translators: 1: moon phase name, 2: illumination percentage. */
 				$moon_text = sprintf( __( 'Moon: %1$s (%2$s%%)', 'spelhubben-weather' ), $moon['phase'], sv_vader_num($moon['illum'], 0) );
 				$moon_html = '<span class="svv-moon"><span class="svv-moon-icon">' . esc_html($icon) . '</span>' . esc_html($moon_text) . '</span>';
 			} else {
@@ -218,7 +219,7 @@ class SV_Vader_Renderer {
 						<?php if (in_array('temp', $show, true) && $t_val !== null): ?>
 						<div class="svv-temp"><?php echo esc_html( sv_vader_num($t_val) ); ?><?php echo esc_html($t_sym); ?></div>
 						<?php endif; ?>
-						<?php echo $moon_html; ?>
+						<?php echo wp_kses_post( $moon_html ); ?>
 					</div>
 				<?php break;
 
@@ -248,7 +249,7 @@ class SV_Vader_Renderer {
 						<?php if (!empty($desc)): ?>
 							<span class="svv-desc svv-badge"><?php echo esc_html($desc); ?></span>
 						<?php endif; ?>
-						<?php echo $moon_html; ?>
+						<?php echo wp_kses_post( $moon_html ); ?>
 					</div>
 				<?php break;
 
@@ -280,7 +281,7 @@ class SV_Vader_Renderer {
 								<?php if (!empty($desc)): ?>
 									<span class="svv-desc"><?php echo esc_html($desc); ?></span>
 								<?php endif; ?>
-								<?php echo $moon_html; ?>
+								<?php echo wp_kses_post( $moon_html ); ?>
 							</div>
 							<div class="svv-extra">
 								<?php if ($p_val !== null): ?>
@@ -333,7 +334,7 @@ class SV_Vader_Renderer {
 						<?php if (!empty($desc)): ?>
 							<span class="svv-desc"><?php echo esc_html($desc); ?></span>
 						<?php endif; ?>
-						<?php echo $moon_html; ?>
+						<?php echo wp_kses_post( $moon_html ); ?>
 					</div>
 				<?php break; } ?>
 
@@ -411,6 +412,7 @@ class SV_Vader_Renderer {
 						}
 						?>
 						<?php if ($day_moon): ?>
+							<?php /* translators: 1: moon phase name, 2: illumination percentage. */ ?>
 							<span class="svv-daymoon" title="<?php echo esc_attr(sprintf(__('Moon: %1$s — %2$s%%', 'spelhubben-weather'), $day_moon['phase'], sv_vader_num($day_moon['illum'], 0))); ?>">
 								<?php echo esc_html( sv_vader_moon_icon(intval($day_moon['phase_index'] ?? 0)) ); ?> <?php echo esc_html( sv_vader_num($day_moon['illum'], 0) ); ?>%
 							</span>
