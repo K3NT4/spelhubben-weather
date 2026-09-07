@@ -19,7 +19,7 @@ class SV_Vader_API {
 		$providers = $this->normalize_providers($providers);
 
 		$api_lang = sv_vader_api_lang();
-		$cache_key = 'sv_vader_cons_' . md5(json_encode([$ort,$lat,$lon,$providers,$api_lang]));
+		$cache_key = 'sv_vader_cons_' . md5(json_encode([$ort,$lat,$lon,$providers,$api_lang,determine_locale()]));
 		$cached = sv_vader_cache_get($cache_key);
 		if ($cached !== false) {
 			sv_vader_stats_hit();
@@ -76,7 +76,7 @@ class SV_Vader_API {
 		$providers = $this->normalize_providers($providers);
 
 		$api_lang = sv_vader_api_lang();
-		$cache_key = 'sv_vader_details_' . md5(json_encode([$ort,$lat,$lon,$providers,$api_lang]));
+		$cache_key = 'sv_vader_details_' . md5(json_encode([$ort,$lat,$lon,$providers,$api_lang,determine_locale()]));
 		$cached = sv_vader_cache_get($cache_key);
 		if ($cached !== false) {
 			sv_vader_stats_hit();
@@ -126,7 +126,7 @@ class SV_Vader_API {
 		$days = max(3, min(10, intval($days)));
 
 		$api_lang = sv_vader_api_lang();
-		$cache_key = 'sv_vader_daily_' . md5(json_encode([$ort,$lat,$lon,$days,$api_lang]));
+		$cache_key = 'sv_vader_daily_' . md5(json_encode([$ort,$lat,$lon,$days,$api_lang,determine_locale()]));
 		$cached = sv_vader_cache_get($cache_key);
 		if ($cached !== false) {
 			sv_vader_stats_hit();
@@ -156,7 +156,7 @@ class SV_Vader_API {
 		$hours = max(3, min(24, intval($hours)));
 
 		$api_lang = sv_vader_api_lang();
-		$cache_key = 'sv_vader_hourly_' . md5(json_encode([$ort,$lat,$lon,$hours,$api_lang]));
+		$cache_key = 'sv_vader_hourly_' . md5(json_encode([$ort,$lat,$lon,$hours,$api_lang,determine_locale()]));
 		$cached = sv_vader_cache_get($cache_key);
 		if ($cached !== false) {
 			sv_vader_stats_hit();
@@ -273,7 +273,7 @@ class SV_Vader_API {
 	private function geocode($q) {
 		$api_lang = sv_vader_api_lang();
 		// Include language in cache key to avoid stale translations
-		$geocode_cache_key = 'sv_vader_geocode_' . md5($q . $api_lang);
+		$geocode_cache_key = 'sv_vader_geocode_' . md5(json_encode([$q, $api_lang, determine_locale()]));
 
 		// Check cache first
 		$cached = sv_vader_cache_get($geocode_cache_key);

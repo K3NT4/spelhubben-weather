@@ -2,22 +2,22 @@
 # This file is distributed under the GPLv3 or later.
 msgid ""
 msgstr ""
-"Project-Id-Version: Spelhubben Weather 2.1.4\n"
+"Project-Id-Version: Spelhubben Weather 2.1.5\n"
 "Report-Msgid-Bugs-To: https://wordpress.org/support/plugin/spelhubben-weather\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"POT-Creation-Date: 2026-08-13T14:41:30+00:00\n"
+"POT-Creation-Date: 2026-09-07T13:50:22+00:00\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "X-Generator: WP-CLI 2.12.0\n"
 "X-Domain: spelhubben-weather\n"
 
 #. Plugin Name of the plugin
 #: spelhubben-weather.php
-#: admin/admin.php:276
 #: admin/admin.php:277
+#: admin/admin.php:278
 #: includes/class-block.php:115
 #: includes/integrations/vc.php:9
 #: includes/Widget/class-widget.php:19
@@ -61,7 +61,7 @@ msgstr ""
 #: admin/admin.php:73
 #: admin/page-performance.php:104
 #: admin/page-performance.php:105
-#: includes/providers.php:674
+#: includes/providers.php:666
 msgid "OK"
 msgstr ""
 
@@ -74,7 +74,7 @@ msgid "Preview failed"
 msgstr ""
 
 #: admin/admin.php:78
-#: admin/page-settings.php:109
+#: admin/page-settings.php:113
 msgid "Show HTML"
 msgstr ""
 
@@ -83,7 +83,7 @@ msgid "Hide HTML"
 msgstr ""
 
 #: admin/admin.php:82
-#: admin/page-settings.php:112
+#: admin/page-settings.php:116
 msgid "Check attribution"
 msgstr ""
 
@@ -105,352 +105,352 @@ msgstr ""
 msgid "Check failed"
 msgstr ""
 
-#: admin/admin.php:117
-#: admin/admin.php:144
-#: admin/admin.php:372
+#: admin/admin.php:118
+#: admin/admin.php:145
+#: admin/admin.php:373
 msgid "Insufficient permissions."
 msgstr ""
 
-#: admin/admin.php:152
-#: admin/admin.php:163
+#: admin/admin.php:153
+#: admin/admin.php:164
 msgid "No file uploaded."
 msgstr ""
 
-#: admin/admin.php:169
+#: admin/admin.php:170
 msgid "Invalid upload."
 msgstr ""
 
-#: admin/admin.php:177
+#: admin/admin.php:178
 msgid "Invalid file type."
 msgstr ""
 
-#: admin/admin.php:182
+#: admin/admin.php:183
 msgid "Upload failed."
 msgstr ""
 
-#: admin/admin.php:188
+#: admin/admin.php:189
 msgid "Invalid file size."
 msgstr ""
 
-#: admin/admin.php:194
+#: admin/admin.php:195
 msgid "Could not read file."
 msgstr ""
 
-#: admin/admin.php:200
+#: admin/admin.php:201
 msgid "Invalid JSON."
 msgstr ""
 
-#: admin/admin.php:288
 #: admin/admin.php:289
+#: admin/admin.php:290
 #: includes/class-plugin.php:103
 msgid "Settings"
 msgstr ""
 
-#: admin/admin.php:298
 #: admin/admin.php:299
-#: admin/page-settings.php:138
+#: admin/admin.php:300
+#: admin/page-settings.php:142
 msgid "Alerts"
 msgstr ""
 
-#: admin/admin.php:308
 #: admin/admin.php:309
-#: admin/page-settings.php:137
+#: admin/admin.php:310
+#: admin/page-settings.php:141
 msgid "Shortcodes"
 msgstr ""
 
-#: admin/admin.php:318
 #: admin/admin.php:319
-#: admin/page-settings.php:139
+#: admin/admin.php:320
+#: admin/page-settings.php:143
 msgid "Performance"
 msgstr ""
 
-#: admin/admin.php:341
+#: admin/admin.php:342
 msgid "Default settings"
 msgstr ""
 
-#: admin/admin.php:343
+#: admin/admin.php:344
 msgid "Default place"
 msgstr ""
 
-#: admin/admin.php:344
-#: admin/admin.php:584
+#: admin/admin.php:345
+#: admin/admin.php:585
 msgid "Cache TTL (minutes)"
 msgstr ""
 
-#: admin/admin.php:345
+#: admin/admin.php:346
 msgid "Default fields"
 msgstr ""
 
-#: admin/admin.php:346
+#: admin/admin.php:347
 msgid "Default layout"
 msgstr ""
 
-#: admin/admin.php:347
+#: admin/admin.php:348
 msgid "Show map by default"
 msgstr ""
 
-#: admin/admin.php:348
+#: admin/admin.php:349
 #: blocks/spelhubben-weather/index.js:126
 msgid "Map height (px)"
 msgstr ""
 
-#: admin/admin.php:349
+#: admin/admin.php:350
 #: blocks/spelhubben-weather/index.js:134
 msgid "Map engine"
 msgstr ""
 
-#: admin/admin.php:350
+#: admin/admin.php:351
 msgid "Icon style"
 msgstr ""
 
-#: admin/admin.php:351
+#: admin/admin.php:352
 msgid "Data providers"
 msgstr ""
 
-#: admin/admin.php:352
+#: admin/admin.php:353
 msgid "Yr contact/UA"
 msgstr ""
 
-#: admin/admin.php:354
+#: admin/admin.php:355
 msgid "Tides (tidvatten)"
 msgstr ""
 
-#: admin/admin.php:357
+#: admin/admin.php:358
 #: admin/page-shortcodes.php:289
 #: blocks/spelhubben-weather/index.js:159
 msgid "Units & format"
 msgstr ""
 
-#: admin/admin.php:358
+#: admin/admin.php:359
 #: blocks/spelhubben-weather/index.js:90
 #: blocks/spelhubben-weather/index.js:161
 msgid "Preset"
 msgstr ""
 
-#: admin/admin.php:359
+#: admin/admin.php:360
 msgid "Overrides (optional)"
 msgstr ""
 
-#: admin/admin.php:360
+#: admin/admin.php:361
 msgid "Date format (PHP)"
 msgstr ""
 
-#: admin/admin.php:361
+#: admin/admin.php:362
 msgid "Tide provider"
 msgstr ""
 
-#: admin/admin.php:363
+#: admin/admin.php:364
 msgid "Tide admin UI"
 msgstr ""
 
-#: admin/admin.php:393
+#: admin/admin.php:394
 #: blocks/spelhubben-weather/index.js:66
 msgid "e.g. Stockholm"
 msgstr ""
 
-#: admin/admin.php:407
+#: admin/admin.php:408
 msgid "How long weather data is cached (transients)."
 msgstr ""
 
-#: admin/admin.php:414
+#: admin/admin.php:415
 #: includes/Widget/class-widget.php:194
 #: blocks/spelhubben-weather/index.js:98
 msgid "Temperature"
 msgstr ""
 
-#: admin/admin.php:415
+#: admin/admin.php:416
 #: includes/Widget/class-widget.php:195
 #: blocks/spelhubben-weather/index.js:99
 msgid "Wind speed"
 msgstr ""
 
-#: admin/admin.php:416
+#: admin/admin.php:417
 #: includes/Widget/class-widget.php:196
 #: blocks/spelhubben-weather/index.js:100
 msgid "Wind direction"
 msgstr ""
 
-#: admin/admin.php:417
+#: admin/admin.php:418
 #: includes/Widget/class-widget.php:197
 #: blocks/spelhubben-weather/index.js:101
 msgid "Weather icon"
 msgstr ""
 
-#: admin/admin.php:432
+#: admin/admin.php:433
 msgid "Choose which fields to show by default."
-msgstr ""
-
-#: admin/admin.php:438
-msgctxt "layout label"
-msgid "Inline"
 msgstr ""
 
 #: admin/admin.php:439
 msgctxt "layout label"
-msgid "Compact"
+msgid "Inline"
 msgstr ""
 
 #: admin/admin.php:440
 msgctxt "layout label"
-msgid "Card"
+msgid "Compact"
 msgstr ""
 
 #: admin/admin.php:441
 msgctxt "layout label"
+msgid "Card"
+msgstr ""
+
+#: admin/admin.php:442
+msgctxt "layout label"
 msgid "Detailed"
 msgstr ""
 
-#: admin/admin.php:460
+#: admin/admin.php:461
 msgid "Enable map as default."
 msgstr ""
 
-#: admin/admin.php:475
+#: admin/admin.php:476
 msgid "Auto (OpenLayers first, Leaflet legacy fallback)"
 msgstr ""
 
-#: admin/admin.php:476
+#: admin/admin.php:477
 #: blocks/spelhubben-weather/index.js:32
 msgid "OpenLayers"
 msgstr ""
 
-#: admin/admin.php:477
+#: admin/admin.php:478
 #: blocks/spelhubben-weather/index.js:33
 msgid "Leaflet legacy"
 msgstr ""
 
-#: admin/admin.php:478
+#: admin/admin.php:479
 #: blocks/spelhubben-weather/index.js:34
 msgid "Static fallback"
 msgstr ""
 
-#: admin/admin.php:490
+#: admin/admin.php:491
 msgid "Auto uses the new OpenLayers engine first and falls back to legacy Leaflet or a static map status if an engine is unavailable."
 msgstr ""
 
-#: admin/admin.php:496
+#: admin/admin.php:497
 msgid "Classic"
 msgstr ""
 
-#: admin/admin.php:497
+#: admin/admin.php:498
 msgid "Modern Flat"
 msgstr ""
 
-#: admin/admin.php:498
+#: admin/admin.php:499
 msgid "Modern Gradient"
 msgstr ""
 
-#: admin/admin.php:499
+#: admin/admin.php:500
 msgid "Modern 2026"
 msgstr ""
 
-#: admin/admin.php:500
+#: admin/admin.php:501
 msgid "Modern 3D"
 msgstr ""
 
-#: admin/admin.php:512
+#: admin/admin.php:513
 msgid "Choose your preferred weather icon theme."
 msgstr ""
 
-#: admin/admin.php:527
+#: admin/admin.php:528
 msgid "OpenWeatherMap and WeatherAPI require API keys and are disabled by default on fresh installs. Keys are stored server-side and never exposed to frontend visitors."
 msgstr ""
 
-#: admin/admin.php:530
+#: admin/admin.php:531
 msgid "OpenWeatherMap API key"
 msgstr ""
 
-#: admin/admin.php:535
+#: admin/admin.php:536
 msgid "WeatherAPI key"
 msgstr ""
 
-#: admin/admin.php:546
+#: admin/admin.php:547
 msgid "Recommended by MET Norway: include an email or URL in your User-Agent."
 msgstr ""
 
-#: admin/admin.php:555
+#: admin/admin.php:556
 msgid "Enable tide data (experimental)."
 msgstr ""
 
-#: admin/admin.php:557
+#: admin/admin.php:558
 msgid "Tide data requires a provider or a custom API endpoint. Some providers may require an API key and/or paid plan."
 msgstr ""
 
-#: admin/admin.php:566
+#: admin/admin.php:567
 msgid "Tide provider settings are hidden. Enable \"Tide admin UI\" to configure."
 msgstr ""
 
-#: admin/admin.php:572
+#: admin/admin.php:573
 msgid "WorldTides (global, often paid)"
 msgstr ""
 
-#: admin/admin.php:573
+#: admin/admin.php:574
 msgid "NOAA Tides (US only)"
 msgstr ""
 
-#: admin/admin.php:574
-#: admin/admin.php:581
+#: admin/admin.php:575
+#: admin/admin.php:582
 msgid "Custom endpoint"
 msgstr ""
 
-#: admin/admin.php:576
+#: admin/admin.php:577
 msgid "Choose a tide provider or use a custom API endpoint."
 msgstr ""
 
-#: admin/admin.php:578
+#: admin/admin.php:579
 msgid "API key (if required)"
 msgstr ""
 
 #. translators: 1: WorldTides URL, 2: NOAA Tides & Currents API URL.
-#: admin/admin.php:589
+#: admin/admin.php:590
 #, php-format
 msgid "Need an API key? See <a href=\"%1$s\" target=\"_blank\" rel=\"noopener noreferrer\">WorldTides</a> (commercial) or NOAA docs for US stations: <a href=\"%2$s\" target=\"_blank\" rel=\"noopener noreferrer\">NOAA Tides & Currents API</a>."
 msgstr ""
 
-#: admin/admin.php:601
+#: admin/admin.php:602
 msgid "Show tide examples & notices in admin (for testing)"
 msgstr ""
 
-#: admin/admin.php:603
+#: admin/admin.php:604
 msgid "Toggle visibility of experimental tide UI elements in the admin pages. Useful to hide notices/examples while testing with selected users."
 msgstr ""
 
-#: admin/admin.php:609
+#: admin/admin.php:610
 #: includes/integrations/vc.php:53
 #: blocks/spelhubben-weather/index.js:17
 msgid "Metric (°C, m/s, mm)"
 msgstr ""
 
-#: admin/admin.php:610
+#: admin/admin.php:611
 #: includes/integrations/vc.php:54
 #: blocks/spelhubben-weather/index.js:18
 msgid "Metric (°C, km/h, mm)"
 msgstr ""
 
-#: admin/admin.php:611
+#: admin/admin.php:612
 #: includes/integrations/vc.php:55
 #: blocks/spelhubben-weather/index.js:19
 msgid "Metric (°C, knt, mm)"
 msgstr ""
 
-#: admin/admin.php:612
+#: admin/admin.php:613
 #: includes/integrations/vc.php:56
 #: blocks/spelhubben-weather/index.js:20
 msgid "Imperial (°F, mph, in)"
 msgstr ""
 
-#: admin/admin.php:630
+#: admin/admin.php:631
 msgid "Temp unit"
 msgstr ""
 
-#: admin/admin.php:635
+#: admin/admin.php:636
 msgid "Wind unit"
 msgstr ""
 
-#: admin/admin.php:640
+#: admin/admin.php:641
 msgid "Precip unit"
 msgstr ""
 
-#: admin/admin.php:651
+#: admin/admin.php:652
 msgid "Used for forecast day labels."
 msgstr ""
 
@@ -740,7 +740,7 @@ msgstr ""
 
 #: admin/page-performance.php:120
 #: includes/class-wporg-plugins.php:319
-#: includes/providers.php:680
+#: includes/providers.php:672
 msgid "Unknown"
 msgstr ""
 
@@ -750,132 +750,132 @@ msgstr ""
 msgid "%s ago"
 msgstr ""
 
-#: admin/page-settings.php:16
+#: admin/page-settings.php:19
 msgid "Settings imported."
 msgstr ""
 
-#: admin/page-settings.php:19
+#: admin/page-settings.php:22
 msgid "Import failed."
 msgstr ""
 
-#: admin/page-settings.php:27
+#: admin/page-settings.php:30
 msgid "Settings reset to defaults."
 msgstr ""
 
-#: admin/page-settings.php:33
+#: admin/page-settings.php:37
 msgid "Spelhubben Weather – Settings"
 msgstr ""
 
-#: admin/page-settings.php:34
+#: admin/page-settings.php:38
 msgid "Tune defaults, providers and formatting. Shortcodes now live on their own page."
 msgstr ""
 
-#: admin/page-settings.php:42
+#: admin/page-settings.php:46
 msgid "Export Settings"
 msgstr ""
 
-#: admin/page-settings.php:51
+#: admin/page-settings.php:55
 msgid "Choose File"
 msgstr ""
 
-#: admin/page-settings.php:54
+#: admin/page-settings.php:58
 msgid "No file chosen"
 msgstr ""
 
-#: admin/page-settings.php:57
+#: admin/page-settings.php:61
 msgid "Import Settings"
 msgstr ""
 
-#: admin/page-settings.php:62
+#: admin/page-settings.php:66
 msgid "Open Shortcodes"
 msgstr ""
 
-#: admin/page-settings.php:71
+#: admin/page-settings.php:75
 msgid "General"
 msgstr ""
 
-#: admin/page-settings.php:75
+#: admin/page-settings.php:79
 msgid "Reset to defaults"
 msgstr ""
 
-#: admin/page-settings.php:91
+#: admin/page-settings.php:95
 msgid "Attribution"
 msgstr ""
 
-#: admin/page-settings.php:94
+#: admin/page-settings.php:98
 msgid "License requirements"
 msgstr ""
 
-#: admin/page-settings.php:98
+#: admin/page-settings.php:102
 msgid "Locked"
 msgstr ""
 
-#: admin/page-settings.php:99
+#: admin/page-settings.php:103
 msgid "OSM / ODbL"
 msgstr ""
 
-#: admin/page-settings.php:105
+#: admin/page-settings.php:109
 msgctxt "aria label"
 msgid "Attribution (HTML)"
 msgstr ""
 
-#: admin/page-settings.php:107
+#: admin/page-settings.php:111
 msgid "Copy attribution (HTML)"
 msgstr ""
 
-#: admin/page-settings.php:108
+#: admin/page-settings.php:112
 msgid "Copy plain text"
 msgstr ""
 
-#: admin/page-settings.php:122
+#: admin/page-settings.php:126
 msgid "Why locked?"
 msgstr ""
 
-#: admin/page-settings.php:123
+#: admin/page-settings.php:127
 msgid "To ensure proper crediting of data sources per ODbL and respective API policies."
 msgstr ""
 
-#: admin/page-settings.php:132
+#: admin/page-settings.php:136
 msgid "Tips"
 msgstr ""
 
-#: admin/page-settings.php:134
-#: admin/page-settings.php:150
+#: admin/page-settings.php:138
+#: admin/page-settings.php:154
 msgid "Use the Shortcodes page to quickly copy examples and see supported attributes."
 msgstr ""
 
-#: admin/page-settings.php:142
+#: admin/page-settings.php:146
 msgid "Shortcode"
 msgstr ""
 
-#: admin/page-settings.php:143
+#: admin/page-settings.php:147
 #: admin/page-shortcodes.php:288
 #: includes/integrations/vc.php:79
 #: blocks/spelhubben-weather/index.js:185
 msgid "Forecast"
 msgstr ""
 
-#: admin/page-settings.php:144
+#: admin/page-settings.php:148
 msgid "Smart map"
 msgstr ""
 
-#: admin/page-settings.php:151
+#: admin/page-settings.php:155
 msgid "Change icon style in Settings → Spelhubben Weather → Icon style to try different themes."
 msgstr ""
 
-#: admin/page-settings.php:152
+#: admin/page-settings.php:156
 msgid "Enable the smart map to use OpenLayers first, Leaflet legacy when selected, or a static fallback if scripts are blocked."
 msgstr ""
 
-#: admin/page-settings.php:153
+#: admin/page-settings.php:157
 msgid "Shortcodes support a `layout` attribute to switch between compact and detailed views."
 msgstr ""
 
-#: admin/page-settings.php:175
+#: admin/page-settings.php:179
 msgid "Loading other Spelhubben plugins…"
 msgstr ""
 
-#: admin/page-settings.php:196
+#: admin/page-settings.php:200
 msgid "Could not load plugin showcase."
 msgstr ""
 
@@ -999,7 +999,7 @@ msgid "Click a snippet to send it here. You can edit, copy or expand the box."
 msgstr ""
 
 #: admin/page-shortcodes.php:156
-#: includes/i18n.php:47
+#: includes/i18n.php:133
 msgid "Clear"
 msgstr ""
 
@@ -1494,111 +1494,135 @@ msgstr ""
 msgid "It looks like it will rain or snow quite a bit. Don't forget your umbrella!"
 msgstr ""
 
-#: includes/i18n.php:48
-#: includes/providers.php:499
+#: includes/i18n.php:85
+msgid "Map location"
+msgstr ""
+
+#: includes/i18n.php:86
+msgid "Map coordinates are missing or invalid."
+msgstr ""
+
+#: includes/i18n.php:87
+msgid "Interactive map is disabled for this weather block."
+msgstr ""
+
+#: includes/i18n.php:88
+msgid "OpenLayers could not initialize on this page."
+msgstr ""
+
+#: includes/i18n.php:89
+msgid "Leaflet could not initialize on this page."
+msgstr ""
+
+#: includes/i18n.php:90
+msgid "No local interactive map engine was available."
+msgstr ""
+
+#: includes/i18n.php:134
+#: includes/providers.php:491
 msgid "Mostly clear"
 msgstr ""
 
-#: includes/i18n.php:49
-#: includes/providers.php:500
-#: includes/providers.php:570
+#: includes/i18n.php:135
+#: includes/providers.php:492
+#: includes/providers.php:562
 msgid "Partly cloudy"
 msgstr ""
 
-#: includes/i18n.php:50
-#: includes/providers.php:501
-#: includes/providers.php:572
+#: includes/i18n.php:136
+#: includes/providers.php:493
+#: includes/providers.php:564
 msgid "Overcast"
 msgstr ""
 
-#: includes/i18n.php:51
-#: includes/providers.php:502
+#: includes/i18n.php:137
+#: includes/providers.php:494
 msgid "Fog"
 msgstr ""
 
-#: includes/i18n.php:52
+#: includes/i18n.php:138
 msgid "Freezing fog"
 msgstr ""
 
-#: includes/i18n.php:53
+#: includes/i18n.php:139
 msgid "Light drizzle"
 msgstr ""
 
-#: includes/i18n.php:54
+#: includes/i18n.php:140
 msgid "Moderate drizzle"
 msgstr ""
 
-#: includes/i18n.php:55
+#: includes/i18n.php:141
 msgid "Dense drizzle"
 msgstr ""
 
-#: includes/i18n.php:56
+#: includes/i18n.php:142
 msgid "Light rain"
 msgstr ""
 
-#: includes/i18n.php:57
+#: includes/i18n.php:143
 msgid "Moderate rain"
 msgstr ""
 
-#: includes/i18n.php:58
+#: includes/i18n.php:144
 msgid "Heavy rain"
 msgstr ""
 
-#: includes/i18n.php:59
+#: includes/i18n.php:145
 msgid "Light freezing rain"
 msgstr ""
 
-#: includes/i18n.php:60
+#: includes/i18n.php:146
 msgid "Heavy freezing rain"
 msgstr ""
 
-#: includes/i18n.php:61
+#: includes/i18n.php:147
 msgid "Light snowfall"
 msgstr ""
 
-#: includes/i18n.php:62
+#: includes/i18n.php:148
 msgid "Moderate snowfall"
 msgstr ""
 
-#: includes/i18n.php:63
+#: includes/i18n.php:149
 msgid "Heavy snowfall"
 msgstr ""
 
-#: includes/i18n.php:64
-#: includes/providers.php:515
+#: includes/i18n.php:150
+#: includes/providers.php:507
 msgid "Snow grains"
 msgstr ""
 
-#: includes/i18n.php:65
+#: includes/i18n.php:151
 msgid "Light rain showers"
 msgstr ""
 
-#: includes/i18n.php:66
+#: includes/i18n.php:152
 msgid "Moderate rain showers"
 msgstr ""
 
-#: includes/i18n.php:67
+#: includes/i18n.php:153
 msgid "Violent rain showers"
 msgstr ""
 
-#: includes/i18n.php:68
+#: includes/i18n.php:154
 msgid "Light snow showers"
 msgstr ""
 
-#: includes/i18n.php:69
+#: includes/i18n.php:155
 msgid "Heavy snow showers"
 msgstr ""
 
-#: includes/i18n.php:70
-#: includes/providers.php:521
+#: includes/i18n.php:156
+#: includes/providers.php:513
 msgid "Thunderstorm"
 msgstr ""
 
-#: includes/i18n.php:71
+#: includes/i18n.php:157
 msgid "Thunderstorm (slight hail)"
 msgstr ""
 
-#: includes/i18n.php:72
+#: includes/i18n.php:158
 msgid "Thunderstorm (heavy hail)"
 msgstr ""
 
@@ -1716,104 +1740,104 @@ msgstr ""
 msgid "WeatherAPI.com"
 msgstr ""
 
-#: includes/providers.php:498
-#: includes/providers.php:568
+#: includes/providers.php:490
+#: includes/providers.php:560
 msgid "Clear sky"
 msgstr ""
 
-#: includes/providers.php:503
+#: includes/providers.php:495
 msgid "Depositing rime fog"
 msgstr ""
 
-#: includes/providers.php:504
+#: includes/providers.php:496
 msgid "Drizzle: light"
 msgstr ""
 
-#: includes/providers.php:505
+#: includes/providers.php:497
 msgid "Drizzle: moderate"
 msgstr ""
 
-#: includes/providers.php:506
+#: includes/providers.php:498
 msgid "Drizzle: dense"
 msgstr ""
 
-#: includes/providers.php:507
+#: includes/providers.php:499
 msgid "Rain: light"
 msgstr ""
 
-#: includes/providers.php:508
+#: includes/providers.php:500
 msgid "Rain: moderate"
 msgstr ""
 
-#: includes/providers.php:509
+#: includes/providers.php:501
 msgid "Rain: heavy"
 msgstr ""
 
-#: includes/providers.php:510
+#: includes/providers.php:502
 msgid "Freezing rain: light"
 msgstr ""
 
-#: includes/providers.php:511
+#: includes/providers.php:503
 msgid "Freezing rain: heavy"
 msgstr ""
 
-#: includes/providers.php:512
+#: includes/providers.php:504
 msgid "Snowfall: light"
 msgstr ""
 
-#: includes/providers.php:513
+#: includes/providers.php:505
 msgid "Snowfall: moderate"
 msgstr ""
 
-#: includes/providers.php:514
+#: includes/providers.php:506
 msgid "Snowfall: heavy"
 msgstr ""
 
-#: includes/providers.php:516
+#: includes/providers.php:508
 msgid "Rain showers: slight"
 msgstr ""
 
-#: includes/providers.php:517
+#: includes/providers.php:509
 msgid "Rain showers: moderate"
 msgstr ""
 
-#: includes/providers.php:518
+#: includes/providers.php:510
 msgid "Rain showers: violent"
 msgstr ""
 
-#: includes/providers.php:519
+#: includes/providers.php:511
 msgid "Snow showers: slight"
 msgstr ""
 
-#: includes/providers.php:520
+#: includes/providers.php:512
 msgid "Snow showers: heavy"
 msgstr ""
 
-#: includes/providers.php:522
+#: includes/providers.php:514
 msgid "Thunderstorm with slight hail"
 msgstr ""
 
-#: includes/providers.php:523
+#: includes/providers.php:515
 msgid "Thunderstorm with heavy hail"
 msgstr ""
 
-#: includes/providers.php:565
+#: includes/providers.php:557
 msgid "Precipitation"
 msgstr ""
 
-#: includes/providers.php:675
+#: includes/providers.php:667
 msgid "Missing API key"
 msgstr ""
 
-#: includes/providers.php:676
+#: includes/providers.php:668
 msgid "No coverage"
 msgstr ""
 
-#: includes/providers.php:677
+#: includes/providers.php:669
 msgid "Request failed"
 msgstr ""
 
-#: includes/providers.php:678
+#: includes/providers.php:670
 msgid "No data"
 msgstr ""
 

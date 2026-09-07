@@ -2108,3 +2108,27 @@ msgstr "Kart"
 
 #~ msgid "legacy"
 #~ msgstr "legacy"
+
+#: includes/class-assets.php
+msgid "Map location"
+msgstr "Kartposisjon"
+
+#: includes/class-assets.php
+msgid "Map coordinates are missing or invalid."
+msgstr "Kartkoordinatene mangler eller er ugyldige."
+
+#: includes/class-assets.php
+msgid "Interactive map is disabled for this weather block."
+msgstr "Interaktivt kart er deaktivert for denne værblokken."
+
+#: includes/class-assets.php
+msgid "OpenLayers could not initialize on this page."
+msgstr "OpenLayers kunne ikke starte på denne siden."
+
+#: includes/class-assets.php
+msgid "Leaflet could not initialize on this page."
+msgstr "Leaflet kunne ikke starte på denne siden."
+
+#: includes/class-assets.php
+msgid "No local interactive map engine was available."
+msgstr "Ingen lokal motor for interaktive kart var tilgjengelig."

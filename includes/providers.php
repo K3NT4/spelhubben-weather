@@ -419,7 +419,7 @@ if (!function_exists('sv_vader_openweathermap_current')) {
             'lat'   => $lat,
             'lon'   => $lon,
             'units' => 'metric',
-            'lang'  => $locale,
+            'lang'  => sv_vader_provider_lang('openweathermap', $locale),
             'appid' => $api_key,
         ], 'https://api.openweathermap.org/data/2.5/weather');
 
@@ -452,15 +452,7 @@ if (!function_exists('sv_vader_weatherapi_current')) {
         $api_key = trim((string)$api_key);
         if ($api_key === '') return ['_status' => 'missing_key'];
 
-        $lang_map = [
-            'sv' => 'sv',
-            'nb' => 'no',
-            'en' => 'en',
-            'de' => 'de',
-            'fr' => 'fr',
-            'es' => 'es',
-        ];
-        $api_lang = $lang_map[substr($locale, 0, 2)] ?? 'en';
+        $api_lang = sv_vader_provider_lang('weatherapi', $locale);
 
         $url = add_query_arg([
             'key'   => $api_key,

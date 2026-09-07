@@ -37,6 +37,23 @@ jobs:
       - name: Run regression suite
         run: php tests/regression_test.php
 
+  translations:
+    name: Translation compatibility
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        wordpress: ['6.8', 'latest']
+    steps:
+      - uses: actions/checkout@v6
+      - uses: shivammathur/setup-php@v2
+        with:
+          php-version: '8.2'
+          tools: wp-cli
+      - name: Download WordPress translation reader
+        run: wp core download --version=${{ matrix.wordpress }} --path="$RUNNER_TEMP/svv-wordpress" --skip-content
+      - name: Check catalogs, overrides, locale switching and cache isolation
+        run: php tests/i18n_test.php "$RUNNER_TEMP/svv-wordpress/wp-includes/l10n"
+
   asset-sync:
     name: Asset sync
     runs-on: ubuntu-latest

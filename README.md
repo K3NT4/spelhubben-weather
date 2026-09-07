@@ -4,11 +4,21 @@ WordPress weather plugin displaying current conditions, compact hourly forecasts
 
 For common questions and troubleshooting see the FAQ: [Docs/FAQ.md](Docs/FAQ.md)
 
-**Version:** 2.1.4
+**Version:** 2.1.5
 
-**Note:** WordPress 7.1 compatibility and security release. The Gutenberg block uses Block API v3 and loads the plugin's content assets inside the iframed block editor.
+**Note:** Translation reliability release. Installed language packs and custom translations take precedence, while bundled translations fill missing messages for the same locale.
 
 ## Changelog
+
+###  2.1.5 (2026-09-07)
+- **Fixed:** Incomplete installed language packs no longer leave wind, moon and other translated labels in English when bundled translations are available.
+- **Fixed:** PHP and JavaScript catalogs preserve existing translations and use bundled messages to fill gaps, including after WordPress locale changes.
+- **Improved:** Bundled translations are discovered by locale filename without a Swedish/Norwegian allowlist, supporting new languages and variants such as `de_DE_formal`.
+- **Fixed:** Weather and location caches now distinguish full WordPress locales so language variants do not share translated results.
+- **Fixed:** API language selection no longer forces non-Nordic languages to English. OpenWeatherMap and WeatherAPI use provider-specific language mappings, with English fallback for unsupported languages.
+- **Improved:** Map fallback messages are translatable on the frontend, in the block editor and in admin previews; Swedish and Norwegian translations are included. Preview script data safely escapes translated text.
+- **Maintenance:** Added translation compatibility checks for PHP/MO/JSON catalogs, custom overrides, locale switching, API languages and cache isolation, plus CI coverage using WordPress 6.8 and the latest release. Fixed Windows path handling in the regression test harness.
+- **Documentation:** Updated the translation template and instructions for compiled catalogs, JavaScript translations, custom file locations and adding new locales.
 
 ###  2.1.4 (2026-08-13)
 - **Security:** Custom tide endpoints now require HTTPS and use WordPress's SSRF-safe HTTP client, blocking private and loopback network targets.
@@ -318,6 +328,14 @@ wp i18n make-pot . languages/spelhubben-weather.pot --slug=spelhubben-weather
 ```
 
 Keep the bundled `.po`, `.mo`, `.l10n.php`, and block editor JSON files in `/languages` synchronized before release.
+
+New locales are discovered by filename; there is no UI language allowlist. Installed PHP/JSON translations take precedence, with bundled messages filling gaps for the same locale. See [translation instructions](readme.txt) for file locations, compiled formats and custom overrides. External API descriptions follow each provider's supported languages; cached weather is separated by the full WordPress locale.
+
+Run the translation compatibility checks with an installed WordPress source tree (no database or API keys needed):
+```bash
+php tests/i18n_test.php /path/to/wordpress/wp-includes/l10n
+```
+CI runs this against WordPress 6.8 and the latest release, checking new locales, overrides, PHP/MO/JSON catalogs, language switching and cache isolation.
 
 Translations are available on [translate.wordpress.org](https://translate.wordpress.org/projects/wp-plugins/spelhubben-weather/)
 

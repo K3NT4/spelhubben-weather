@@ -2148,3 +2148,27 @@ msgstr "Karta"
 #~ msgstr ""
 #~ "”detaljerad” visar extra rader som nederbörd/molntäcke när sådana finns "
 #~ "tillgängliga."
+
+#: includes/class-assets.php
+msgid "Map location"
+msgstr "Kartplats"
+
+#: includes/class-assets.php
+msgid "Map coordinates are missing or invalid."
+msgstr "Kartans koordinater saknas eller är ogiltiga."
+
+#: includes/class-assets.php
+msgid "Interactive map is disabled for this weather block."
+msgstr "Interaktiv karta är avstängd för detta väderblock."
+
+#: includes/class-assets.php
+msgid "OpenLayers could not initialize on this page."
+msgstr "OpenLayers kunde inte starta på denna sida."
+
+#: includes/class-assets.php
+msgid "Leaflet could not initialize on this page."
+msgstr "Leaflet kunde inte starta på denna sida."
+
+#: includes/class-assets.php
+msgid "No local interactive map engine was available."
+msgstr "Ingen lokal motor för interaktiva kartor var tillgänglig."

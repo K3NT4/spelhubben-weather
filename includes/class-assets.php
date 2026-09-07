@@ -113,7 +113,7 @@ class SV_Vader_Assets {
 
         // Enable translations for front-end scripts (if present)
         if ( function_exists( 'wp_set_script_translations' ) ) {
-            wp_set_script_translations( 'sv-vader-map', 'spelhubben-weather', SV_VADER_DIR . 'languages' );
+            wp_set_script_translations( 'sv-vader-map', 'spelhubben-weather', WP_LANG_DIR . '/plugins' );
         }
         // Small helper to rotate wind direction arrows when inline styles are stripped
         wp_register_script('sv-vader-wind', SV_VADER_URL . 'assets/wind.js', [], SV_VADER_VER, true);
@@ -138,6 +138,7 @@ class SV_Vader_Assets {
         wp_localize_script('sv-vader-map', 'SVV', [
             'iconBase' => trailingslashit(SV_VADER_URL . 'assets/vendor/leaflet/images'),
             'mapEngine' => $engine,
+            'i18n' => sv_vader_map_translations(),
         ]);
     }
 

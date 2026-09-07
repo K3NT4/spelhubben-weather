@@ -10,6 +10,7 @@
  */
 
 define('ABSPATH', __DIR__ . '/../');
+define('WP_LANG_DIR', sys_get_temp_dir() . '/svv-test-languages');
 
 if (!function_exists('__')) {
 	function __($text, $domain = null) {
@@ -259,6 +260,7 @@ if (!function_exists('sv_vader_stats_miss')) {
 	}
 }
 
+require_once __DIR__ . '/../includes/i18n.php';
 require_once __DIR__ . '/../includes/options.php';
 require_once __DIR__ . '/../includes/format.php';
 require_once __DIR__ . '/../includes/providers.php';
@@ -587,9 +589,9 @@ assert_true(strpos($options_php, "\$current['alert_cold_extreme']") !== false, '
 assert_true(strpos($options_php, "\$current['tide_custom_endpoint']") !== false, 'main settings save preserves hidden tide provider settings');
 assert_true(substr_count($widget_code, "'show_moon_daily' => 0") >= 2, 'widget form defines a default for daily moon display');
 assert_true(substr_count($widget_code, "'show_alerts' => 1") >= 2, 'widget form defines a default for weather alerts');
-assert_true(strpos($admin_php, "wp_set_script_translations( 'sv-vader-admin', 'spelhubben-weather', SV_VADER_DIR . 'languages' )") !== false, 'admin script translations use bundled language path');
-assert_true(strpos($assets_php, "wp_set_script_translations( 'sv-vader-map', 'spelhubben-weather', SV_VADER_DIR . 'languages' )") !== false, 'map script translations use bundled language path');
-assert_true(strpos($block_php, 'spelhubben-weather-spelhubben-weather-editor-script') !== false && strpos($block_php, "dirname( __DIR__ ) . '/languages'") !== false, 'block editor translations use bundled language path');
+assert_true(strpos($admin_php, "wp_set_script_translations( 'sv-vader-admin', 'spelhubben-weather', WP_LANG_DIR . '/plugins' )") !== false, 'admin script translations prefer installed language packs');
+assert_true(strpos($assets_php, "wp_set_script_translations( 'sv-vader-map', 'spelhubben-weather', WP_LANG_DIR . '/plugins' )") !== false, 'map script translations prefer installed language packs');
+assert_true(strpos($block_php, 'spelhubben-weather-spelhubben-weather-editor-script') !== false && strpos($block_php, "WP_LANG_DIR . '/plugins'") !== false, 'block editor translations prefer installed language packs');
 assert_true(strpos($assets_php, "add_action( 'enqueue_block_assets'") !== false, 'block content assets hook into enqueue_block_assets for iframed editor previews');
 $custom_tide_provider = substr($providers_php, strpos($providers_php, 'function sv_vader_tide_custom'), 1500);
 assert_true(strpos($custom_tide_provider, 'wp_safe_remote_get($url' ) !== false, 'custom tide endpoint uses the SSRF-safe WordPress HTTP client');
@@ -618,6 +620,8 @@ assert_true(file_exists(__DIR__ . '/../blocks/spelhubben-weather/index.asset.php
 
 if (!function_exists('register_block_type')) {
 	function register_block_type($block_type, $args = []) {
+		// Normalize directory registrations just as WordPress does on Windows.
+		$block_type = is_dir($block_type) ? realpath($block_type) : $block_type;
 		$GLOBALS['svv_registered_blocks'][$block_type] = $args;
 	}
 }

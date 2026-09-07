@@ -1,6 +1,6 @@
 {
   "name": "spelhubben-weather",
-  "version": "2.1.4",
+  "version": "2.1.5",
   "private": true,
   "scripts": {
     "build:openlayers": "esbuild assets/openlayers-entry.js --bundle --format=iife --global-name=SVVOpenLayers --outfile=assets/openlayers.js",

@@ -4,7 +4,7 @@ Tags: weather, forecast, widget, shortcode, blocks
 Requires at least: 6.8
 Tested up to: 7.1
 Requires PHP: 7.4
-Stable tag: 2.1.4
+Stable tag: 2.1.5
 Donate link: https://www.paypal.com/donate/?hosted_button_id=CV74CEXY5XEAU
 
 License: GPLv3 or later
@@ -29,6 +29,16 @@ Weather widget & block with optional map and daily forecast. Can combine Open-Me
 This plugin displays current weather and an optional forecast. It can aggregate data from free global weather providers (Open-Meteo, SMHI, Yr/MET Norway, MET Norway Nowcast, FMI, OpenWeatherMap, and WeatherAPI.com) and compute a simple consensus. Works worldwide with excellent coverage in Europe and beyond.
 
 == Changelog ==
+
+= 2.1.5 =
+- Fixed: Incomplete installed language packs no longer leave wind, moon and other translated labels in English when bundled translations are available.
+- Fixed: PHP and JavaScript catalogs preserve existing translations and use bundled messages to fill gaps, including after WordPress locale changes.
+- Improved: Bundled translations are discovered by locale filename without a Swedish/Norwegian allowlist, supporting new languages and variants such as de_DE_formal.
+- Fixed: Weather and location caches now distinguish full WordPress locales so language variants do not share translated results.
+- Fixed: API language selection no longer forces non-Nordic languages to English. OpenWeatherMap and WeatherAPI use provider-specific language mappings, with English fallback for unsupported languages.
+- Improved: Map fallback messages are translatable on the frontend, in the block editor and in admin previews; Swedish and Norwegian translations are included. Preview script data safely escapes translated text.
+- Maintenance: Added translation compatibility checks for PHP/MO/JSON catalogs, custom overrides, locale switching, API languages and cache isolation, plus CI coverage using WordPress 6.8 and the latest release. Fixed Windows path handling in the regression test harness.
+- Documentation: Updated the translation template and instructions for compiled catalogs, JavaScript translations, custom file locations and adding new locales.
 
 = 2.1.4 =
 - Security: Custom tide endpoints now require HTTPS and use WordPress's SSRF-safe HTTP client, blocking private and loopback network targets.
@@ -236,13 +246,18 @@ If you need to add or modify translations locally:
    msgfmt spelhubben-weather-de_DE.po -o spelhubben-weather-de_DE.mo
    ```
 
-4. **Place files in the plugin**:
-   - Store both `.po` and `.mo` files in `/languages/`
-   - If you bundle translations with the plugin, also keep generated `.l10n.php` files and block editor JSON files in sync with the PO/MO files.
+4. **Install compiled translations**:
+   - For a site language pack, use `wp-content/languages/plugins/spelhubben-weather-de_DE.mo` (replace `de_DE` with the exact WordPress locale). WordPress language-pack updates can replace files here; use a translation tool's protected custom location and loading integration for site-specific overrides.
+   - For translations distributed with this plugin, use its `/languages/` directory. Any locale is supported without a code change, including variants such as `de_DE_formal`. Plugin updates replace this directory.
+   - `.po` files are editable sources; WordPress reads `.mo` or `.l10n.php`. If both compiled formats exist, regenerate both because WordPress normally prefers `.l10n.php`.
+   - Generate PHP catalogs with `wp i18n make-php languages` and block editor JSON with `wp i18n make-json languages --no-purge`. Keep the generated JSON filenames: their hash identifies the source script.
+   - Installed translations take precedence; bundled catalogs fill missing PHP and JavaScript messages for the same locale. Missing translations fall back to the original English text.
 
 5. **Activate your translation**:
    - Change your WordPress language to match the locale code (Settings → General → Site Language)
    - The plugin will automatically load the translated strings
+   - Frontend output follows the site's active language; admin follows the user's WordPress language. Multilingual tools must set the WordPress locale, not just the page's HTML `lang` attribute.
+   - Weather descriptions supplied by external APIs depend on that provider's supported languages. Plugin labels and WMO descriptions use your WordPress translation. Weather caches are separated by the full locale.
 
 **Translation file structure**:
 ```
@@ -414,6 +429,9 @@ languages/
 
 
 == Upgrade Notice ==
+= 2.1.5 =
+Fixes incomplete translations and language-variant caching. Adds support for new translation locales and translatable map messages. Clear any page cache after updating.
+
 = 1.9.5 =
 Added moon phase support via `extras="moon"` and daily moon information via `extras="moon_daily"`.
 

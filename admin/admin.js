@@ -249,7 +249,7 @@
         head += '<link rel="stylesheet" href="'+ href +'">';
       });
       // SVV-global innan map.js körs
-      var bootSVV = '<script>window.SVV='+ JSON.stringify(assets.svv || {}) +';<\/script>';
+      var bootSVV = '<script>window.SVV='+ JSON.stringify(assets.svv || {}).replace(/</g, '\\u003c') +';<\/script>';
       // JS (leaflet, widget, map)
       var scripts = (assets.js || []).map(function(src){
         return '<script src="'+ src +'"><\/script>';

@@ -55,7 +55,7 @@ class SV_Vader_Block {
 			wp_set_script_translations(
 				'spelhubben-weather-spelhubben-weather-editor-script',
 				'spelhubben-weather',
-				dirname( __DIR__ ) . '/languages'
+				WP_LANG_DIR . '/plugins'
 			);
 		}
 

@@ -62,7 +62,7 @@ if ( ! function_exists( 'sv_vader_admin_enqueue' ) ) {
 
 		// Enable JS translations for admin script when available
 		if ( function_exists( 'wp_set_script_translations' ) ) {
-			wp_set_script_translations( 'sv-vader-admin', 'spelhubben-weather', SV_VADER_DIR . 'languages' );
+			wp_set_script_translations( 'sv-vader-admin', 'spelhubben-weather', WP_LANG_DIR . '/plugins' );
 		}
 		wp_localize_script( 'sv-vader-admin', 'SVV_ADMIN_I18N', array(
 			'copied'     => __( 'Copied!', 'spelhubben-weather' ),
@@ -103,6 +103,7 @@ if ( ! function_exists( 'sv_vader_admin_enqueue' ) ) {
 				'svv' => array(
 					'iconBase' => trailingslashit( SV_VADER_URL ) . 'assets/vendor/leaflet/images/',
 					'mapEngine' => ( sv_vader_get_options()['map_engine'] ?? 'auto' ),
+					'i18n' => sv_vader_map_translations(),
 				),
 			),
 		) );

@@ -2,6 +2,10 @@
 (function () {
   'use strict';
 
+  function t(key, fallback) {
+    return (window.SVV && window.SVV.i18n && window.SVV.i18n[key]) || fallback;
+  }
+
   function debounce(fn, ms) {
     var timeoutId = null;
     return function () {
@@ -46,7 +50,7 @@
     box.setAttribute('role', 'status');
 
     var title = document.createElement('strong');
-    title.textContent = name || 'Map location';
+    title.textContent = name || t('location', 'Map location');
     box.appendChild(title);
 
     var text = document.createElement('span');
@@ -115,7 +119,7 @@
     var lat = parseFloat(el.getAttribute('data-lat'));
     var lon = parseFloat(el.getAttribute('data-lon'));
     if (isNaN(lat) || isNaN(lon)) {
-      showFallback(el, 'SVV_MAP_INVALID_COORDS', 'Map coordinates are missing or invalid.');
+      showFallback(el, 'SVV_MAP_INVALID_COORDS', t('invalidCoords', 'Map coordinates are missing or invalid.'));
       return;
     }
 
@@ -131,7 +135,7 @@
     }
 
     if (requested === 'static') {
-      showFallback(el, 'SVV_MAP_STATIC_MODE', 'Interactive map is disabled for this weather block.');
+      showFallback(el, 'SVV_MAP_STATIC_MODE', t('staticMode', 'Interactive map is disabled for this weather block.'));
       return;
     }
 
@@ -142,7 +146,7 @@
     } catch (e) {
       recordMapEvent(el, 'SVV_MAP_OPENLAYERS_INIT_FAIL', e && e.message ? e.message : 'OpenLayers failed to initialize.');
       if (requested === 'openlayers') {
-        showFallback(el, 'SVV_MAP_OPENLAYERS_INIT_FAIL', 'OpenLayers could not initialize on this page.');
+        showFallback(el, 'SVV_MAP_OPENLAYERS_INIT_FAIL', t('openlayersFailed', 'OpenLayers could not initialize on this page.'));
         return;
       }
     }
@@ -154,12 +158,12 @@
     } catch (e2) {
       recordMapEvent(el, 'SVV_MAP_LEAFLET_INIT_FAIL', e2 && e2.message ? e2.message : 'Leaflet failed to initialize.');
       if (requested === 'leaflet') {
-        showFallback(el, 'SVV_MAP_LEAFLET_INIT_FAIL', 'Leaflet could not initialize on this page.');
+        showFallback(el, 'SVV_MAP_LEAFLET_INIT_FAIL', t('leafletFailed', 'Leaflet could not initialize on this page.'));
         return;
       }
     }
 
-    showFallback(el, 'SVV_MAP_ENGINE_UNAVAILABLE', 'No local interactive map engine was available.');
+    showFallback(el, 'SVV_MAP_ENGINE_UNAVAILABLE', t('unavailable', 'No local interactive map engine was available.'));
   }
 
   function scanMapsLazy(root) {

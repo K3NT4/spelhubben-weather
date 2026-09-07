@@ -2,7 +2,7 @@
 /**
  * Plugin Name: Spelhubben Weather
  * Description: Displays current weather, compact hourly forecasts and optional daily forecast with provider consensus (Open-Meteo, SMHI, Yr/MET Norway, MET Nowcast, FMI, OpenWeatherMap, WeatherAPI). Supports shortcode, Gutenberg block, classic widget and local smart maps.
- * Version: 2.1.4
+ * Version: 2.1.5
  * Author: Spelhubben
  * Text Domain: spelhubben-weather
  * Domain Path: /languages
@@ -29,7 +29,7 @@ if ( ! defined( 'SV_VADER_PATH' ) ) {
 	define( 'SV_VADER_PATH', plugin_dir_path( __FILE__ ) );
 }
 if ( ! defined( 'SV_VADER_VER' ) ) {
-	define( 'SV_VADER_VER', '2.1.4' );
+	define( 'SV_VADER_VER', '2.1.5' );
 }
 if ( ! defined( 'SV_VADER_DIR' ) ) {
 	define( 'SV_VADER_DIR', SV_VADER_PATH );
@@ -84,9 +84,13 @@ if ( ! function_exists( 'sv_vader_load_plugin_textdomain' ) ) {
 			false,
 			dirname( plugin_basename( __FILE__ ) ) . '/languages'
 		);
+		sv_vader_load_bundled_translations();
 	}
 }
 add_action( 'init', 'sv_vader_load_plugin_textdomain', 0 );
+add_action( 'change_locale', 'sv_vader_load_bundled_translations' );
+add_filter( 'load_script_translation_file', 'sv_vader_script_translation_file', 10, 3 );
+add_filter( 'load_script_translations', 'sv_vader_script_translations', 10, 4 );
 
 // Optional integrations
 $sv_vader_vc = SV_VADER_DIR . 'includes/integrations/vc.php';
