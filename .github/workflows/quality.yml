@@ -10,32 +10,40 @@ on:
 
 jobs:
   php-lint:
-    name: PHP lint
+    name: PHP lint (${{ matrix.php }})
     runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        php: ['7.4', '8.1', '8.2', '8.3', '8.4', '8.5']
     steps:
       - uses: actions/checkout@v6
 
       - uses: shivammathur/setup-php@v2
         with:
-          php-version: '7.4'
+          php-version: ${{ matrix.php }}
           tools: none
 
       - name: Lint PHP files
         run: find . -path ./node_modules -prune -o -name '*.php' -print0 | xargs -0 -n1 php -l
 
   regression:
-    name: Regression tests
+    name: Regression tests (${{ matrix.php }})
     runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        php: ['7.4', '8.1', '8.2', '8.3', '8.4', '8.5']
     steps:
       - uses: actions/checkout@v6
 
       - uses: shivammathur/setup-php@v2
         with:
-          php-version: '7.4'
+          php-version: ${{ matrix.php }}
           tools: none
 
       - name: Run regression suite
-        run: php tests/regression_test.php
+        run: php -d error_reporting=-1 -d display_errors=1 tests/regression_test.php
 
   translations:
     name: Translation compatibility

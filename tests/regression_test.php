@@ -315,7 +315,7 @@ require_once '{$plugin_root}/includes/class-sv-vader.php';
 require_once '{$plugin_root}/includes/providers.php';
 \$api = new SV_Vader_API(10);
 \$method = new ReflectionMethod(\$api, 'normalize_providers');
-\$method->setAccessible(true);
+if (PHP_VERSION_ID < 80100) { \$method->setAccessible(true); }
 echo json_encode([
 	'basic' => \$method->invoke(\$api, [' Yr ', 'smhi', 'yr', '', 'openmeteo', 'SMHI']),
 	'registry_order' => \$method->invoke(\$api, ['weatherapi', 'metno_nowcast', 'openmeteo']),
@@ -606,7 +606,7 @@ define('SV_VADER_FILE', '{$plugin_root}/spelhubben-weather.php');
 require_once '{$plugin_root}/includes/class-wporg-plugins.php';
 \$wporg = new SV_Vader_WPOrg_Plugins();
 \$method = new ReflectionMethod(\$wporg, 'get_current_plugin_slug');
-\$method->setAccessible(true);
+if (PHP_VERSION_ID < 80100) { \$method->setAccessible(true); }
 echo \$method->invoke(\$wporg);
 PHP;
 

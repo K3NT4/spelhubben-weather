@@ -4,11 +4,17 @@ WordPress weather plugin displaying current conditions, compact hourly forecasts
 
 For common questions and troubleshooting see the FAQ: [Docs/FAQ.md](Docs/FAQ.md)
 
-**Version:** 2.1.5
+**Version:** 2.1.6
 
-**Note:** Translation reliability release. Installed language packs and custom translations take precedence, while bundled translations fill missing messages for the same locale.
+**Note:** PHP compatibility release. Verified on PHP 8.5 following the October 2026 PHP security updates; the plugin requires no code changes and works with the latest patched PHP releases.
 
 ## Changelog
+
+###  2.1.6 (2026-10-25)
+- **Compatibility:** Verified PHP 7.4 through PHP 8.5. The codebase passes PHP lint and the regression suite on PHP 8.5 with all deprecation notices enabled, and uses no deprecated or removed PHP features.
+- **Maintenance:** CI now lints and runs the regression suite against PHP 7.4, 8.1, 8.2, 8.3, 8.4 and 8.5.
+- **Maintenance:** Regression tests no longer call the PHP 8.5-deprecated `ReflectionMethod::setAccessible()` on PHP 8.1+.
+- **Documentation:** Added PHP compatibility notes and corrected the `Tested Up To` WordPress version in the README.
 
 ###  2.1.5 (2026-09-07)
 - **Fixed:** Incomplete installed language packs no longer leave wind, moon and other translated labels in English when bundled translations are available.
@@ -287,7 +293,8 @@ All themes include icons for: sun, partly-cloudy (including an alternate), cloud
 
 ## Development
 - **Minimum Requirements:** PHP 7.4+, WordPress 6.8+
-- **Tested Up To:** WordPress 6.9
+- **PHP Compatibility:** Supports PHP 7.4 through PHP 8.5. The full codebase passes PHP lint and the regression test suite on PHP 8.5 with all deprecation notices enabled, and it uses no deprecated or removed PHP features. Updating to the latest patched PHP release is recommended.
+- **Tested Up To:** WordPress 7.1
 - **Text Domain:** `spelhubben-weather`
 - **Translations:** English (base), Swedish (sv_SE), Norwegian Bokmål (nb_NO)
 

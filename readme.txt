@@ -4,7 +4,7 @@ Tags: weather, forecast, widget, shortcode, blocks
 Requires at least: 6.8
 Tested up to: 7.1
 Requires PHP: 7.4
-Stable tag: 2.1.5
+Stable tag: 2.1.6
 Donate link: https://www.paypal.com/donate/?hosted_button_id=CV74CEXY5XEAU
 
 License: GPLv3 or later
@@ -28,7 +28,15 @@ Weather widget & block with optional map and daily forecast. Can combine Open-Me
 == Description ==
 This plugin displays current weather and an optional forecast. It can aggregate data from free global weather providers (Open-Meteo, SMHI, Yr/MET Norway, MET Norway Nowcast, FMI, OpenWeatherMap, and WeatherAPI.com) and compute a simple consensus. Works worldwide with excellent coverage in Europe and beyond.
 
+**PHP compatibility:** Supports PHP 7.4 through PHP 8.5. The code passes PHP lint and the plugin's regression test suite on PHP 8.5 with all deprecation notices enabled, and it uses no deprecated or removed PHP features. Running the latest patched PHP release is recommended.
+
 == Changelog ==
+
+= 2.1.6 =
+- Compatibility: Verified PHP 7.4 through PHP 8.5. The codebase passes PHP lint and the regression suite on PHP 8.5 with all deprecation notices enabled, and uses no deprecated or removed PHP features.
+- Maintenance: CI now lints and runs the regression suite against PHP 7.4, 8.1, 8.2, 8.3, 8.4 and 8.5.
+- Maintenance: Regression tests no longer call the PHP 8.5-deprecated ReflectionMethod::setAccessible() on PHP 8.1+.
+- Documentation: Added PHP compatibility notes.
 
 = 2.1.5 =
 - Fixed: Incomplete installed language packs no longer leave wind, moon and other translated labels in English when bundled translations are available.
@@ -429,6 +437,9 @@ languages/
 
 
 == Upgrade Notice ==
+= 2.1.6 =
+PHP compatibility release verified on PHP 8.5. Keep your server's PHP updated to the latest patched release.
+
 = 2.1.5 =
 Fixes incomplete translations and language-variant caching. Adds support for new translation locales and translatable map messages. Clear any page cache after updating.
 
