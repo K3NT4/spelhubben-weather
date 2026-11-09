@@ -5,14 +5,47 @@ if (!defined('ABSPATH')) exit;
 class SV_Vader_Assets {
 
     private $registered = false;
+    private $localized = false;
+    private $footer_hooked = false;
+    /** @var array<string,bool> Map libraries required on this request. */
+    private $map_libs = [];
 
     public function __construct() {
         add_action( 'enqueue_block_assets', [ $this, 'enqueue_block_content_assets' ] );
+        add_action( 'sv_vader_render_assets', [ $this, 'enqueue_on_render' ], 10, 2 );
+    }
+
+    /**
+     * Enqueue assets at render time. Covers output placed outside post content
+     * (theme sidebars, block widget areas, templates) that the page-content
+     * detection cannot see. Late-enqueued styles/scripts print in the footer.
+     *
+     * @param bool   $with_map Whether this instance renders a map.
+     * @param string $engine   Requested map engine for this instance.
+     */
+    public function enqueue_on_render( $with_map = false, $engine = 'auto' ) {
+        if ( function_exists( 'is_admin' ) && is_admin() ) {
+            return;
+        }
+
+        $this->register_assets();
+        wp_enqueue_style('sv-vader-style');
+        wp_enqueue_script('sv-vader-wind');
+
+        if ( $with_map ) {
+            // Collect what every instance needs; the footer hook enqueues the
+            // union once all instances have rendered.
+            $this->request_map_engine( $this->normalize_engine( $engine ) );
+            if ( ! $this->footer_hooked ) {
+                $this->footer_hooked = true;
+                add_action( 'wp_footer', [ $this, 'apply_map_assets' ], 5 );
+            }
+        }
     }
 
     /**
      * Enqueue public-facing assets (CSS/JS) for the frontend.
-     * Only loads core stylesheet; map engine assets are loaded conditionally.
+     * Only loads the core stylesheet and wind helper; map assets load at render time.
      */
     public function enqueue_public_assets() {
         $this->register_assets();
@@ -23,22 +56,13 @@ class SV_Vader_Assets {
             wp_enqueue_script('sv-vader-wind');
         }
 
-        // Load map assets only if shortcode is present or Gutenberg block is used.
-        if ( $this->should_load_map() ) {
-            $opts = function_exists('sv_vader_get_options') ? sv_vader_get_options() : [];
-            $engine = strtolower((string)($opts['map_engine'] ?? 'auto'));
-            if ( ! in_array($engine, ['auto','openlayers','leaflet','static'], true) ) {
-                $engine = 'auto';
-            }
-
-            $this->enqueue_map_assets($engine);
-
-            /**
-             * NOTE:
-             * Do NOT force "defer" here. Defer/Delay/Async is best left to caching/optimization plugins,
-             * otherwise we risk Leaflet loading after our map script on some live setups.
-             */
-        }
+        // Map engines are NOT enqueued here. Each rendered instance knows whether
+        // it shows a map and which engine it wants, so enqueue_on_render() loads
+        // exactly what is needed (and nothing on pages with map="0").
+        //
+        // NOTE: Do NOT force "defer" on these scripts. Defer/Delay/Async is best
+        // left to caching/optimization plugins, otherwise Leaflet may load after
+        // the map script on some live setups.
     }
 
     /**
@@ -109,7 +133,9 @@ class SV_Vader_Assets {
             $map_file = 'assets/map.min.js';
         }
 
-        wp_register_script('sv-vader-map', SV_VADER_URL . $map_file, ['svv-openlayers-js', 'svv-leaflet-js'], SV_VADER_VER, true);
+        // Dependencies on the engine libraries are attached in apply_map_assets()
+        // so only the engine(s) actually needed are downloaded.
+        wp_register_script('sv-vader-map', SV_VADER_URL . $map_file, [], SV_VADER_VER, true);
 
         // Enable translations for front-end scripts (if present)
         if ( function_exists( 'wp_set_script_translations' ) ) {
@@ -122,19 +148,77 @@ class SV_Vader_Assets {
     }
 
     /**
-     * Enqueue all local map engines because each rendered instance can override engine.
+     * Whitelist a map engine value.
      */
-    private function enqueue_map_assets($engine = 'auto') {
-        // Enqueue both local engines when a map is present. The effective
-        // engine can be overridden per shortcode/block/widget instance, and
-        // this enqueue phase cannot reliably know every rendered instance.
-        wp_enqueue_style('svv-leaflet-css');
-        wp_enqueue_script('svv-leaflet-js');
-        wp_enqueue_style('svv-openlayers-css');
-        wp_enqueue_script('svv-openlayers-js');
+    private function normalize_engine( $engine ) {
+        $engine = strtolower( (string) $engine );
+        return in_array( $engine, ['auto','openlayers','leaflet','static'], true ) ? $engine : 'auto';
+    }
+
+    /**
+     * Record which map libraries an engine needs.
+     * "auto" tries OpenLayers first and falls back to Leaflet, so it needs both;
+     * "static" needs neither.
+     */
+    private function request_map_engine( $engine ) {
+        if ( $engine === 'static' ) {
+            return;
+        }
+        if ( $engine === 'openlayers' || $engine === 'auto' ) {
+            $this->map_libs['openlayers'] = true;
+        }
+        if ( $engine === 'leaflet' || $engine === 'auto' ) {
+            $this->map_libs['leaflet'] = true;
+        }
+    }
+
+    /**
+     * Enqueue the map libraries required for the given engine right away.
+     */
+    private function enqueue_map_assets( $engine = 'auto' ) {
+        $engine = $this->normalize_engine( $engine );
+        $this->request_map_engine( $engine );
+        $this->apply_map_assets( $engine );
+    }
+
+    /**
+     * Enqueue the union of map libraries requested so far, plus the map script.
+     * Also hooked to wp_footer (priority 5) for render-time requests.
+     */
+    public function apply_map_assets( $engine = null ) {
+        if ( empty( $this->map_libs ) ) {
+            return;
+        }
+        $this->register_assets();
+
+        $deps = [];
+        if ( ! empty( $this->map_libs['leaflet'] ) ) {
+            wp_enqueue_style('svv-leaflet-css');
+            wp_enqueue_script('svv-leaflet-js');
+            $deps[] = 'svv-leaflet-js';
+        }
+        if ( ! empty( $this->map_libs['openlayers'] ) ) {
+            wp_enqueue_style('svv-openlayers-css');
+            wp_enqueue_script('svv-openlayers-js');
+            $deps[] = 'svv-openlayers-js';
+        }
+
+        // Attach the needed libraries as dependencies so they print before map.js.
+        $scripts = function_exists( 'wp_scripts' ) ? wp_scripts() : null;
+        if ( $scripts && isset( $scripts->registered['sv-vader-map'] ) ) {
+            $scripts->registered['sv-vader-map']->deps = $deps;
+        }
         wp_enqueue_script('sv-vader-map');
 
-        // Localize only when map script is actually enqueued.
+        // Localize only once, even if enqueued from several code paths.
+        if ( $this->localized ) {
+            return;
+        }
+        $this->localized = true;
+        if ( $engine === null ) {
+            $opts = function_exists('sv_vader_get_options') ? sv_vader_get_options() : [];
+            $engine = $this->normalize_engine( $opts['map_engine'] ?? 'auto' );
+        }
         wp_localize_script('sv-vader-map', 'SVV', [
             'iconBase' => trailingslashit(SV_VADER_URL . 'assets/vendor/leaflet/images'),
             'mapEngine' => $engine,
@@ -143,99 +227,43 @@ class SV_Vader_Assets {
     }
 
     /**
-     * Check if map assets should be loaded on this page.
+     * Does the main page content, or any post in the main query, contain
+     * plugin output (shortcode, block, or legacy names)?
      */
-    private function should_load_map() {
-        global $post;
-        // Fallback: get queried object if $post is not set or not a WP_Post
-        if ( ! isset( $post ) || ! is_a( $post, 'WP_Post' ) ) {
-            $post = get_queried_object();
-        }
+    private function content_has_plugin_output() {
+        $shortcodes = ['sv-vader', 'spelhubben_weather'];
+        $blocks     = ['spelhubben-weather/spelhubben-weather', 'sv/vader'];
 
-        // Check for shortcodes in post content
-        if ( isset( $post->post_content ) ) {
-            // Check for old shortcode (legacy)
-            if ( has_shortcode( $post->post_content, 'sv-vader' ) ) {
-                return true;
+        $check = function ( $p ) use ( $shortcodes, $blocks ) {
+            if ( ! is_object( $p ) || ! isset( $p->post_content ) ) {
+                return false;
             }
-            // Check for new shortcode
-            if ( has_shortcode( $post->post_content, 'spelhubben_weather' ) ) {
-                return true;
+            foreach ( $shortcodes as $sc ) {
+                if ( has_shortcode( $p->post_content, $sc ) ) return true;
             }
-            // Check for Gutenberg blocks
-            if ( has_block( 'spelhubben-weather/spelhubben-weather', $post ) ) {
-                return true;
+            foreach ( $blocks as $b ) {
+                if ( has_block( $b, $p ) ) return true;
             }
-            if ( has_block( 'sv/vader', $post ) ) {
-                return true;
-            }
-        }
+            return false;
+        };
 
-        // If we're on an archive/home/paged view, scan the main query posts
-        global $wp_query;
-        if ( isset( $wp_query ) && ! empty( $wp_query->posts ) && is_array( $wp_query->posts ) ) {
-            foreach ( $wp_query->posts as $qpost ) {
-                if ( isset( $qpost->post_content ) ) {
-                    if ( has_shortcode( $qpost->post_content, 'sv-vader' ) || has_shortcode( $qpost->post_content, 'spelhubben_weather' ) ) {
-                        return true;
-                    }
-                    if ( has_block( 'spelhubben-weather/spelhubben-weather', $qpost ) || has_block( 'sv/vader', $qpost ) ) {
-                        return true;
-                    }
-                }
-            }
-        }
-
-        // Check if the sv_vader_widget is active in any sidebar
-        if ( function_exists( 'is_active_widget' ) ) {
-            if ( is_active_widget( false, false, 'sv_vader_widget' ) ) {
-                return true;
-            }
-        }
-
-        return false;
-    }
-
-    /**
-     * Should we load any frontend assets (styles/scripts) for the plugin on this page?
-     */
-    private function should_load_assets() {
-        global $post;
-        // Fallback: get queried object if $post is not set or not en WP_Post
-        if ( ! isset( $post ) || ! is_a( $post, 'WP_Post' ) ) {
-            $post = get_queried_object();
-        }
-
-        // If the post contains the shortcode or block, load assets
-        if ( isset( $post->post_content ) ) {
-            if ( has_shortcode( $post->post_content, 'spelhubben_weather' ) ) {
-                return true;
-            }
-            if ( has_block( 'spelhubben-weather/spelhubben-weather', $post ) ) {
-                return true;
-            }
-        }
-
-        // Also scan posts in the main query for archives/paged views
-        global $wp_query;
-        if ( isset( $wp_query ) && ! empty( $wp_query->posts ) && is_array( $wp_query->posts ) ) {
-            foreach ( $wp_query->posts as $qpost ) {
-                if ( isset( $qpost->post_content ) ) {
-                    if ( has_shortcode( $qpost->post_content, 'spelhubben_weather' ) ) {
-                        return true;
-                    }
-                    if ( has_block( 'spelhubben-weather/spelhubben-weather', $qpost ) ) {
-                        return true;
-                    }
-                }
-            }
-        }
-
-        // If widget is active anywhere, load assets
-        if ( function_exists( 'is_active_widget' ) && is_active_widget( false, false, 'sv_vader_widget' ) ) {
+        global $post, $wp_query;
+        $current = ( isset( $post ) && is_a( $post, 'WP_Post' ) ) ? $post : get_queried_object();
+        if ( $check( $current ) ) {
             return true;
         }
 
-        return false;
+        if ( isset( $wp_query ) && ! empty( $wp_query->posts ) && is_array( $wp_query->posts ) ) {
+            foreach ( $wp_query->posts as $qpost ) {
+                if ( $check( $qpost ) ) return true;
+            }
+        }
+
+        return function_exists( 'is_active_widget' ) && is_active_widget( false, false, 'sv_vader_widget' );
+    }
+
+    /** Should we load any frontend assets (styles/scripts) for the plugin on this page? */
+    private function should_load_assets() {
+        return $this->content_has_plugin_output();
     }
 }

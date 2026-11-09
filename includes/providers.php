@@ -13,6 +13,22 @@ if (!function_exists('sv_vader_check_remote_response')) {
     }
 }
 
+if (!function_exists('sv_vader_http_get')) {
+    /**
+     * Single entry point for outbound weather API requests so every provider
+     * shares the same timeout and identifying User-Agent (required by e.g.
+     * MET Norway). Callers may override any argument.
+     */
+    function sv_vader_http_get($url, $args = []) {
+        $ver = defined('SV_VADER_VER') ? SV_VADER_VER : '2';
+        $defaults = [
+            'timeout'    => 8,
+            'user-agent' => 'Spelhubben-Weather/' . $ver,
+        ];
+        return wp_remote_get($url, array_merge($defaults, (array) $args));
+    }
+}
+
 if (!function_exists('sv_vader_remote_error_status')) {
     function sv_vader_remote_error_status($res, $expected_code = 200) {
         if (is_wp_error($res)) return 'request_failed';
@@ -145,7 +161,7 @@ if (!function_exists('sv_vader_openmeteo_current')) {
             'lang'      => $locale
         ], 'https://api.open-meteo.com/v1/forecast');
 
-        $res = wp_remote_get($url, ['timeout' => 10]);
+        $res = sv_vader_http_get($url, []);
         $remote_status = sv_vader_remote_error_status($res, 200);
         if ($remote_status !== '') return ['_status' => $remote_status];
         $j = json_decode(wp_remote_retrieve_body($res), true);
@@ -170,8 +186,7 @@ if (!function_exists('sv_vader_smhi_current')) {
             'https://opendata.smhi.se/meteorological/forecast/api/category/pmp3g/version/2/geotype/point/lon/%s/lat/%s/data.json',
             rawurlencode($lon), rawurlencode($lat)
         );
-        $res = wp_remote_get($url, [
-            'timeout'    => 12,
+        $res = sv_vader_http_get($url, [
             'user-agent' => 'Spelhubben-Weather/1.0'
         ]);
         $remote_status = sv_vader_remote_error_status($res, 200);
@@ -215,8 +230,7 @@ if (!function_exists('sv_vader_yr_current')) {
 
         $url = add_query_arg(['lat' => $lat, 'lon' => $lon], 'https://api.met.no/weatherapi/locationforecast/2.0/compact');
 
-        $res = wp_remote_get($url, [
-            'timeout' => 12,
+        $res = sv_vader_http_get($url, [
             'headers' => ['User-Agent' => $ua]
         ]);
         $remote_status = sv_vader_remote_error_status($res, 200);
@@ -261,8 +275,7 @@ if (!function_exists('sv_vader_metno_nowcast_current')) {
             'lon' => $lon,
         ], 'https://api.met.no/weatherapi/nowcast/2.0/complete');
 
-        $res = wp_remote_get($url, [
-            'timeout' => 12,
+        $res = sv_vader_http_get($url, [
             'headers' => [
                 'User-Agent' => $ua,
                 'Accept' => 'application/json',
@@ -369,7 +382,7 @@ if (!function_exists('sv_vader_fmi_current')) {
             'bbox'           => $bbox,
         ], 'https://opendata.fmi.fi/wfs');
 
-        $res = wp_remote_get($url, ['timeout'=>14,'user-agent'=>'Spelhubben-Weather/1.0 (FMI WFS)']);
+        $res = sv_vader_http_get($url, ['user-agent'=>'Spelhubben-Weather/1.0 (FMI WFS)']);
         $remote_status = sv_vader_remote_error_status($res, 200);
         if ($remote_status !== '') return ['_status' => $remote_status];
 
@@ -423,7 +436,7 @@ if (!function_exists('sv_vader_openweathermap_current')) {
             'appid' => $api_key,
         ], 'https://api.openweathermap.org/data/2.5/weather');
 
-        $res = wp_remote_get($url, ['timeout' => 10]);
+        $res = sv_vader_http_get($url, []);
         $remote_status = sv_vader_remote_error_status($res, 200);
         if ($remote_status !== '') return ['_status' => $remote_status];
         $j = json_decode(wp_remote_retrieve_body($res), true);
@@ -461,7 +474,7 @@ if (!function_exists('sv_vader_weatherapi_current')) {
             'aqi'   => 'no',
         ], 'https://api.weatherapi.com/v1/current.json');
 
-        $res = wp_remote_get($url, ['timeout' => 10]);
+        $res = sv_vader_http_get($url, []);
         $remote_status = sv_vader_remote_error_status($res, 200);
         if ($remote_status !== '') return ['_status' => $remote_status];
         $j = json_decode(wp_remote_retrieve_body($res), true);
@@ -588,7 +601,7 @@ if (!function_exists('sv_vader_openmeteo_daily')) {
             'lang'          => $locale
         ], 'https://api.open-meteo.com/v1/forecast');
 
-        $res = wp_remote_get($url, ['timeout' => 10]);
+        $res = sv_vader_http_get($url, []);
         if (is_wp_error($res) || wp_remote_retrieve_response_code($res) !== 200) return [];
 
         $j = json_decode(wp_remote_retrieve_body($res), true);
@@ -629,7 +642,7 @@ if (!function_exists('sv_vader_openmeteo_hourly')) {
             'lang'           => $locale,
         ], 'https://api.open-meteo.com/v1/forecast');
 
-        $res = wp_remote_get($url, ['timeout' => 10]);
+        $res = sv_vader_http_get($url, []);
         if (is_wp_error($res) || wp_remote_retrieve_response_code($res) !== 200) return [];
 
         $j = json_decode(wp_remote_retrieve_body($res), true);
@@ -723,7 +736,7 @@ if (!function_exists('sv_vader_provider_status_label')) {
                 'key' => $key,
             ], 'https://www.worldtides.info/api/v3');
 
-            $res = wp_remote_get($url, ['timeout' => 12]);
+            $res = sv_vader_http_get($url, []);
             if (is_wp_error($res) || wp_remote_retrieve_response_code($res) !== 200) return null;
             $j = json_decode(wp_remote_retrieve_body($res), true);
             if (!$j) return null;
@@ -761,7 +774,7 @@ if (!function_exists('sv_vader_provider_status_label')) {
             // The endpoint is administrator-configurable. Use WordPress' safe
             // HTTP client to reject loopback/private-network targets and reduce
             // the risk of server-side request forgery (SSRF).
-            $res = wp_safe_remote_get($url, ['timeout' => 12]);
+            $res = wp_safe_remote_get($url, ['timeout' => 8]);
             if (is_wp_error($res) || wp_remote_retrieve_response_code($res) !== 200) return null;
             $j = json_decode(wp_remote_retrieve_body($res), true);
             if (!$j || !is_array($j)) return null;
@@ -808,7 +821,7 @@ if (!function_exists('sv_vader_provider_status_label')) {
                 'bbox' => sprintf('%s,%s,%s,%s', $minlon, $minlat, $maxlon, $maxlat),
             ], 'https://api.tidesandcurrents.noaa.gov/mdapi/prod/webapi/stations.json');
 
-            $res = wp_remote_get($mdapi, ['timeout' => 12]);
+            $res = sv_vader_http_get($mdapi, []);
             if (is_wp_error($res) || wp_remote_retrieve_response_code($res) !== 200) return null;
             $j = json_decode(wp_remote_retrieve_body($res), true);
             if (empty($j['stations']) || !is_array($j['stations'])) return null;
@@ -841,7 +854,7 @@ if (!function_exists('sv_vader_provider_status_label')) {
                 'interval' => 'hilo',
             ], 'https://api.tidesandcurrents.noaa.gov/api/prod/datagetter');
 
-            $r2 = wp_remote_get($pred_url, ['timeout' => 12]);
+            $r2 = sv_vader_http_get($pred_url, []);
             if (is_wp_error($r2) || wp_remote_retrieve_response_code($r2) !== 200) return null;
             $pj = json_decode(wp_remote_retrieve_body($r2), true);
             if (empty($pj['predictions']) || !is_array($pj['predictions'])) return null;

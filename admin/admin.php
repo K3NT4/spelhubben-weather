@@ -13,6 +13,7 @@ if ( ! defined( 'ABSPATH' ) ) exit;
  * Load sub-pages
  * - Done conditionally inside callbacks, but we require files here for simplicity.
  */
+require_once __DIR__ . '/page-setup.php';
 require_once __DIR__ . '/page-settings.php';
 require_once __DIR__ . '/page-shortcodes.php';
 require_once __DIR__ . '/page-performance.php';

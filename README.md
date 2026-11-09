@@ -4,11 +4,33 @@ WordPress weather plugin displaying current conditions, compact hourly forecasts
 
 For common questions and troubleshooting see the FAQ: [Docs/FAQ.md](Docs/FAQ.md)
 
-**Version:** 2.1.6
+**Version:** 2.1.7
 
-**Note:** PHP compatibility release. Verified on PHP 8.5 following the October 2026 PHP security updates; the plugin requires no code changes and works with the latest patched PHP releases.
+**Note:** Fixes weather shown in sidebars/widget areas losing its styling and map on pages other than the one containing the shortcode. Clear any page cache after updating.
+
+## Requirements
+
+- WordPress 6.8+ and PHP 7.4+ (PHP 8.5 verified).
+- The server must be able to make outgoing HTTPS requests; all weather data is fetched server-side. Hosts that block outgoing connections, or `WP_HTTP_BLOCK_EXTERNAL`, stop the weather from loading.
+- No API key is needed for Open-Meteo, SMHI, Yr/MET Norway, MET Norway Nowcast or FMI. OpenWeatherMap and WeatherAPI.com are off by default and need your own key.
+- Recommended: enter an email or URL under **Yr contact** (MET Norway asks API users to identify themselves).
+- Maps need no key; visitors' browsers load tiles from OpenStreetMap.
+- The theme must call `wp_footer()` so the plugin's scripts can load.
+- With a caching/optimization plugin, clear its cache after changing settings.
+
+After activation, **Spelhubben Weather → Settings** shows a "Getting started & requirements" checklist that flags anything missing, and a one-time notice links to it.
 
 ## Changelog
+
+###  2.1.7 (2026-11-09)
+- **Fixed:** Weather placed outside the page content (theme sidebar, widget area, template) lost its styling, icon, wind arrow and map on pages other than the one containing the shortcode. Assets are now also loaded at render time.
+- **Improved:** Map scripts load only for instances that show a map and only for the engine needed (OpenLayers, Leaflet, or both for `auto`; none for `static` or `map="0"`).
+- **Improved:** All weather API requests share one HTTP helper (8 s timeout, identifying User-Agent).
+- **Improved:** A failure of all providers is cached for 2 minutes to avoid repeated slow requests.
+- **Added:** "Getting started & requirements" checklist on the settings page and a one-time notice after activation.
+- **Documentation:** New Requirements section in the readme files.
+- **Maintenance:** Merged duplicated content detection; new regression tests for render-time loading, per-engine map assets, the HTTP helper and the setup checklist.
+- **Translations:** New admin strings translated to Swedish.
 
 ###  2.1.6 (2026-10-25)
 - **Compatibility:** Verified PHP 7.4 through PHP 8.5. The codebase passes PHP lint and the regression suite on PHP 8.5 with all deprecation notices enabled, and uses no deprecated or removed PHP features.
@@ -104,7 +126,8 @@ For common questions and troubleshooting see the FAQ: [Docs/FAQ.md](Docs/FAQ.md)
 
 
 ### Asset Loading Optimization
-- Leaflet CSS/JS and map assets now load conditionally — only when shortcode or Gutenberg block is present
+- Core CSS/JS load when the page content has the shortcode/block/widget and also at render time, so output in sidebars and widget areas is styled everywhere
+- Map assets (OpenLayers/Leaflet) load only for instances that show a map, and only the engine that is needed
 - Eliminates unnecessary 404 errors on pages without weather widget
 - Added `.htaccess` files to ensure correct MIME types for static assets
 - Improved page load performance by reducing asset requests on non-weather pages

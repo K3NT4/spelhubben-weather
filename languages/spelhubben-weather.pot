@@ -2031,3 +2031,119 @@ msgstr ""
 msgctxt "block keyword"
 msgid "map"
 msgstr ""
+
+#: admin/page-setup.php
+msgid "PHP %s"
+msgstr ""
+
+#: admin/page-setup.php
+msgid "Requires PHP 7.4 or newer."
+msgstr ""
+
+#: admin/page-setup.php
+msgid "The plugin requires PHP 7.4 or newer. Ask your host to upgrade PHP."
+msgstr ""
+
+#: admin/page-setup.php
+msgid "WordPress %s"
+msgstr ""
+
+#: admin/page-setup.php
+msgid "Requires WordPress 6.8 or newer."
+msgstr ""
+
+#: admin/page-setup.php
+msgid "The plugin requires WordPress 6.8 or newer."
+msgstr ""
+
+#: admin/page-setup.php
+msgid "Server can reach weather services"
+msgstr ""
+
+#: admin/page-setup.php
+msgid "WP_HTTP_BLOCK_EXTERNAL is enabled, which blocks all weather requests. Allow the provider hosts via WP_ACCESSIBLE_HOSTS or disable the block."
+msgstr ""
+
+#: admin/page-setup.php
+msgid "Weather data is fetched from your server, so it needs outgoing HTTPS access (firewalls may block it)."
+msgstr ""
+
+#: admin/page-setup.php
+msgid "At least one weather provider is enabled"
+msgstr ""
+
+#: admin/page-setup.php
+msgid "Enable a provider under Providers below. Open-Meteo, SMHI and Yr need no API key."
+msgstr ""
+
+#: admin/page-setup.php
+msgid "Open-Meteo, SMHI, Yr, MET Nowcast and FMI need no API key."
+msgstr ""
+
+#: admin/page-setup.php
+msgid "%s needs an API key"
+msgstr ""
+
+#: admin/page-setup.php
+msgid "The provider is enabled but no API key is saved, so it is skipped. Add the key or disable the provider."
+msgstr ""
+
+#: admin/page-setup.php
+msgid "Contact for Yr / MET Norway is empty"
+msgstr ""
+
+#: admin/page-setup.php
+msgid "MET Norway asks API users to identify themselves. Enter an email or website URL in \"Yr contact\" to avoid being rate limited."
+msgstr ""
+
+#: admin/page-setup.php
+msgid "No default place set"
+msgstr ""
+
+#: admin/page-setup.php
+msgid "Set a default place, or always give place or lat/lon in the block, shortcode or widget."
+msgstr ""
+
+#: admin/page-setup.php
+msgid "Getting started & requirements"
+msgstr ""
+
+#: admin/page-setup.php
+msgid "Everything the plugin needs is in place."
+msgstr ""
+
+#: admin/page-setup.php
+msgid "Fix the items marked below so the weather can be shown."
+msgstr ""
+
+#: admin/page-setup.php
+msgid "Show the weather on your site"
+msgstr ""
+
+#: admin/page-setup.php
+msgid "Block: edit a page, click Add block and search for \"Spelhubben Weather\"."
+msgstr ""
+
+#: admin/page-setup.php
+msgid "Shortcode: paste <code>[spelhubben_weather place=\"Stockholm\"]</code> in a page, post or text widget."
+msgstr ""
+
+#: admin/page-setup.php
+msgid "Widget: go to Appearance → Widgets and add \"Spelhubben Weather\" to a sidebar."
+msgstr ""
+
+#: admin/page-setup.php
+msgid "Good to know: maps need no API key, but visitors load map tiles from OpenStreetMap. If you use a caching or optimization plugin, clear its cache after changing settings. Your theme must call wp_footer() for scripts to load."
+msgstr ""
+
+#: admin/page-setup.php
+msgid "Spelhubben Weather is installed."
+msgstr ""
+
+#: admin/page-setup.php
+msgid "Open the settings to check the requirements, pick your place and providers, and see how to add the weather to your site."
+msgstr ""
+
+#: admin/page-setup.php
+msgid "Get started"
+msgstr ""

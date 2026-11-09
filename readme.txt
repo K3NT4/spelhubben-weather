@@ -4,7 +4,7 @@ Tags: weather, forecast, widget, shortcode, blocks
 Requires at least: 6.8
 Tested up to: 7.1
 Requires PHP: 7.4
-Stable tag: 2.1.6
+Stable tag: 2.1.7
 Donate link: https://www.paypal.com/donate/?hosted_button_id=CV74CEXY5XEAU
 
 License: GPLv3 or later
@@ -31,6 +31,16 @@ This plugin displays current weather and an optional forecast. It can aggregate 
 **PHP compatibility:** Supports PHP 7.4 through PHP 8.5. The code passes PHP lint and the plugin's regression test suite on PHP 8.5 with all deprecation notices enabled, and it uses no deprecated or removed PHP features. Running the latest patched PHP release is recommended.
 
 == Changelog ==
+
+= 2.1.7 =
+- Fixed: The weather widget lost its styling, icon, wind arrow and map on pages where it is placed outside the page content (theme sidebar, widget area or template). Assets are now also loaded at render time, so the widget looks the same on every page.
+- Improved: Map scripts load only for instances that show a map, and only the engine that is needed (OpenLayers, Leaflet or both for "auto"). Pages with `map="0"` no longer download any map code.
+- Improved: All weather API requests share one HTTP helper with a common 8 second timeout and an identifying User-Agent.
+- Improved: When every provider fails, the failure is cached for 2 minutes so page views are not slowed by repeated slow requests.
+- Added: "Getting started & requirements" checklist at the top of the settings page (PHP/WordPress version, blocked outgoing requests, enabled providers, missing API keys, Yr contact, default place) and a one-time notice after activation.
+- Documentation: Added a Requirements section to the readme.
+- Maintenance: Merged duplicated page-content detection. New regression tests cover render-time asset loading, per-engine map loading, the HTTP helper and the setup checklist.
+- Translations: New admin strings translated to Swedish.
 
 = 2.1.6 =
 - Compatibility: Verified PHP 7.4 through PHP 8.5. The codebase passes PHP lint and the regression suite on PHP 8.5 with all deprecation notices enabled, and uses no deprecated or removed PHP features.
@@ -124,6 +134,17 @@ This plugin displays current weather and an optional forecast. It can aggregate 
 - **Translation-Ready:** English base strings, Swedish and Norwegian Bokmål translations included
 
 *Not affiliated with Open-Meteo, SMHI, Yr/MET Norway, MET Norway Nowcast, FMI, OpenLayers, Leaflet, or OpenStreetMap. Names are used for descriptive purposes only. Map data © OpenStreetMap contributors (ODbL).*
+
+== Requirements ==
+- WordPress 6.8 or newer and PHP 7.4 or newer (PHP 8.5 verified).
+- Your server must be able to make outgoing HTTPS requests; all weather data is fetched server-side. Hosts that block outgoing connections, or `WP_HTTP_BLOCK_EXTERNAL`, will stop the weather from loading.
+- No API key is needed for Open-Meteo, SMHI, Yr/MET Norway, MET Norway Nowcast or FMI. OpenWeatherMap and WeatherAPI.com are off by default and need your own API key.
+- Recommended: enter an email or website URL under **Yr contact** (MET Norway asks API users to identify themselves).
+- Maps need no key. Visitors' browsers load map tiles from OpenStreetMap.
+- Your theme must call `wp_footer()` so the plugin's scripts can load.
+- If you use a caching or optimization plugin, clear its cache after changing settings.
+
+After activation the settings page shows a "Getting started & requirements" checklist that flags anything missing.
 
 == Installation ==
 1. Upload/activate the plugin.
@@ -437,6 +458,9 @@ languages/
 
 
 == Upgrade Notice ==
+= 2.1.7 =
+Fixes missing styling and map for weather shown in sidebars/widget areas on pages other than the one with the shortcode, loads map scripts only when needed, and adds a getting-started checklist. Clear any page cache after updating.
+
 = 2.1.6 =
 PHP compatibility release verified on PHP 8.5. Keep your server's PHP updated to the latest patched release.
 

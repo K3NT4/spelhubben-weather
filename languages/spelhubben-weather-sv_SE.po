@@ -2172,3 +2172,119 @@ msgstr "Leaflet kunde inte starta på denna sida."
 #: includes/class-assets.php
 msgid "No local interactive map engine was available."
 msgstr "Ingen lokal motor för interaktiva kartor var tillgänglig."
+
+#: admin/page-setup.php
+msgid "PHP %s"
+msgstr "PHP %s"
+
+#: admin/page-setup.php
+msgid "Requires PHP 7.4 or newer."
+msgstr "Kräver PHP 7.4 eller nyare."
+
+#: admin/page-setup.php
+msgid "The plugin requires PHP 7.4 or newer. Ask your host to upgrade PHP."
+msgstr "Tillägget kräver PHP 7.4 eller nyare. Be ditt webbhotell uppgradera PHP."
+
+#: admin/page-setup.php
+msgid "WordPress %s"
+msgstr "WordPress %s"
+
+#: admin/page-setup.php
+msgid "Requires WordPress 6.8 or newer."
+msgstr "Kräver WordPress 6.8 eller nyare."
+
+#: admin/page-setup.php
+msgid "The plugin requires WordPress 6.8 or newer."
+msgstr "Tillägget kräver WordPress 6.8 eller nyare."
+
+#: admin/page-setup.php
+msgid "Server can reach weather services"
+msgstr "Servern når vädertjänsterna"
+
+#: admin/page-setup.php
+msgid "WP_HTTP_BLOCK_EXTERNAL is enabled, which blocks all weather requests. Allow the provider hosts via WP_ACCESSIBLE_HOSTS or disable the block."
+msgstr "WP_HTTP_BLOCK_EXTERNAL är aktiverat och blockerar alla väderanrop. Tillåt leverantörernas värdar via WP_ACCESSIBLE_HOSTS eller stäng av blockeringen."
+
+#: admin/page-setup.php
+msgid "Weather data is fetched from your server, so it needs outgoing HTTPS access (firewalls may block it)."
+msgstr "Väderdata hämtas från din server, så den behöver utgående HTTPS-åtkomst (brandväggar kan blockera det)."
+
+#: admin/page-setup.php
+msgid "At least one weather provider is enabled"
+msgstr "Minst en väderleverantör är aktiverad"
+
+#: admin/page-setup.php
+msgid "Enable a provider under Providers below. Open-Meteo, SMHI and Yr need no API key."
+msgstr "Aktivera en leverantör under Leverantörer nedan. Open-Meteo, SMHI och Yr behöver ingen API-nyckel."
+
+#: admin/page-setup.php
+msgid "Open-Meteo, SMHI, Yr, MET Nowcast and FMI need no API key."
+msgstr "Open-Meteo, SMHI, Yr, MET Nowcast och FMI behöver ingen API-nyckel."
+
+#: admin/page-setup.php
+msgid "%s needs an API key"
+msgstr "%s kräver en API-nyckel"
+
+#: admin/page-setup.php
+msgid "The provider is enabled but no API key is saved, so it is skipped. Add the key or disable the provider."
+msgstr "Leverantören är aktiverad men ingen API-nyckel är sparad, så den hoppas över. Lägg till nyckeln eller inaktivera leverantören."
+
+#: admin/page-setup.php
+msgid "Contact for Yr / MET Norway is empty"
+msgstr "Kontakt för Yr / MET Norge saknas"
+
+#: admin/page-setup.php
+msgid "MET Norway asks API users to identify themselves. Enter an email or website URL in \"Yr contact\" to avoid being rate limited."
+msgstr "MET Norge ber API-användare att identifiera sig. Ange en e-postadress eller webbadress i \"Yr-kontakt\" för att undvika begränsning."
+
+#: admin/page-setup.php
+msgid "No default place set"
+msgstr "Ingen standardplats vald"
+
+#: admin/page-setup.php
+msgid "Set a default place, or always give place or lat/lon in the block, shortcode or widget."
+msgstr "Ange en standardplats, eller ange alltid place eller lat/lon i blocket, shortcoden eller widgeten."
+
+#: admin/page-setup.php
+msgid "Getting started & requirements"
+msgstr "Kom igång och krav"
+
+#: admin/page-setup.php
+msgid "Everything the plugin needs is in place."
+msgstr "Allt som tillägget behöver finns på plats."
+
+#: admin/page-setup.php
+msgid "Fix the items marked below so the weather can be shown."
+msgstr "Åtgärda punkterna som är markerade nedan så att vädret kan visas."
+
+#: admin/page-setup.php
+msgid "Show the weather on your site"
+msgstr "Visa vädret på din webbplats"
+
+#: admin/page-setup.php
+msgid "Block: edit a page, click Add block and search for \"Spelhubben Weather\"."
+msgstr "Block: redigera en sida, klicka på Lägg till block och sök efter \"Spelhubben Weather\"."
+
+#: admin/page-setup.php
+msgid "Shortcode: paste <code>[spelhubben_weather place=\"Stockholm\"]</code> in a page, post or text widget."
+msgstr "Shortcode: klistra in <code>[spelhubben_weather place=\"Stockholm\"]</code> i en sida, ett inlägg eller en textwidget."
+
+#: admin/page-setup.php
+msgid "Widget: go to Appearance → Widgets and add \"Spelhubben Weather\" to a sidebar."
+msgstr "Widget: gå till Utseende → Widgets och lägg till \"Spelhubben Weather\" i en sidofält."
+
+#: admin/page-setup.php
+msgid "Good to know: maps need no API key, but visitors load map tiles from OpenStreetMap. If you use a caching or optimization plugin, clear its cache after changing settings. Your theme must call wp_footer() for scripts to load."
+msgstr "Bra att veta: kartor behöver ingen API-nyckel, men besökare hämtar kartbilder från OpenStreetMap. Om du använder ett cache- eller optimeringstillägg, rensa dess cache efter att du ändrat inställningar. Ditt tema måste anropa wp_footer() för att skript ska laddas."
+
+#: admin/page-setup.php
+msgid "Spelhubben Weather is installed."
+msgstr "Spelhubben Weather är installerat."
+
+#: admin/page-setup.php
+msgid "Open the settings to check the requirements, pick your place and providers, and see how to add the weather to your site."
+msgstr "Öppna inställningarna för att kontrollera kraven, välja plats och leverantörer och se hur du lägger till vädret på din webbplats."
+
+#: admin/page-setup.php
+msgid "Get started"
+msgstr "Kom igång"

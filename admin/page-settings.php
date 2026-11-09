@@ -69,6 +69,7 @@ if ( ! function_exists( 'sv_vader_render_settings_page' ) ) {
 
 			<div class="svv-grid svv-grid--settings">
 				<div class="svv-col">
+					<?php sv_vader_render_setup_card(); ?>
 					<div class="svv-card">
 						<h2 class="svv-card-title" style="display:flex; align-items:center; gap:8px;">
 							<span class="dashicons dashicons-admin-generic"></span>

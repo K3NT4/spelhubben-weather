@@ -96,8 +96,17 @@ if (!function_exists('add_query_arg')) {
 	}
 }
 
+if (!function_exists('do_action')) {
+	function do_action($hook_name, ...$args) {
+		if ($hook_name === 'sv_vader_render_assets') {
+			$GLOBALS['svv_render_asset_calls'][] = $args;
+		}
+	}
+}
+
 if (!function_exists('wp_remote_get')) {
 	function wp_remote_get($url, $args = []) {
+		$GLOBALS['svv_last_http_args'] = $args;
 		if (!empty($GLOBALS['svv_remote_responses'])) {
 			return array_shift($GLOBALS['svv_remote_responses']);
 		}
@@ -548,9 +557,72 @@ $GLOBALS['post']->post_content = '[spelhubben_weather map="1" map_engine="openla
 $assets = new SV_Vader_Assets();
 $assets->enqueue_public_assets();
 
-assert_true(in_array('svv-openlayers-css', $GLOBALS['svv_enqueued_styles'], true), 'OpenLayers CSS enqueued even when global map engine is static and instance requests OpenLayers');
-assert_true(in_array('svv-openlayers-js', $GLOBALS['svv_enqueued_scripts'], true), 'OpenLayers JS enqueued even when global map engine is static and instance requests OpenLayers');
-assert_true(in_array('sv-vader-map', $GLOBALS['svv_enqueued_scripts'], true), 'map runtime enqueued for per-instance map engine');
+assert_true(in_array('sv-vader-style', $GLOBALS['svv_enqueued_styles'], true), 'page-content detection enqueues weather stylesheet');
+assert_true(!in_array('sv-vader-map', $GLOBALS['svv_enqueued_scripts'], true), 'page-content detection does not enqueue map runtime (loaded per instance at render time)');
+
+// Render-time loading: output outside post content (theme sidebar / widget area).
+function svv_reset_enqueues() {
+	$GLOBALS['svv_enqueued_styles'] = [];
+	$GLOBALS['svv_enqueued_scripts'] = [];
+}
+
+$GLOBALS['post'] = new WP_Post();
+$GLOBALS['post']->post_content = 'No weather in this page content';
+$GLOBALS['wp_query'] = null;
+
+svv_reset_enqueues();
+$assets = new SV_Vader_Assets();
+$assets->enqueue_public_assets();
+assert_true(!in_array('sv-vader-style', $GLOBALS['svv_enqueued_styles'], true), 'no assets enqueued from page content when it has no weather output');
+
+$assets->enqueue_on_render(false, 'auto');
+assert_true(in_array('sv-vader-style', $GLOBALS['svv_enqueued_styles'], true), 'render-time enqueue loads stylesheet for sidebar/widget output');
+assert_true(in_array('sv-vader-wind', $GLOBALS['svv_enqueued_scripts'], true), 'render-time enqueue loads wind helper for sidebar/widget output');
+$assets->apply_map_assets();
+assert_true(!in_array('sv-vader-map', $GLOBALS['svv_enqueued_scripts'], true), 'instance without map does not load map scripts');
+assert_true(!in_array('svv-openlayers-js', $GLOBALS['svv_enqueued_scripts'], true), 'instance without map does not load OpenLayers');
+
+svv_reset_enqueues();
+$assets = new SV_Vader_Assets();
+$assets->enqueue_on_render(true, 'openlayers');
+$assets->apply_map_assets();
+assert_true(in_array('svv-openlayers-js', $GLOBALS['svv_enqueued_scripts'], true), 'openlayers instance loads OpenLayers');
+assert_true(!in_array('svv-leaflet-js', $GLOBALS['svv_enqueued_scripts'], true), 'openlayers instance does not load Leaflet');
+assert_true(in_array('sv-vader-map', $GLOBALS['svv_enqueued_scripts'], true), 'map instance loads map runtime');
+
+svv_reset_enqueues();
+$assets = new SV_Vader_Assets();
+$assets->enqueue_on_render(true, 'static');
+$assets->apply_map_assets();
+assert_true(!in_array('sv-vader-map', $GLOBALS['svv_enqueued_scripts'], true), 'static engine loads no map libraries');
+
+svv_reset_enqueues();
+$assets = new SV_Vader_Assets();
+$assets->enqueue_on_render(true, 'leaflet');
+$assets->enqueue_on_render(true, 'openlayers');
+$assets->apply_map_assets();
+assert_true(in_array('svv-leaflet-js', $GLOBALS['svv_enqueued_scripts'], true) && in_array('svv-openlayers-js', $GLOBALS['svv_enqueued_scripts'], true), 'mixed engines on one page load the union of libraries');
+
+svv_reset_enqueues();
+$assets = new SV_Vader_Assets();
+$assets->enqueue_on_render(true, 'auto');
+$assets->apply_map_assets();
+assert_true(in_array('svv-leaflet-js', $GLOBALS['svv_enqueued_scripts'], true) && in_array('svv-openlayers-js', $GLOBALS['svv_enqueued_scripts'], true), 'auto engine loads both libraries so Leaflet can back up OpenLayers');
+
+// Renderer fires the asset hook with map flag + engine.
+$GLOBALS['svv_render_asset_calls'] = [];
+$renderer->render_shortcode(['ort' => 'Stockholm', 'map' => '0', 'show' => 'temp']);
+$renderer->render_shortcode(['ort' => 'Stockholm', 'map' => '1', 'map_engine' => 'leaflet', 'show' => 'temp']);
+assert_true(($GLOBALS['svv_render_asset_calls'][0][0] ?? null) === false, 'renderer reports map-less instance to asset loader');
+assert_true(($GLOBALS['svv_render_asset_calls'][1] ?? null) === [true, 'leaflet'], 'renderer reports map instance and engine to asset loader');
+
+// Shared HTTP helper applies a common timeout and User-Agent.
+$GLOBALS['svv_last_http_args'] = null;
+sv_vader_http_get('https://example.test/', []);
+assert_true(($GLOBALS['svv_last_http_args']['timeout'] ?? 0) === 8, 'sv_vader_http_get applies default timeout');
+assert_true(strpos((string) ($GLOBALS['svv_last_http_args']['user-agent'] ?? ''), 'Spelhubben-Weather/') === 0, 'sv_vader_http_get sets identifying User-Agent');
+sv_vader_http_get('https://example.test/', ['timeout' => 3]);
+assert_true(($GLOBALS['svv_last_http_args']['timeout'] ?? 0) === 3, 'sv_vader_http_get allows callers to override timeout');
 
 $widget_code = file_get_contents(__DIR__ . '/../includes/Widget/class-widget.php');
 assert_true(strpos($widget_code, "'tides'") !== false, 'widget exposes tides setting');
@@ -650,5 +722,22 @@ assert_true(in_array('sv-vader-wind', $GLOBALS['svv_enqueued_scripts'], true), '
 assert_true(in_array('svv-openlayers-css', $GLOBALS['svv_enqueued_styles'], true), 'editor block content enqueues OpenLayers CSS for map previews');
 assert_true(in_array('svv-openlayers-js', $GLOBALS['svv_enqueued_scripts'], true), 'editor block content enqueues OpenLayers JS for map previews');
 assert_true(in_array('sv-vader-map', $GLOBALS['svv_enqueued_scripts'], true), 'editor block content enqueues map runtime for map previews');
+
+// Setup checklist shown on the settings page.
+require_once __DIR__ . '/../admin/page-setup.php';
+function svv_check_labels($checks, $status) {
+	$out = [];
+	foreach ($checks as $c) { if ($c['status'] === $status) $out[] = $c['label']; }
+	return $out;
+}
+$setup_none = sv_vader_setup_checks(['default_ort' => 'Stockholm']);
+assert_true(in_array('At least one weather provider is enabled', svv_check_labels($setup_none, 'error'), true), 'setup checklist errors when no provider is enabled');
+$setup_ok = sv_vader_setup_checks(['default_ort' => 'Stockholm', 'prov_openmeteo' => 1]);
+assert_true(svv_check_labels($setup_ok, 'error') === [] && svv_check_labels($setup_ok, 'warn') === [], 'setup checklist is clean for a working key-free configuration');
+$setup_keys = sv_vader_setup_checks(['default_ort' => 'Stockholm', 'prov_openweathermap' => 1, 'owm_api_key' => '', 'prov_yr' => 1]);
+$setup_warns = svv_check_labels($setup_keys, 'warn');
+assert_true(in_array('OpenWeatherMap needs an API key', $setup_warns, true), 'setup checklist warns when an enabled provider lacks its API key');
+assert_true(in_array('Contact for Yr / MET Norway is empty', $setup_warns, true), 'setup checklist warns when Yr is enabled without contact details');
+assert_true(in_array('No default place set', svv_check_labels(sv_vader_setup_checks(['prov_openmeteo' => 1]), 'warn'), true), 'setup checklist warns when no default place is set');
 
 echo "All regression checks passed.\n";

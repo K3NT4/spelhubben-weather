@@ -26,6 +26,13 @@ class SV_Vader_API {
 			return $cached;
 		}
 
+		// Negative cache: if every provider failed moments ago, don't block this
+		// page view on another round of slow remote requests.
+		$fail_key = $cache_key . '_fail';
+		if (sv_vader_cache_get($fail_key) !== false) {
+			return new WP_Error('sv_vader_no_sources', __('Could not fetch weather data from the selected providers.', 'spelhubben-weather'));
+		}
+
 		if ($lat === '' || $lon === '') {
 			$coords = $this->geocode($ort);
 			if (is_wp_error($coords)) return $coords;
@@ -50,6 +57,7 @@ class SV_Vader_API {
 		}
 
 		if (empty($samples)) {
+			sv_vader_cache_set($fail_key, 1, 2 * MINUTE_IN_SECONDS);
 			return new WP_Error('sv_vader_no_sources', __('Could not fetch weather data from the selected providers.', 'spelhubben-weather'));
 		}
 
@@ -286,7 +294,7 @@ class SV_Vader_API {
 			'format'   => 'json'
 		], 'https://geocoding-api.open-meteo.com/v1/search');
 
-		$res = wp_remote_get($url, ['timeout'=>10]);
+		$res = sv_vader_http_get($url, []);
 		if (is_wp_error($res)) return $res;
 
 		$data = json_decode(wp_remote_retrieve_body($res), true);

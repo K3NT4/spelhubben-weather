@@ -97,6 +97,7 @@ class SV_Vader_Renderer {
 		
 		// Check if comparison mode is enabled
 		if ($a['comparison'] === '1') {
+			do_action('sv_vader_render_assets', false, 'static');
 			$res = $api->get_provider_details($a['ort'], $a['lat'], $a['lon'], $provider_list, $opts['yr_contact']);
 			if (is_wp_error($res)) return '<em>' . esc_html($res->get_error_message()) . '</em>';
 			return $this->render_comparison_view($res, $a['ort'], $units, $api);
@@ -184,6 +185,10 @@ class SV_Vader_Renderer {
 		if (!in_array($map_engine, ['auto','openlayers','leaflet','static'], true)) {
 			$map_engine = 'auto';
 		}
+
+		// Ensure assets are loaded even when output comes from a theme sidebar,
+		// widget area or template outside the post content.
+		do_action('sv_vader_render_assets', ($a['map'] === '1' && $layout !== 'inline'), $map_engine);
 
 		ob_start(); ?>
 		<div class="<?php echo esc_attr($classes); ?>" data-svv-ro="1" data-svv-theme="<?php echo esc_attr($theme); ?>" data-svv-wind-unit="<?php echo esc_attr($units['wind']); ?>">
