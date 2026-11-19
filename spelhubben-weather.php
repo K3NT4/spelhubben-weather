@@ -1,8 +1,8 @@
 <?php
 /**
  * Plugin Name: Spelhubben Weather
- * Description: Displays current weather, compact hourly forecasts and optional daily forecast with provider consensus (Open-Meteo, SMHI, Yr/MET Norway, MET Nowcast, FMI, OpenWeatherMap, WeatherAPI). Supports shortcode, Gutenberg block, classic widget and local smart maps.
- * Version: 2.1.7
+ * Description: Current weather and forecasts with smart maps, sun and moon information, forecast insights, layouts and style presets. Supports shortcodes, Gutenberg blocks and patterns, and classic widgets.
+ * Version: 2.2.0
  * Author: Spelhubben
  * Text Domain: spelhubben-weather
  * Domain Path: /languages
@@ -29,7 +29,7 @@ if ( ! defined( 'SV_VADER_PATH' ) ) {
 	define( 'SV_VADER_PATH', plugin_dir_path( __FILE__ ) );
 }
 if ( ! defined( 'SV_VADER_VER' ) ) {
-	define( 'SV_VADER_VER', '2.1.7' );
+	define( 'SV_VADER_VER', '2.2.0' );
 }
 if ( ! defined( 'SV_VADER_DIR' ) ) {
 	define( 'SV_VADER_DIR', SV_VADER_PATH );
@@ -77,6 +77,9 @@ register_activation_hook(
 require_once SV_VADER_DIR . 'includes/constants.php';      // Configuration constants (v1.8.3+).
 require_once SV_VADER_DIR . 'includes/i18n.php';           // Language helpers.
 require_once SV_VADER_DIR . 'includes/options.php';
+require_once SV_VADER_DIR . 'includes/presets.php';
+require_once SV_VADER_DIR . 'includes/reviews.php';
+require_once SV_VADER_DIR . 'includes/map-diagnostics.php';
 require_once SV_VADER_DIR . 'includes/cache.php';
 require_once SV_VADER_DIR . 'includes/format.php';         // Units & formatting helpers.
 require_once SV_VADER_DIR . 'includes/class-wporg-plugins.php'; // WP.org plugin showcase.

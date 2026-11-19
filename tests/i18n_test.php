@@ -85,13 +85,22 @@ try {
         check_translation('Waning Crescent', 'Avtagande halvmåne');
         check_translation('Overcast', 'Egen svensk översättning');
         check_translation('Compact', 'Kompakt', 'layout label');
+        foreach (['Sun and moon'=>'Sol och måne', 'Forecast insights'=>'Väderinsikter', 'Sunrise'=>'Soluppgång', 'Sunset'=>'Solnedgång', 'Day length'=>'Dagslängd', 'Style preset'=>'Stilprofil', 'Dark'=>'Mörk', 'Weather card'=>'Väderkort', 'Forecast row'=>'Prognosrad', 'Hours:'=>'Timmar:', 'Show tides'=>'Visa tidvatten', 'Share your experience'=>'Dela din upplevelse', 'Leave a review'=>'Lämna ett omdöme'] as $source => $translation) {
+            check_translation($source, $translation);
+        }
 
         $controller->set_locale('nb_NO');
         sv_vader_load_bundled_translations('nb_NO');
         check_translation('Settings', 'Innstillinger');
+        foreach (['Sun and moon'=>'Sol og måne', 'Forecast insights'=>'Værinnsikt', 'Sunrise'=>'Soloppgang', 'Sunset'=>'Solnedgang', 'Day length'=>'Daglengde', 'Style preset'=>'Stilprofil', 'Dark'=>'Mørk', 'Weather card'=>'Værkort', 'Forecast row'=>'Varselrad', 'Hours:'=>'Timer:', 'Show tides'=>'Vis tidevann', 'Share your experience'=>'Del din opplevelse', 'Leave a review'=>'Skriv en omtale'] as $source => $translation) {
+            check_translation($source, $translation);
+        }
         $controller->set_locale('en_US');
         sv_vader_load_bundled_translations('en_US');
         check_translation('Settings', false);
+        foreach (['Sun and moon','Forecast insights','Sunrise','Sunset','Day length','Style preset','Dark','Weather card','Forecast row','Share your experience','Leave a review'] as $source) {
+            if (__($source, 'spelhubben-weather') !== $source) throw new RuntimeException('English source message was not restored: ' . $source);
+        }
         $controller->set_locale('sv_SE');
         sv_vader_load_bundled_translations('sv_SE');
         check_translation('Overcast', 'Egen svensk översättning');
@@ -169,7 +178,14 @@ try {
         sv_vader_script_translations('{}', $installed_json, 'block', 'another-plugin') !== '{}') {
         throw new RuntimeException('JSON filter changed unrelated or malformed data');
     }
-    echo "All translation checks passed (PHP and MO).\n";
+    foreach (['sv_SE' => ['Sun and moon'=>'Sol och måne','Forecast insights'=>'Väderinsikter','Style preset'=>'Stilprofil'], 'nb_NO' => ['Sun and moon'=>'Sol og måne','Forecast insights'=>'Værinnsikt','Style preset'=>'Stilprofil']] as $locale => $messages) {
+        $path = ABSPATH . 'languages/spelhubben-weather-' . $locale . '-ef457c6fc9879530ccb874bec7a8e544.json';
+        $json = json_decode(file_get_contents($path), true);
+        foreach ($messages as $source => $translation) {
+            if (($json['locale_data']['messages'][$source] ?? null) !== [$translation]) throw new RuntimeException('Missing editor translation: ' . $locale . ' ' . $source);
+        }
+    }
+    echo "All translation checks passed (English, Swedish, Norwegian; PHP, MO and editor JSON).\n";
 } finally {
     unlink($pack);
     if (isset($installed_json) && is_file($installed_json)) unlink($installed_json);

@@ -174,6 +174,12 @@ if ( ! function_exists( 'sv_vader_render_settings_page' ) ) {
 				</div>
 			</div><!-- /.svv-grid -->
 
+			<div class="svv-card">
+				<h2 class="svv-card-title"><?php esc_html_e('Share your experience', 'spelhubben-weather'); ?></h2>
+				<p><?php esc_html_e('Have you tried Spelhubben Weather? We would appreciate an honest rating or review on WordPress.org. Your feedback helps us improve the plugin.', 'spelhubben-weather'); ?></p>
+				<a class="button button-secondary" href="https://wordpress.org/plugins/spelhubben-weather/#reviews" target="_blank" rel="noopener noreferrer"><?php esc_html_e('Leave a review', 'spelhubben-weather'); ?></a>
+			</div>
+
 			<!-- More plugins by Spelhubben - lazy loaded -->
 			<div id="svv-plugin-showcase" style="margin-top: 30px; margin-bottom: 20px;">
 				<p style="color: #666; font-style: italic;">

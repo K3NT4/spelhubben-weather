@@ -157,6 +157,7 @@ if (!function_exists('sv_vader_openmeteo_current')) {
             'latitude'  => $lat,
             'longitude' => $lon,
             'current'   => 'temperature_2m,wind_speed_10m,wind_direction_10m,weather_code,precipitation,cloud_cover',
+            'wind_speed_unit' => 'ms',
             'timezone'  => 'Europe/Stockholm',
             'lang'      => $locale
         ], 'https://api.open-meteo.com/v1/forecast');
@@ -629,7 +630,7 @@ if (!function_exists('sv_vader_openmeteo_daily')) {
 if (!function_exists('sv_vader_openmeteo_hourly')) {
     /**
      * Fetch compact hourly forecast for the next N hours.
-     * Returns: [ ['time'=>'YYYY-MM-DDTHH:MM','temp'=>..,'wind'=>..,'wind_dir'=>..,'precip'=>..,'code'=>int|null,'desc'=>string], ... ]
+     * Returns rows with ISO8601 UTC time, Celsius temp, m/s wind and mm precipitation.
      */
     function sv_vader_openmeteo_hourly($lat, $lon, $hours = 24, $locale = 'en') {
         $hours = max(3, min(24, intval($hours)));
@@ -637,8 +638,10 @@ if (!function_exists('sv_vader_openmeteo_hourly')) {
             'latitude'       => $lat,
             'longitude'      => $lon,
             'hourly'         => 'temperature_2m,wind_speed_10m,wind_direction_10m,weather_code,precipitation',
-            'timezone'       => 'Europe/Stockholm',
-            'forecast_hours' => $hours,
+            'timezone'       => 'UTC',
+            'timeformat'     => 'unixtime',
+            'wind_speed_unit' => 'ms',
+            'forecast_hours' => $hours + 1,
             'lang'           => $locale,
         ], 'https://api.open-meteo.com/v1/forecast');
 
@@ -657,13 +660,18 @@ if (!function_exists('sv_vader_openmeteo_hourly')) {
         $out = [];
 
         foreach (array_slice($times, 0, $hours) as $i => $time) {
-            $code = isset($codes[$i]) ? intval($codes[$i]) : null;
+            if (!is_numeric($time) || !is_finite((float)$time)) continue;
+            $number = static function ($value) {
+                return !is_bool($value) && is_numeric($value) && is_finite((float)$value) ? (float)$value : null;
+            };
+            $code = isset($codes[$i]) && is_numeric($codes[$i]) ? intval($codes[$i]) : null;
             $out[] = [
-                'time'     => $time,
-                'temp'     => isset($temps[$i]) ? floatval($temps[$i]) : null,
-                'wind'     => isset($winds[$i]) ? floatval($winds[$i]) : null,
-                'wind_dir' => isset($wind_dirs[$i]) ? floatval($wind_dirs[$i]) : null,
-                'precip'   => isset($precips[$i]) ? floatval($precips[$i]) : null,
+                'time'     => gmdate('c', (int)$time),
+                'temp'     => $number($temps[$i] ?? null),
+                'wind'     => $number($winds[$i] ?? null),
+                'wind_dir' => $number($wind_dirs[$i] ?? null),
+                // API precipitation ends at its timestamp; align it to this card's upcoming hour.
+                'precip'   => $number($precips[$i + 1] ?? null),
                 'code'     => $code,
                 'desc'     => ($code !== null) ? sv_vader_wmo_text($code) : '',
             ];

@@ -7,6 +7,7 @@ class SV_Vader_Assets {
     private $registered = false;
     private $localized = false;
     private $footer_hooked = false;
+    private $diagnostics_loaded = false;
     /** @var array<string,bool> Map libraries required on this request. */
     private $map_libs = [];
 
@@ -33,6 +34,7 @@ class SV_Vader_Assets {
         wp_enqueue_script('sv-vader-wind');
 
         if ( $with_map ) {
+            $this->enqueue_map_diagnostics();
             // Collect what every instance needs; the footer hook enqueues the
             // union once all instances have rendered.
             $this->request_map_engine( $this->normalize_engine( $engine ) );
@@ -78,13 +80,9 @@ class SV_Vader_Assets {
         wp_enqueue_style('sv-vader-style');
         wp_enqueue_script('sv-vader-wind');
 
-        $opts = function_exists('sv_vader_get_options') ? sv_vader_get_options() : [];
-        $engine = strtolower((string)($opts['map_engine'] ?? 'auto'));
-        if ( ! in_array($engine, ['auto','openlayers','leaflet','static'], true) ) {
-            $engine = 'auto';
-        }
-
-        $this->enqueue_map_assets($engine);
+        // A block can override the global engine and switch engines live in the
+        // editor. Keep both local libraries available for those previews.
+        $this->enqueue_map_assets('auto');
     }
 
     /**
@@ -145,6 +143,20 @@ class SV_Vader_Assets {
         wp_register_script('sv-vader-wind', SV_VADER_URL . 'assets/wind.js', [], SV_VADER_VER, true);
 
         $this->registered = true;
+    }
+
+    /** Report observations only during an administrator's frontend visit. */
+    private function enqueue_map_diagnostics() {
+        if ( $this->diagnostics_loaded || ! function_exists('current_user_can') || ! current_user_can('manage_options') ) {
+            return;
+        }
+        $this->diagnostics_loaded = true;
+        wp_register_script('svv-map-status', SV_VADER_URL . 'assets/map-status.js', [], SV_VADER_VER, true);
+        wp_enqueue_script('svv-map-status');
+        wp_localize_script('svv-map-status', 'SVV_MAP_STATUS', [
+            'url' => admin_url('admin-ajax.php'),
+            'nonce' => wp_create_nonce('svv_map_status'),
+        ]);
     }
 
     /**

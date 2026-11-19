@@ -47,6 +47,9 @@ if ( ! function_exists( 'sv_vader_render_performance_page' ) ) {
 
 		$recent = is_array( $stats['recent'] ) ? $stats['recent'] : [];
 		$map_engine = $opts['map_engine'] ?? 'auto';
+		$map_status = sv_vader_map_get_report('sv_vader_map_last_status');
+		$map_error = sv_vader_map_get_report('sv_vader_map_last_error');
+		$map_messages = sv_vader_map_status_messages();
 		$openlayers_ok = file_exists( SV_VADER_DIR . 'assets/openlayers.js' ) && file_exists( SV_VADER_DIR . 'assets/openlayers.css' );
 		$leaflet_ok = file_exists( SV_VADER_DIR . 'assets/vendor/leaflet/leaflet.js' ) && file_exists( SV_VADER_DIR . 'assets/vendor/leaflet/leaflet.css' );
 		?>
@@ -103,7 +106,13 @@ if ( ! function_exists( 'sv_vader_render_performance_page' ) ) {
 							<li><span><?php esc_html_e( 'Configured engine', 'spelhubben-weather' ); ?></span><strong><?php echo esc_html( $map_engine ); ?></strong></li>
 							<li><span><?php esc_html_e( 'OpenLayers assets', 'spelhubben-weather' ); ?></span><strong><?php echo esc_html( $openlayers_ok ? __( 'OK', 'spelhubben-weather' ) : __( 'Missing', 'spelhubben-weather' ) ); ?></strong></li>
 							<li><span><?php esc_html_e( 'Leaflet legacy assets', 'spelhubben-weather' ); ?></span><strong><?php echo esc_html( $leaflet_ok ? __( 'OK', 'spelhubben-weather' ) : __( 'Missing', 'spelhubben-weather' ) ); ?></strong></li>
+							<li><span><?php esc_html_e( 'Last browser-reported engine', 'spelhubben-weather' ); ?></span><strong><?php echo esc_html($map_status ? $map_status['engine'] : __('Not reported', 'spelhubben-weather')); ?></strong></li>
 						</ul>
+						<?php foreach (['status' => $map_status, 'error' => $map_error] as $kind => $report): ?>
+							<p><strong><?php echo esc_html($kind === 'error' ? __('Latest reported map error', 'spelhubben-weather') : __('Latest browser report', 'spelhubben-weather')); ?>:</strong>
+							<?php echo esc_html($report ? ($map_messages[$report['code']] ?? $report['code']) . ' (' . $report['code'] . '; ' . $report['requested'] . '; ' . gmdate('Y-m-d H:i:s', $report['time']) . ' UTC)' : __('Not reported', 'spelhubben-weather')); ?></p>
+						<?php endforeach; ?>
+						<p class="description"><?php esc_html_e( 'Reports come from administrator visits to the frontend, expire after seven days and may describe an instance-specific engine override. No report does not prove that maps work or fail. Cache or optimization rules may delay scripts; the exact blocking theme or plugin cannot be identified here.', 'spelhubben-weather' ); ?></p>
 						<p class="description"><?php esc_html_e( 'If a cache or optimization plugin delays scripts, set the map engine to Static fallback temporarily or exclude Spelhubben Weather map assets from delay/defer rules.', 'spelhubben-weather' ); ?></p>
 					</div>
 				</div>

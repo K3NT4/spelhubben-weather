@@ -19,7 +19,7 @@ class SV_Vader_API {
 		$providers = $this->normalize_providers($providers);
 
 		$api_lang = sv_vader_api_lang();
-		$cache_key = 'sv_vader_cons_' . md5(json_encode([$ort,$lat,$lon,$providers,$api_lang,determine_locale()]));
+		$cache_key = 'sv_vader_cons_ms_v2_' . md5(json_encode([$ort,$lat,$lon,$providers,$api_lang,determine_locale()]));
 		$cached = sv_vader_cache_get($cache_key);
 		if ($cached !== false) {
 			sv_vader_stats_hit();
@@ -84,7 +84,7 @@ class SV_Vader_API {
 		$providers = $this->normalize_providers($providers);
 
 		$api_lang = sv_vader_api_lang();
-		$cache_key = 'sv_vader_details_' . md5(json_encode([$ort,$lat,$lon,$providers,$api_lang,determine_locale()]));
+		$cache_key = 'sv_vader_details_ms_v2_' . md5(json_encode([$ort,$lat,$lon,$providers,$api_lang,determine_locale()]));
 		$cached = sv_vader_cache_get($cache_key);
 		if ($cached !== false) {
 			sv_vader_stats_hit();
@@ -164,7 +164,7 @@ class SV_Vader_API {
 		$hours = max(3, min(24, intval($hours)));
 
 		$api_lang = sv_vader_api_lang();
-		$cache_key = 'sv_vader_hourly_' . md5(json_encode([$ort,$lat,$lon,$hours,$api_lang,determine_locale()]));
+		$cache_key = 'sv_vader_hourly_utc_ms_v3_' . md5(json_encode([$ort,$lat,$lon,$hours,$api_lang,determine_locale()]));
 		$cached = sv_vader_cache_get($cache_key);
 		if ($cached !== false) {
 			sv_vader_stats_hit();

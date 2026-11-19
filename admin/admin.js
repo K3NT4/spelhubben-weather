@@ -314,6 +314,7 @@
       var show = Array.from(document.querySelectorAll('.svv-b-show:checked')).map(function(i){ return i.value; }).join(',');
       var layout = document.querySelector('.svv-b-layout').value;
       var theme = (document.querySelector('.svv-b-theme') && document.querySelector('.svv-b-theme').value) || 'auto';
+      var stylePreset = (document.querySelector('.svv-b-style-preset') && document.querySelector('.svv-b-style-preset').value) || '';
       var preset = (document.querySelector('.svv-b-preset') && document.querySelector('.svv-b-preset').value) || '';
       var mapengine = (document.querySelector('.svv-b-mapengine') && document.querySelector('.svv-b-mapengine').value) || 'auto';
       var windunit = (document.querySelector('.svv-b-windunit') && document.querySelector('.svv-b-windunit').value) || '';
@@ -331,8 +332,9 @@
       if (show && show !== 'temp,wind,wind_dir,icon') sc += ' show="' + show + '"';
       if (layout !== 'card') sc += ' layout="' + layout + '"';
       if (theme && theme !== 'auto') sc += ' theme="' + theme + '"';
+      if (stylePreset) sc += ' style_preset="' + stylePreset + '"';
       if (preset) sc += ' preset="' + preset + '"';
-      if (map === '1') sc += ' map="1"';
+      sc += ' map="' + map + '"';
       if (mapengine && mapengine !== 'auto') sc += ' map_engine="' + mapengine + '"';
       if (animate === '0') sc += ' animate="0"';
       if (hourly === '1') sc += ' hourly="1" hours="' + hours + '"';
@@ -342,6 +344,8 @@
       if (tides) extras.push('tides');
       if (moon) extras.push('moon');
       if (moonDaily) extras.push('moon_daily');
+      if (document.querySelector('.svv-b-astro') && document.querySelector('.svv-b-astro').checked) extras.push('astro');
+      if (document.querySelector('.svv-b-insights') && document.querySelector('.svv-b-insights').checked) extras.push('insights');
       if (extras.length) sc += ' extras="' + extras.join(',') + '"';
       sc += ']';
 

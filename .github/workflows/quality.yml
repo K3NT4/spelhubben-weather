@@ -43,7 +43,7 @@ jobs:
           tools: none
 
       - name: Run regression suite
-        run: php -d error_reporting=-1 -d display_errors=1 tests/regression_test.php
+        run: php -d error_reporting=-1 -d display_errors=1 tests/run.php
 
   translations:
     name: Translation compatibility
@@ -75,6 +75,9 @@ jobs:
 
       - name: Install dependencies
         run: npm ci
+
+      - name: Check map runtime
+        run: node tests/map_runtime_test.js
 
       - name: Rebuild assets
         run: npm run build:assets

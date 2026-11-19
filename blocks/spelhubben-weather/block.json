@@ -27,6 +27,9 @@
     "tides":      { "type": "boolean", "default": false },
     "theme":      { "type": "string",  "default": "auto" },
     "preset":     { "type": "string",  "default": "" },
+    "stylePreset":{ "type": "string",  "default": "" },
+    "astro":      { "type": "boolean", "default": false },
+    "insights":   { "type": "boolean", "default": false },
     "units":      { "type": "string",  "default": "metric" },
     "date_format":{ "type": "string",  "default": "D j/n" },
     "wind_unit":  { "type": "string",  "default": "" }

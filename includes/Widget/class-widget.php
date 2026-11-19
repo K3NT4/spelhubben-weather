@@ -45,6 +45,9 @@ class SV_Vader_Widget extends WP_Widget {
             'show_alerts' => 1,
             'theme'     => 'auto',
             'preset'    => '',
+            'style_preset' => '',
+            'astro'     => 0,
+            'insights'  => 0,
             'class'     => 'is-widget',
             'wind_unit' => '',
         ];
@@ -78,7 +81,7 @@ class SV_Vader_Widget extends WP_Widget {
         $tides       = !empty($instance['tides']) ? 1 : 0;
         $show_alerts = !empty($instance['show_alerts']) ? 1 : 0;
         $theme       = in_array(strtolower($instance['theme'] ?? 'auto'), ['auto','light','dark'], true) ? strtolower($instance['theme']) : 'auto';
-        $preset      = in_array(strtolower($instance['preset'] ?? ''), ['','mini','hero','sidebar','dashboard','forecast-strip'], true) ? strtolower($instance['preset']) : '';
+        $preset      = in_array(strtolower($instance['preset'] ?? ''), array_merge([''], array_keys(sv_vader_layout_presets())), true) ? strtolower($instance['preset']) : '';
         $extra_cls   = isset($instance['class']) ? sanitize_html_class($instance['class'], '') : '';
         $show_moon   = !empty($instance['show_moon']) ? 1 : 0;
         $show_moon_daily = !empty($instance['show_moon_daily']) ? 1 : 0;
@@ -114,6 +117,9 @@ class SV_Vader_Widget extends WP_Widget {
                 'show_alerts' => $show_alerts ? '1' : '0',
                 'theme'       => $theme,
                 'preset'      => $preset,
+                'style_preset' => sv_vader_normalize_style_preset($instance['style_preset'] ?? ''),
+                'astro'       => !empty($instance['astro']) ? '1' : '0',
+                'insights'    => !empty($instance['insights']) ? '1' : '0',
                 'wind_unit'   => $instance['wind_unit'] ?? ($opts['wind_unit'] ?? ''),
             ]);
 
@@ -149,6 +155,9 @@ class SV_Vader_Widget extends WP_Widget {
             'show_alerts' => 1,
             'theme'     => 'auto',
             'preset'    => '',
+            'style_preset' => '',
+            'astro'     => 0,
+            'insights'  => 0,
             'class'     => '',
             'wind_unit' => '',
         ];
@@ -255,11 +264,23 @@ class SV_Vader_Widget extends WP_Widget {
             <select id="<?php echo esc_attr($this->get_field_id('preset')); ?>"
                     name="<?php echo esc_attr($this->get_field_name('preset')); ?>"
                     class="widefat">
-                <?php foreach (['' => '(none)', 'mini' => 'mini', 'hero' => 'hero', 'sidebar' => 'sidebar', 'dashboard' => 'dashboard', 'forecast-strip' => 'forecast-strip'] as $val => $label): ?>
+                <?php foreach (['' => __('Default', 'spelhubben-weather')] + sv_vader_layout_presets() as $val => $label): ?>
                     <option value="<?php echo esc_attr($val); ?>" <?php selected($instance['preset'] ?? '', $val); ?>><?php echo esc_html($label); ?></option>
                 <?php endforeach; ?>
             </select>
         </p>
+        <p>
+            <label for="<?php echo esc_attr($this->get_field_id('style_preset')); ?>"><?php esc_html_e('Style preset', 'spelhubben-weather'); ?></label>
+            <select class="widefat" id="<?php echo esc_attr($this->get_field_id('style_preset')); ?>" name="<?php echo esc_attr($this->get_field_name('style_preset')); ?>">
+                <?php foreach (sv_vader_style_presets() as $value => $label): ?>
+                    <option value="<?php echo esc_attr($value); ?>" <?php selected($instance['style_preset'] ?? '', $value); ?>><?php echo esc_html($label); ?></option>
+                <?php endforeach; ?>
+            </select>
+        </p>
+        <?php foreach (['astro' => __('Sun and moon', 'spelhubben-weather'), 'insights' => __('Forecast insights', 'spelhubben-weather')] as $feature => $label): ?>
+            <p><input type="checkbox" value="1" id="<?php echo esc_attr($this->get_field_id($feature)); ?>" name="<?php echo esc_attr($this->get_field_name($feature)); ?>" <?php checked(!empty($instance[$feature])); ?>>
+            <label for="<?php echo esc_attr($this->get_field_id($feature)); ?>"><?php echo esc_html($label); ?></label></p>
+        <?php endforeach; ?>
         <p>
             <input id="<?php echo esc_attr($this->get_field_id('map')); ?>"
                    name="<?php echo esc_attr($this->get_field_name('map')); ?>"
@@ -397,7 +418,10 @@ class SV_Vader_Widget extends WP_Widget {
         $instance['show_moon']   = !empty($new_instance['show_moon']) ? 1 : 0;
         $instance['theme']       = in_array(strtolower($new_instance['theme'] ?? 'auto'), ['auto','light','dark'], true) ? sanitize_text_field(strtolower($new_instance['theme'])) : 'auto';
         $preset = strtolower(trim((string)($new_instance['preset'] ?? '')));
-        $instance['preset']      = in_array($preset, ['','mini','hero','sidebar','dashboard','forecast-strip'], true) ? $preset : '';
+        $instance['preset']      = in_array($preset, array_merge([''], array_keys(sv_vader_layout_presets())), true) ? $preset : '';
+        $instance['style_preset'] = sv_vader_normalize_style_preset($new_instance['style_preset'] ?? '');
+        $instance['astro'] = !empty($new_instance['astro']) ? 1 : 0;
+        $instance['insights'] = !empty($new_instance['insights']) ? 1 : 0;
         $instance['class']       = sanitize_html_class($new_instance['class'] ?? '', '');
         $wu = strtolower(trim((string)($new_instance['wind_unit'] ?? '')));
         $instance['wind_unit'] = in_array($wu, ['ms','kmh','mph','knt','kn'], true) ? $wu : '';

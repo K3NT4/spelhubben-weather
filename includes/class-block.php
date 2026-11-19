@@ -36,6 +36,9 @@ class SV_Vader_Block {
 						'hours'      => isset( $attrs['hours'] ) ? (string) intval( $attrs['hours'] ) : '24',
 						'theme'      => $attrs['theme'] ?? 'auto',
 						'preset'     => $attrs['preset'] ?? '',
+						'style_preset' => $attrs['stylePreset'] ?? '',
+						'astro'      => !empty($attrs['astro']) ? '1' : '0',
+						'insights'   => !empty($attrs['insights']) ? '1' : '0',
 						'days'       => isset( $attrs['days'] ) ? (string) intval( $attrs['days'] ) : '5',
 
 						'units'       => $attrs['units']       ?? $opts['units'],
@@ -83,6 +86,9 @@ class SV_Vader_Block {
 						'hours'       => isset( $attrs['hours'] ) ? (string) intval( $attrs['hours'] ) : '24',
 						'theme'       => $attrs['theme'] ?? 'auto',
 						'preset'      => $attrs['preset'] ?? '',
+						'style_preset' => $attrs['stylePreset'] ?? '',
+						'astro'       => !empty($attrs['astro']) ? '1' : '0',
+						'insights'    => !empty($attrs['insights']) ? '1' : '0',
 						'days'        => isset( $attrs['days'] ) ? (string) intval( $attrs['days'] ) : '5',
 						'show_alerts' => isset( $attrs['showAlerts'] ) ? ( $attrs['showAlerts'] ? '1' : '0' ) : (string) $opts['show_alerts'],
 						'tides'       => ! empty( $attrs['tides'] ) ? '1' : '0',
@@ -103,10 +109,6 @@ class SV_Vader_Block {
 	}
 
 	public function register_patterns() {
-		if ( ! is_admin() ) {
-			return; // only needed in editor
-		}
-
 		if ( ! function_exists( 'register_block_pattern' ) ) {
 			return;
 		}
@@ -129,6 +131,21 @@ class SV_Vader_Block {
 				'categories'  => [ 'spelhubben-weather', 'widgets' ],
 				'description' => __( 'Card layout with map and 5-day forecast.', 'spelhubben-weather' ),
 				'content'     => sprintf( '<!-- wp:%1$s {"place":"Stockholm","layout":"card","map":true,"mapHeight":280,"forecast":"daily","days":5,"show":"temp,wind,icon","animate":true} /-->', $block_name ),
+			],
+			'spelhubben-weather/weather-card' => [
+				'title' => __('Weather card', 'spelhubben-weather'),
+				'categories' => ['spelhubben-weather', 'widgets'],
+				'content' => sprintf('<!-- wp:%s {"layout":"card","map":false,"stylePreset":"neutral"} /-->', $block_name),
+			],
+			'spelhubben-weather/forecast-row' => [
+				'title' => __('Forecast row', 'spelhubben-weather'),
+				'categories' => ['spelhubben-weather', 'widgets'],
+				'content' => sprintf('<!-- wp:%s {"preset":"forecast-strip","hourly":true,"hours":24,"forecast":"daily","days":5,"map":false} /-->', $block_name),
+			],
+			'spelhubben-weather/astro-panel' => [
+				'title' => __('Sun and moon', 'spelhubben-weather'),
+				'categories' => ['spelhubben-weather', 'widgets'],
+				'content' => sprintf('<!-- wp:%s {"astro":true,"map":false,"layout":"card"} /-->', $block_name),
 			],
 			'spelhubben-weather/compact-weather' => [
 				'title'       => __( 'Compact Weather', 'spelhubben-weather' ),

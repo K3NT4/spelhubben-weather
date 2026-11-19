@@ -174,7 +174,8 @@ body.admin-color-modern .sv-vader {
 
 /* Karta */
 .svv-map{width:100%;height:240px;border:1px solid var(--svv-border);border-radius:var(--svv-radius);overflow:hidden;margin-top:calc(10px * var(--svv-scale))}
-.svv-map-fallback{height:100%;min-height:120px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:6px;padding:12px;text-align:center;background:rgba(248,250,252,.92);color:var(--svv-text)}
+.svv-map[data-active-engine="static"]{filter:none!important}
+.svv-map-fallback{box-sizing:border-box;height:100%;min-height:120px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:6px;padding:12px;text-align:center;background:var(--svv-bg);color:var(--svv-text)}
 .svv-map-fallback span{font-size:13px;color:var(--svv-muted)}
 .svv-map-fallback small{font-size:12px;color:var(--svv-muted)}
 .svv-map-fallback a{color:var(--svv-accent);text-decoration:none;font-weight:600}
@@ -240,16 +241,157 @@ body.admin-color-modern .sv-vader {
 .svv-hour-meta{display:flex;flex-direction:column;gap:2px;font-size:calc(11px * var(--svv-scale));color:var(--svv-muted)}
 
 /* 2.2 preset-grund */
-.svv-preset-mini{display:inline-flex;width:auto;padding:8px 12px}
+.svv-preset-mini{
+  display:inline-flex;
+  align-items:center;
+  flex-wrap:wrap;
+  gap:calc(8px * var(--svv-scale));
+  width:auto;
+  max-width:100%;
+  padding:calc(8px * var(--svv-scale)) calc(12px * var(--svv-scale));
+}
 .svv-preset-mini .svv-map,
+.svv-preset-mini .svv-map-attrib,
+.svv-preset-mini .svv-map-link,
 .svv-preset-mini .svv-forecast,
 .svv-preset-mini .svv-hourly{display:none}
 .svv-preset-hero{padding:22px;min-height:220px}
 .svv-preset-hero .svv-temp{font-size:calc(42px * var(--svv-scale))}
 .svv-preset-sidebar{max-width:360px}
 .svv-preset-dashboard .svv-hourly,
-.svv-preset-dashboard .svv-forecast{margin-top:16px}
-.svv-preset-forecast-strip .svv-forecast{grid-auto-flow:column;grid-auto-columns:minmax(96px, 1fr);overflow-x:auto}
+.svv-preset-dashboard .svv-forecast{margin-top:16px;min-width:0}
+.svv-preset-forecast-strip .svv-forecast{
+  grid-template-columns:none;
+  grid-auto-flow:column;
+  grid-auto-columns:minmax(96px, 1fr);
+  overflow-x:auto;
+  overflow-y:hidden;
+  padding-bottom:calc(6px * var(--svv-scale));
+  scroll-snap-type:x proximity;
+  overscroll-behavior-inline:contain;
+  -webkit-overflow-scrolling:touch;
+}
+.svv-preset-forecast-strip .svv-daycard{scroll-snap-align:start}
+
+/* 2.2 stilpresets – allt är scopat till .sv-vader.svv-style-* */
+.sv-vader.svv-style-light:not(.svv-force-dark){
+  --svv-bg:#ffffff;
+  --svv-text:#1a1a1a;
+  --svv-border:#e6e6e6;
+  --svv-accent:#0b63ff;
+  --svv-shadow:rgba(0,0,0,.04);
+  --svv-badge-bg:transparent;
+  --svv-badge-border:#eeeeee;
+  --svv-muted:#666666;
+}
+.sv-vader.svv-style-light:not(.svv-force-dark) .svv-map{filter:none}
+.sv-vader.svv-style-light:not(.svv-force-dark) .svv-alert-mini.is-danger{background:#fef2f2;color:#991b1b;border-color:#fecaca}
+.sv-vader.svv-style-light:not(.svv-force-dark) .svv-alert-mini.is-warning{background:#fffbeb;color:#92400e;border-color:#fde68a}
+.sv-vader.svv-style-light:not(.svv-force-dark) .svv-alert-mini.is-info{background:#eff6ff;color:#1e40af;border-color:#bfdbfe}
+
+.sv-vader.svv-style-dark:not(.svv-force-light){
+  --svv-bg:#1e1e1e;
+  --svv-text:#f0f0f0;
+  --svv-border:#333333;
+  --svv-accent:#6ea8ff;
+  --svv-shadow:rgba(0,0,0,.2);
+  --svv-badge-bg:transparent;
+  --svv-badge-border:#444444;
+  --svv-muted:#aaaaaa;
+}
+.sv-vader.svv-style-dark:not(.svv-force-light) .svv-map{filter:brightness(.78) contrast(1.06) saturate(.95)}
+.sv-vader.svv-style-dark:not(.svv-force-light) .svv-alert-mini.is-danger{background:#2b0a0a;color:#ffb4b4;border-color:#5a0f0f}
+.sv-vader.svv-style-dark:not(.svv-force-light) .svv-alert-mini.is-warning{background:#2f1602;color:#ffdca8;border-color:#5b2d09}
+.sv-vader.svv-style-dark:not(.svv-force-light) .svv-alert-mini.is-info{background:#0b1630;color:#dbeeff;border-color:#14283f}
+
+.sv-vader.svv-style-neutral{
+  --svv-accent:#475569;
+  --svv-badge-bg:#f1f5f9;
+  --svv-badge-border:#cbd5e1;
+}
+.sv-vader.svv-style-spelhubben{
+  --svv-accent:#6d28d9;
+  --svv-badge-bg:#f5f3ff;
+  --svv-badge-border:#ddd6fe;
+}
+.sv-vader.svv-style-neutral .svv-badge,
+.sv-vader.svv-style-spelhubben .svv-badge{
+  background:var(--svv-badge-bg);
+  border-color:var(--svv-badge-border);
+}
+
+@media (prefers-color-scheme: dark){
+  .sv-vader.svv-style-neutral:not(.svv-force-light){
+    --svv-accent:#cbd5e1;
+    --svv-badge-bg:#1f2937;
+    --svv-badge-border:#475569;
+  }
+  .sv-vader.svv-style-spelhubben:not(.svv-force-light){
+    --svv-accent:#c4b5fd;
+    --svv-badge-bg:#2e1065;
+    --svv-badge-border:#5b21b6;
+  }
+}
+
+/* Explicit dark theme wins over OS preference for neutral/Spelhubben accents */
+.svv-theme-dark.sv-vader.svv-style-neutral,
+.sv-vader.svv-style-neutral[data-svv-theme="dark"],
+[data-wp-theme-style="dark"] .sv-vader.svv-style-neutral,
+.is-dark-theme .sv-vader.svv-style-neutral,
+body.admin-color-modern .sv-vader.svv-style-neutral{
+  --svv-accent:#cbd5e1;
+  --svv-badge-bg:#1f2937;
+  --svv-badge-border:#475569;
+}
+.svv-theme-dark.sv-vader.svv-style-spelhubben,
+.sv-vader.svv-style-spelhubben[data-svv-theme="dark"],
+[data-wp-theme-style="dark"] .sv-vader.svv-style-spelhubben,
+.is-dark-theme .sv-vader.svv-style-spelhubben,
+body.admin-color-modern .sv-vader.svv-style-spelhubben{
+  --svv-accent:#c4b5fd;
+  --svv-badge-bg:#2e1065;
+  --svv-badge-border:#5b21b6;
+}
+
+/* Explicit light theme wins over OS preference for neutral/Spelhubben accents */
+.svv-theme-light.sv-vader.svv-style-neutral,
+.sv-vader.svv-style-neutral[data-svv-theme="light"]{
+  --svv-accent:#475569;
+  --svv-badge-bg:#f1f5f9;
+  --svv-badge-border:#cbd5e1;
+}
+.svv-theme-light.sv-vader.svv-style-spelhubben,
+.sv-vader.svv-style-spelhubben[data-svv-theme="light"]{
+  --svv-accent:#6d28d9;
+  --svv-badge-bg:#f5f3ff;
+  --svv-badge-border:#ddd6fe;
+}
+
+/* Compact style only tightens spacing; it never hides data. */
+.sv-vader.svv-style-compact{
+  --svv-gap:calc(6px * var(--svv-scale));
+  --svv-padY:calc(10px * var(--svv-scale));
+  --svv-padX:calc(12px * var(--svv-scale));
+}
+.sv-vader.svv-style-compact .svv-row{margin:calc(4px * var(--svv-scale)) 0}
+.sv-vader.svv-style-compact .svv-meta,
+.sv-vader.svv-style-compact .svv-extra{gap:calc(8px * var(--svv-scale))}
+.sv-vader.svv-style-compact .svv-forecast,
+.sv-vader.svv-style-compact .svv-hourly{
+  gap:calc(6px * var(--svv-scale));
+  margin-top:calc(8px * var(--svv-scale));
+}
+.sv-vader.svv-style-compact .svv-daycard,
+.sv-vader.svv-style-compact .svv-hour{padding:calc(7px * var(--svv-scale))}
+
+/* Responsiva premiumlayouter */
+@media (max-width: 480px){
+  .svv-preset-hero{padding:16px;min-height:0}
+  .svv-preset-hero .svv-temp{font-size:calc(34px * var(--svv-scale))}
+  .svv-preset-sidebar{max-width:100%}
+  .svv-preset-dashboard .svv-hourly,
+  .svv-preset-dashboard .svv-forecast{margin-top:calc(12px * var(--svv-scale))}
+}
 
 /* Extra snävt: tvinga 2 kolumner om det blir för kompakt */
 @media (max-width: 320px){
@@ -262,3 +404,28 @@ body.admin-color-modern .sv-vader {
 /* Dölj Leaflet-markörer överallt i våra kartor */
 .sv-vader .leaflet-marker-icon,
 .sv-vader .leaflet-marker-shadow { display:none !important; }
+
+/* Optional panels and keyboard-scrollable hourly timeline. */
+.sv-vader .svv-panel-title{font-size:1rem;line-height:1.4;font-weight:600;color:var(--svv-text);margin:0 0 10px}
+.sv-vader .svv-astro,.sv-vader .svv-insights{margin-top:16px;padding-top:12px;border-top:1px solid var(--svv-border);min-width:0}
+.sv-vader .svv-astro-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,150px),1fr));gap:12px;margin:0}
+.sv-vader .svv-astro-grid div{min-width:0}
+.sv-vader .svv-astro-grid dt{font-size:.85rem;color:var(--svv-muted);margin:0}
+.sv-vader .svv-astro-grid dd{font-size:.95rem;color:var(--svv-text);margin:3px 0 0;overflow-wrap:anywhere}
+.sv-vader .svv-panel-note{font-size:.8rem;color:var(--svv-muted);margin:10px 0 0;overflow-wrap:anywhere}
+.sv-vader .svv-insights ul{padding-inline-start:20px;margin:0}
+.sv-vader .svv-insights li{margin:6px 0;overflow-wrap:anywhere}
+.sv-vader .svv-hourly{grid-auto-columns:minmax(118px,1fr);scroll-snap-type:x proximity;overscroll-behavior-inline:contain;padding-bottom:10px;max-width:100%}
+.sv-vader .svv-hourly:focus-visible{outline:2px solid var(--svv-accent);outline-offset:2px}
+.sv-vader .svv-hour{scroll-snap-align:start;min-width:0;box-sizing:border-box}
+.sv-vader .svv-hour-date{font-size:.8rem;color:var(--svv-muted)}
+.sv-vader .svv-hour-time{display:block;font-size:.95rem;font-weight:600;color:var(--svv-text)}
+.sv-vader .svv-hour-meta{font-size:.8rem;overflow-wrap:anywhere}
+.sv-vader.svv-preset-mini .svv-hourly-title{display:none}
+/* Keep an explicit light choice readable even inside a site's dark wrapper. */
+.sv-vader.svv-force-light{--svv-bg:#ffffff;--svv-text:#1a1a1a;--svv-border:#e6e6e6;--svv-shadow:rgba(0,0,0,.04);--svv-badge-border:#eeeeee;--svv-muted:#666666}
+
+.sv-vader.svv-style-neutral{--svv-radius:6px;--svv-shadow:transparent}
+.sv-vader.svv-style-spelhubben{--svv-radius:16px;border-top:3px solid var(--svv-accent)}
+.sv-vader.svv-style-spelhubben .svv-ort{color:var(--svv-accent)}
+.sv-vader .svv-hourly-title{margin-top:16px}

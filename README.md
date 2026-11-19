@@ -4,13 +4,13 @@ WordPress weather plugin displaying current conditions, compact hourly forecasts
 
 For common questions and troubleshooting see the FAQ: [Docs/FAQ.md](Docs/FAQ.md)
 
-**Version:** 2.1.7
+**Version:** 2.2.0 (local release candidate; not published)
 
-**Note:** Fixes weather shown in sidebars/widget areas losing its styling and map on pages other than the one containing the shortcode. Clear any page cache after updating.
+**Release status:** The 2.2.0 work is prepared locally. No release tag or WordPress.org publication has been made. Clear page caches when installing the new assets.
 
 ## Requirements
 
-- WordPress 6.8+ and PHP 7.4+ (PHP 8.5 verified).
+- WordPress 6.8+ and PHP 7.4+ (PHP 8.5 verified). Local validation environment: WordPress 7.1.5 / PHP 8.5.
 - The server must be able to make outgoing HTTPS requests; all weather data is fetched server-side. Hosts that block outgoing connections, or `WP_HTTP_BLOCK_EXTERNAL`, stop the weather from loading.
 - No API key is needed for Open-Meteo, SMHI, Yr/MET Norway, MET Norway Nowcast or FMI. OpenWeatherMap and WeatherAPI.com are off by default and need your own key.
 - Recommended: enter an email or URL under **Yr contact** (MET Norway asks API users to identify themselves).
@@ -20,7 +20,24 @@ For common questions and troubleshooting see the FAQ: [Docs/FAQ.md](Docs/FAQ.md)
 
 After activation, **Spelhubben Weather → Settings** shows a "Getting started & requirements" checklist that flags anything missing, and a one-time notice links to it.
 
+## Support and voluntary reviews
+
+Support and bug reports: https://github.com/K3NT4/spelhubben-weather/issues. Reviews are voluntary: https://wordpress.org/plugins/spelhubben-weather/#reviews. A discreet settings link and a reminder 14 days after the first administrator visit after installation (or upgrading from a version without the reminder) appear only on the plugin’s own admin pages. Choose “No thanks” to permanently dismiss the reminder for the whole site, including after updates; the optional settings link remains. There is no frontend popup, tracking or background request for reviews; reviewing or dismissing has no effect on plugin functionality.
+
 ## Changelog
+
+### 2.2.0 (unreleased)
+- **Added:** Voluntary review link and dismissible reminder on the plugin’s admin pages after 14 days; no tracking or frontend popup.
+- **Added:** Optional sun/moon panel with sunrise, sunset, day length, polar day/night and estimated next main moon phase. Existing moon extras remain supported.
+- **Added:** Conservative forecast insights for mostly dry periods, strongest forecast wind and rain later, with a fallback when hourly data is insufficient.
+- **Added:** Separate visual style presets (`light`, `dark`, `neutral`, `spelhubben`, `compact`) alongside the existing layout presets (`mini`, `hero`, `sidebar`, `dashboard`, `forecast-strip`).
+- **Improved:** Responsive hourly timeline with dates, labelled precipitation/wind, keyboard scrolling and local site-time display.
+- **Added:** Weather card, forecast row and astro block patterns; existing weather/map and forecast patterns retained and available through the editor REST API.
+- **Fixed:** Current/hourly Open-Meteo wind explicitly requests m/s. Hourly timestamps use UTC and precipitation is aligned with the upcoming card interval; cache schemas prevent reuse of old units/times.
+- **Fixed:** Static map fallback is rendered in HTML, including when map JavaScript never loads. Strict coordinate checks and readable dark fallback.
+- **Added:** Administrator-only map status reporting with capability/nonce checks, bounded calls, minimal data and separate latest-error display.
+- **Improved:** Block editor previews support per-block map engine overrides regardless of the global engine.
+- **Maintenance:** Extended standalone PHP/JavaScript tests, Swedish/Norwegian catalogs, and isolated asset builds during release checks.
 
 ###  2.1.7 (2026-11-09)
 - **Fixed:** Weather placed outside the page content (theme sidebar, widget area, template) lost its styling, icon, wind arrow and map on pages other than the one containing the shortcode. Assets are now also loaded at render time.
@@ -161,35 +178,37 @@ After activation, **Spelhubben Weather → Settings** shows a "Getting started &
 ## Screenshots
 
 ![Frontend examples](.wordpress-org/screenshot-1.png)
-Frontend examples: inline, compact, card, detailed, with optional map.
+Frontend weather examples with maps and daily forecast.
 
-![Settings page](.wordpress-org/screenshot-2.png)
-Settings page: defaults, providers, cache, units & format.
+![Weather and forecast](.wordpress-org/screenshot-2.png)
+Weather card with wind direction, map and daily forecast.
 
-![Shortcodes page](.wordpress-org/screenshot-3.png)
-Shortcodes page: searchable examples, copy buttons, and admin live preview.
+![Settings page](.wordpress-org/screenshot-3.png)
+Settings: defaults, providers, cache and units.
 
 ![Alerts page](.wordpress-org/screenshot-4.png)
-Alerts page: active warnings and smart recommendations for extreme conditions.
+Alerts and recommendations.
 
-![Performance page](.wordpress-org/screenshot-5.png)
-Performance page: cache statistics, API usage and "Clear cache" action.
+![Shortcodes page](.wordpress-org/screenshot-5.png)
+Shortcode examples, copy controls and preview builder.
 
-![Provider comparison](.wordpress-org/screenshot-6.png)
-Provider comparison: side-by-side data from enabled providers for troubleshooting.
+![Performance page](.wordpress-org/screenshot-6.png)
+Cache statistics, API usage and recent updates.
+
+These existing screenshots illustrate earlier interfaces, not the new 2.2 panels or controls.
 
 ## Compliance & Security
 
-### ✅ Full GDPR & Consent API Compliance
+### Privacy and security
 - **No cookies** set by the plugin
 - **No tracking** or analytics code
-- **No personal data** collected or transmitted
+- Interactive maps contact OpenStreetMap tile servers; weather APIs receive the requested coordinates
 - All external API calls clearly documented and secure
 - API keys stored server-side only (never exposed to frontend)
 - Proper input validation and XSS prevention on all outputs
 - CSRF protection via WordPress nonces on all AJAX endpoints
 
-See `CONSENT_API_AUDIT.md` for detailed compliance audit.
+See [Docs/CONSENT_API_AUDIT.md](Docs/CONSENT_API_AUDIT.md) for detailed compliance audit.
 
 ## Configuration & Maintainability (v1.8.4)
 
@@ -232,6 +251,12 @@ assets/
 ```
 
 **Runtime policy**
+
+The location fallback is rendered by PHP before JavaScript runs. It remains usable when `map.js` or an engine is unavailable, delayed or blocked, and in Static mode. Valid coordinates (including zero) show a location label, coordinates, status and OpenStreetMap link. Missing, nonnumeric or out-of-range coordinates show an explanatory message without an invalid map link. Interactive startup replaces the fallback; Auto can recover from an OpenLayers startup failure using Leaflet. The block editor makes both local engines available so per-block engine choices can be previewed independently of the global default.
+
+Performance → Map diagnostics distinguishes the configured default engine from the latest browser-reported engine, including instance overrides. It also shows the latest status and latest error separately with UTC timestamps. Reports are collected **only during logged-in administrator frontend visits** using a capability- and nonce-protected AJAX endpoint; guests do not report. Stored data is limited to fixed status code, requested engine, active engine and server timestamp, expires after seven days, and excludes IP addresses, location names, coordinates, page URLs and exception text. Identical reports are limited to once per minute across the site and once per page visit in the browser, with at most 12 reports per page visit.
+
+An independent administrator-only helper observes visible maps that have not reported startup after 15 seconds, even if `map.js` does not run. Delayed scripts can still start later. If the helper or all JavaScript is also blocked, no report is possible, but the HTML fallback remains available. Reports are observations from an administrator visit, not live site-wide monitoring or proof of tile/network availability. Cache/optimization rules, unavailable files or script errors are possible causes; diagnostics cannot identify the exact blocking theme or plugin.
 
 - `map_engine="auto"` uses OpenLayers first, then Leaflet legacy, then static fallback.
 - `map_engine="openlayers"` forces OpenLayers.
@@ -441,9 +466,9 @@ Translations are available on [translate.wordpress.org](https://translate.wordpr
 - Added 3 icon themes (Classic, Modern Flat, Modern Gradient)
 
 ## Privacy & Data Handling
-- **No personal data collected** — plugin only caches weather data and geocoding results
+- Weather and geocoding results are cached server-side; minimal administrator map status reports expire after seven days.
 - **No cookies** set by the plugin itself
-- **No tracking or analytics** — fully GDPR compliant
+- **No tracking or analytics** by the plugin; interactive maps contact third-party tile servers.
 - **Server-side caching only** — all data stored in WordPress transients (database)
 - **External requests clearly documented:**
   - Open-Meteo (weather, geocoding) — public APIs, no authentication
@@ -496,7 +521,7 @@ Typical minimal response shape (JSON):
 
 If you use WorldTides, add your API key in Settings → Spelhubben Weather → Tide provider, and choose `WorldTides` as the provider.
 
-For full transparency, see `CONSENT_API_AUDIT.md` in the repository root.
+For full transparency, see [Docs/CONSENT_API_AUDIT.md](Docs/CONSENT_API_AUDIT.md) in the repository root.
 
 ## Documentation Files
 
@@ -522,3 +547,37 @@ Open-Meteo, SMHI, Yr, MET Norway, OpenLayers, Leaflet, and OpenStreetMap are tra
 This program is free software; you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free Software Foundation; either version 3 of the License, or (at your option) any later version.
 
 Full license text is included in the `LICENSE` file in the plugin root.
+
+Map regression checks (no WordPress installation or network access required):
+
+```bash
+php tests/regression_test.php
+php tests/map_diagnostics_test.php
+node tests/map_runtime_test.js
+```
+
+Before release, also test shortcode, block and widget output in a WordPress browser session: block `map.js`, block each engine separately, select each engine mode, check light/dark themes, and verify Performance diagnostics during an administrator visit. Repeat as a guest to confirm fallback rendering without diagnostic requests.
+
+## Optional 2.2 panels and appearance
+
+English is the source language. All new interface messages are included in the bundled Swedish (`sv_SE`) and Norwegian Bokmål (`nb_NO`) PHP/MO and block-editor JSON catalogs; WordPress selects them using the site or user language.
+
+The new panels and style presets are off by default and available through shortcode, block controls, classic widget controls and the admin shortcode builder/preview. Gutenberg's Spelhubben Weather pattern category includes a weather card, forecast row, weather/map and sun/moon combinations.
+
+```text
+[spelhubben_weather astro="1"]
+[spelhubben_weather extras="astro,moon,moon_daily" forecast="daily"]
+[spelhubben_weather insights="1" hourly="1" hours="24"]
+[spelhubben_weather preset="hero" style_preset="spelhubben"]
+[spelhubben_weather preset="forecast-strip" style_preset="neutral" hourly="1"]
+```
+
+`preset` selects a layout: `mini`, `hero`, `sidebar`, `dashboard`, `forecast-strip`. `style_preset` independently selects `light`, `dark`, `neutral`, `spelhubben` or `compact`; an empty/invalid value retains the default appearance. An explicit `theme="light|dark"` overrides a conflicting light/dark style. Compact styling adjusts spacing without removing data. Inline layout continues to omit the larger forecast and optional panels. Mini retains its existing compact behavior and hides map/forecast surfaces.
+
+The astro panel calculates solar events locally for the solar cycle whose noon falls on the date in the **site timezone**, shown in the panel. Sunrise/sunset include dates and belong to the same cycle as day length, even when the place is far from the site's timezone. Polar conditions have explicit messages. Moon phases reuse the existing mean-month approximation; the next main-phase time is an estimate, not precision ephemeris data. A rounded current moon label can match an upcoming main phase. No astronomy API/key is needed.
+
+Insights use up to 24 hours of forecast data in m/s/mm, require at least six consecutive complete future hourly rows, and use complete upcoming hours rather than the partly elapsed current hour. Missing, invalid, gapped or stale data produces an explanatory fallback. Mostly dry means less than 0.1 mm per hour for at least two consecutive hours. Rain later means at least 0.2 mm in a forecast hour at least two hours ahead following two initially dry hours. Wind is compared only within the available forecast; these are forecast summaries, not probabilities, warnings or guarantees. Requesting insights alone does not force the hourly timeline to display. `hours="3-24"` still controls displayed cards.
+
+Run the complete offline PHP suite with `php tests/run.php` (or `npm run test:php`), the browser-logic checks with `node tests/map_runtime_test.js`, and `npm run check:release` to rebuild and compare assets in a disposable directory. The release check leaves the checkout's `node_modules` untouched. Translation checks still require WordPress's translation-reader directory as documented above.
+
+The static map fallback is included in the server-rendered HTML, even when JavaScript is blocked or never loads. With valid coordinates it includes an OpenStreetMap link. Performance shows administrator-only, rate-limited map diagnostics: the latest status and a separate latest error, retained for up to seven days. Reports store fixed status codes, engine names and timestamps, not visitor identities or raw browser errors. Guests do not report. This is not live monitoring and cannot identify the exact plugin blocking a script.

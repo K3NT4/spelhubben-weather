@@ -16,18 +16,31 @@
   }
 
   function recordMapEvent(el, code, message) {
+    var engine = el._svvMapEngine || 'static';
+    el.dataset.mapStatus = code;
+    el.dataset.activeEngine = engine;
     window.SVV_MAP_DIAGNOSTICS = window.SVV_MAP_DIAGNOSTICS || [];
-    window.SVV_MAP_DIAGNOSTICS.push({
-      code: code,
-      message: message,
-      name: el.getAttribute('data-name') || '',
-      lat: el.getAttribute('data-lat') || '',
-      lon: el.getAttribute('data-lon') || '',
-      time: new Date().toISOString()
-    });
-    if (window.console && console.warn) {
-      console.warn(code + ': ' + message, el);
+    window.SVV_MAP_DIAGNOSTICS.push({ code: code, engine: engine, time: new Date().toISOString() });
+    if (window.SVV_MAP_DIAGNOSTICS.length > 30) window.SVV_MAP_DIAGNOSTICS.shift();
+    document.dispatchEvent(new CustomEvent('svv-map-status'));
+  }
+
+  function validCoords(lat, lon) {
+    return lat !== null && lon !== null && /^[+-]?(?:\d+\.?\d*|\.\d+)(?:e[+-]?\d+)?$/i.test(String(lat).trim()) &&
+      /^[+-]?(?:\d+\.?\d*|\.\d+)(?:e[+-]?\d+)?$/i.test(String(lon).trim()) &&
+      isFinite(Number(lat)) && isFinite(Number(lon)) && Math.abs(Number(lat)) <= 90 && Math.abs(Number(lon)) <= 180;
+  }
+
+  function resetEngine(el) {
+    if (el._svvMap) {
+      try {
+        if (el._svvMapEngine === 'leaflet') el._svvMap.remove();
+        else el._svvMap.setTarget(null);
+      } catch (e) { /* Keep the static fallback usable even after a partial startup. */ }
     }
+    delete el._svvMap;
+    delete el._svvMapEngine;
+    el.innerHTML = '';
   }
 
   function osmUrl(lat, lon) {
@@ -43,7 +56,7 @@
 
     el.dataset.svvMapFailed = '1';
     el.dataset.inited = '1';
-    el.innerHTML = '';
+    resetEngine(el);
 
     var box = document.createElement('div');
     box.className = 'svv-map-fallback';
@@ -57,7 +70,7 @@
     text.textContent = message;
     box.appendChild(text);
 
-    if (lat && lon) {
+    if (validCoords(lat, lon)) {
       var coords = document.createElement('small');
       coords.textContent = lat + ', ' + lon;
       box.appendChild(coords);
@@ -84,7 +97,9 @@
       return false;
     }
 
+    el.innerHTML = '';
     var map = window.SVVOpenLayers.createMap(el, { lat: lat, lon: lon, zoom: 12 });
+    if (!map) throw new Error('OpenLayers did not return a map.');
     el._svvMap = map;
     el._svvMapEngine = 'openlayers';
     return true;
@@ -103,6 +118,7 @@
       });
     }
 
+    el.innerHTML = '';
     var map = window.L.map(el, { scrollWheelZoom: false, attributionControl: false });
     el._svvMap = map;
     el._svvMapEngine = 'leaflet';
@@ -116,12 +132,15 @@
     if (el.dataset.inited) return;
     el.dataset.inited = '1';
 
-    var lat = parseFloat(el.getAttribute('data-lat'));
-    var lon = parseFloat(el.getAttribute('data-lon'));
-    if (isNaN(lat) || isNaN(lon)) {
+    var lat = el.getAttribute('data-lat');
+    var lon = el.getAttribute('data-lon');
+    if (!validCoords(lat, lon)) {
       showFallback(el, 'SVV_MAP_INVALID_COORDS', t('invalidCoords', 'Map coordinates are missing or invalid.'));
       return;
     }
+
+    lat = Number(lat);
+    lon = Number(lon);
 
     if (!hasUsableHeight(el)) {
       delete el.dataset.inited;
@@ -139,12 +158,16 @@
       return;
     }
 
+    var lastFailure = null;
     try {
       if ((requested === 'auto' || requested === 'openlayers') && initOpenLayers(el, lat, lon)) {
+        recordMapEvent(el, 'SVV_MAP_STARTED');
         return;
       }
     } catch (e) {
-      recordMapEvent(el, 'SVV_MAP_OPENLAYERS_INIT_FAIL', e && e.message ? e.message : 'OpenLayers failed to initialize.');
+      lastFailure = ['SVV_MAP_OPENLAYERS_INIT_FAIL', t('openlayersFailed', 'OpenLayers could not initialize on this page.')];
+      resetEngine(el);
+      recordMapEvent(el, 'SVV_MAP_OPENLAYERS_INIT_FAIL');
       if (requested === 'openlayers') {
         showFallback(el, 'SVV_MAP_OPENLAYERS_INIT_FAIL', t('openlayersFailed', 'OpenLayers could not initialize on this page.'));
         return;
@@ -153,17 +176,21 @@
 
     try {
       if ((requested === 'auto' || requested === 'leaflet') && initLeaflet(el, lat, lon)) {
+        recordMapEvent(el, 'SVV_MAP_STARTED');
         return;
       }
     } catch (e2) {
-      recordMapEvent(el, 'SVV_MAP_LEAFLET_INIT_FAIL', e2 && e2.message ? e2.message : 'Leaflet failed to initialize.');
+      lastFailure = ['SVV_MAP_LEAFLET_INIT_FAIL', t('leafletFailed', 'Leaflet could not initialize on this page.')];
+      resetEngine(el);
+      recordMapEvent(el, 'SVV_MAP_LEAFLET_INIT_FAIL');
       if (requested === 'leaflet') {
         showFallback(el, 'SVV_MAP_LEAFLET_INIT_FAIL', t('leafletFailed', 'Leaflet could not initialize on this page.'));
         return;
       }
     }
 
-    showFallback(el, 'SVV_MAP_ENGINE_UNAVAILABLE', t('unavailable', 'No local interactive map engine was available.'));
+    if (lastFailure) showFallback(el, lastFailure[0], lastFailure[1]);
+    else showFallback(el, 'SVV_MAP_ENGINE_UNAVAILABLE', t('unavailable', 'No local interactive map engine was available.'));
   }
 
   function scanMapsLazy(root) {

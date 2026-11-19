@@ -49,6 +49,9 @@ class SV_Vader_Renderer {
 			'date_format'  => $opts['date_format'],
 			'theme'        => 'auto',
 			'preset'       => '',
+			'style_preset' => '',
+			'astro'        => '0',
+			'insights'     => '0',
 			'map_engine'   => $opts['map_engine'] ?? 'auto',
 		], $atts, 'sv_vader');
 
@@ -73,6 +76,8 @@ class SV_Vader_Renderer {
 		$show_tides = in_array('tides', $extras, true) || (string)($a['tides'] ?? '') === '1';
 		// Daily forecast moon: enable per-day moon icons when extras contains 'moon_daily' or flag set
 		$show_moon_daily = in_array('moon_daily', $extras, true) || (string)($a['show_moon_daily'] ?? '') === '1';
+		$show_astro = in_array('astro', $extras, true) || in_array(strtolower((string)$a['astro']), ['1','true','yes','on'], true);
+		$show_insights = in_array('insights', $extras, true) || in_array(strtolower((string)$a['insights']), ['1','true','yes','on'], true);
 		$show_hourly = in_array(strtolower((string)($a['hourly'] ?? '')), ['1','true','yes','on'], true);
 
 		// Units
@@ -136,9 +141,9 @@ class SV_Vader_Renderer {
 
 		$desc     = $res['desc'] ?? '';
 		$icon_url = $api->map_icon_url($res['code'] ?? null);
-		$name     = $res['name'];
-		$lat      = $res['lat'];
-		$lon      = $res['lon'];
+		$name     = $res['name'] ?? $a['ort'];
+		$lat      = $res['lat'] ?? '';
+		$lon      = $res['lon'] ?? '';
 
 		$alerts   = ( $a['show_alerts'] === '1' ) ? sv_vader_get_alerts($res) : [];
 
@@ -157,8 +162,8 @@ class SV_Vader_Renderer {
 		}
 
 		$hourly = [];
-		if ($show_hourly && method_exists($api, 'get_hourly_forecast')) {
-			$hourly = $api->get_hourly_forecast($a['ort'], $a['lat'], $a['lon'], $hours);
+		if (($show_hourly || $show_insights) && $layout !== 'inline' && method_exists($api, 'get_hourly_forecast')) {
+			$hourly = $api->get_hourly_forecast($a['ort'], $a['lat'], $a['lon'], $show_insights ? 24 : $hours);
 		}
 
 		$is_anim = in_array(strtolower((string)($a['animate'] ?? '')), ['1','true','yes','on'], true);
@@ -170,13 +175,16 @@ class SV_Vader_Renderer {
 			$theme = 'auto';
 		}
 
+		$style_preset = sv_vader_normalize_style_preset($a['style_preset']);
+		if ($theme === 'auto' && in_array($style_preset, ['light','dark'], true)) $theme = $style_preset;
+		if ($style_preset !== '') $classes .= ' svv-style-' . $style_preset;
 		if ($theme !== 'auto') {
 			// Add both theme class and a force-class to override OS/browser prefers-color-scheme
 			$classes .= ' svv-theme-' . $theme . ' svv-force-' . $theme;
 		}
 
 		$preset = strtolower(trim((string)($a['preset'] ?? '')));
-		$allowed_presets = ['mini','hero','sidebar','dashboard','forecast-strip'];
+		$allowed_presets = array_keys(sv_vader_layout_presets());
 		if ($preset !== '' && in_array($preset, $allowed_presets, true)) {
 			$classes .= ' svv-preset-' . $preset;
 		}
@@ -343,22 +351,45 @@ class SV_Vader_Renderer {
 					</div>
 				<?php break; } ?>
 
-			<?php if ($a['map'] === '1' && $layout !== 'inline'): ?>
+			<?php if ($a['map'] === '1' && $layout !== 'inline'):
+				$valid_coords = is_numeric($lat) && is_numeric($lon) && is_finite((float)$lat) && is_finite((float)$lon)
+					&& abs((float)$lat) <= 90 && abs((float)$lon) <= 180;
+				if ($valid_coords) {
+					$lat = (string)(float)$lat;
+					$lon = (string)(float)$lon;
+				}
+				$map_status = !$valid_coords ? 'SVV_MAP_INVALID_COORDS' : ($map_engine === 'static' ? 'SVV_MAP_STATIC_MODE' : 'pending');
+				$map_messages = sv_vader_map_translations();
+				$map_message = !$valid_coords ? $map_messages['invalidCoords'] : ($map_engine === 'static' ? $map_messages['staticMode'] : __('Interactive map is unavailable or has not started. Use the location below.', 'spelhubben-weather'));
+			?>
 				<div class="svv-map"
 					 data-lat="<?php echo esc_attr($lat); ?>"
 					 data-lon="<?php echo esc_attr($lon); ?>"
 					 data-name="<?php echo esc_attr($name); ?>"
 					 data-engine="<?php echo esc_attr($map_engine); ?>"
-					 style="height: <?php echo esc_attr($map_height); ?>px;"></div>
+					 data-map-status="<?php echo esc_attr($map_status); ?>"
+					 data-active-engine="static"
+					 style="height: <?php echo esc_attr($map_height); ?>px;">
+					<div class="svv-map-fallback" role="status">
+						<strong><?php echo esc_html($name ?: __('Map location', 'spelhubben-weather')); ?></strong>
+						<span><?php echo esc_html($map_message); ?></span>
+						<?php if ($valid_coords): ?>
+							<small><?php echo esc_html($lat . ', ' . $lon); ?></small>
+							<a href="<?php echo esc_url('https://www.openstreetmap.org/?mlat=' . rawurlencode($lat) . '&mlon=' . rawurlencode($lon) . '#map=12/' . rawurlencode($lat) . '/' . rawurlencode($lon)); ?>" target="_blank" rel="noopener noreferrer">OpenStreetMap</a>
+						<?php endif; ?>
+					</div>
+				</div>
 
 				<div class="svv-map-attrib" role="note" aria-label="<?php echo esc_attr_x('Map data attribution', 'aria label', 'spelhubben-weather'); ?>"><?php echo wp_kses_post(SV_VADER_ATTRIB_HTML); ?></div>
 
+				<?php if ($valid_coords): ?>
 				<div class="svv-map-link">
 					<a href="<?php echo esc_url('https://www.openstreetmap.org/?mlat=' . rawurlencode($lat) . '&mlon=' . rawurlencode($lon) . '#map=12/' . rawurlencode($lat) . '/' . rawurlencode($lon)); ?>"
 					   target="_blank" rel="noopener noreferrer">
 						<?php esc_html_e('View on OpenStreetMap', 'spelhubben-weather'); ?>
 					</a>
 				</div>
+				<?php endif; ?>
 			<?php endif; ?>
 
 			<?php if (!empty($tide_data) && $layout !== 'inline'): ?>
@@ -375,8 +406,12 @@ class SV_Vader_Renderer {
 				</div>
 			<?php endif; ?>
 
-			<?php if (!empty($hourly) && $layout !== 'inline') : ?>
-				<div class="svv-hourly" data-svv-hours="<?php echo esc_attr($hours); ?>">
+			<?php if ($show_astro && $layout !== 'inline') echo wp_kses_post(SV_Vader_Panels::astro(SV_Vader_Astro::calculate($lat, $lon))); ?>
+			<?php if ($show_insights && $layout !== 'inline') echo wp_kses_post(SV_Vader_Panels::insights(SV_Vader_Insights::calculate($hourly), $units)); ?>
+
+			<?php if ($show_hourly && !empty($hourly) && $layout !== 'inline') : ?>
+				<p class="svv-panel-title svv-hourly-title"><?php esc_html_e('Hourly forecast', 'spelhubben-weather'); ?></p>
+				<div class="svv-hourly" role="region" tabindex="0" aria-label="<?php esc_attr_e('Hourly forecast, scroll for more hours', 'spelhubben-weather'); ?>" data-svv-hours="<?php echo esc_attr($hours); ?>">
 					<?php foreach (array_slice($hourly, 0, $hours) as $h):
 						$icon = $api->map_icon_url($h['code'] ?? null);
 						$ts = strtotime($h['time'] ?? '');
@@ -386,12 +421,13 @@ class SV_Vader_Renderer {
 						list($h_precip, $h_precip_unit) = sv_vader_precip($h['precip'] ?? null, $units['precip'], 1);
 					?>
 						<div class="svv-hour">
-							<div class="svv-hour-time"><?php echo esc_html($lbl); ?></div>
+							<div class="svv-hour-date"><?php echo esc_html($ts ? (function_exists('wp_date') ? wp_date('j M', $ts) : date_i18n('j M', $ts)) : ''); ?></div>
+							<time class="svv-hour-time" datetime="<?php echo esc_attr($h['time'] ?? ''); ?>"><?php echo esc_html($lbl); ?></time>
 							<?php if ($icon): ?><img class="svv-hour-icon" src="<?php echo esc_url($icon); ?>" alt="" width="28" height="28"><?php endif; ?>
 							<?php if ($h_temp !== null): ?><div class="svv-hour-temp"><?php echo esc_html(sv_vader_num($h_temp)); ?><?php echo esc_html($h_temp_sym); ?></div><?php endif; ?>
 							<div class="svv-hour-meta">
-								<?php if ($h_precip !== null): ?><span><?php echo esc_html(sv_vader_num($h_precip, 1) . ' ' . $h_precip_unit); ?></span><?php endif; ?>
-								<?php if ($h_wind !== null): ?><span><?php echo esc_html(sv_vader_num($h_wind) . ' ' . $h_wind_unit); ?></span><?php endif; ?>
+								<?php if ($h_precip !== null): ?><span><?php echo esc_html(__('Precipitation', 'spelhubben-weather') . ': ' . sv_vader_num($h_precip, 1) . ' ' . $h_precip_unit); ?></span><?php endif; ?>
+								<?php if ($h_wind !== null): ?><span><?php echo esc_html(__('Wind', 'spelhubben-weather') . ': ' . sv_vader_num($h_wind) . ' ' . $h_wind_unit); ?></span><?php endif; ?>
 							</div>
 						</div>
 					<?php endforeach; ?>

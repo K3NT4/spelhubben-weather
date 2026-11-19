@@ -26,7 +26,7 @@ msgstr ""
 
 #. Description of the plugin
 #: spelhubben-weather.php
-msgid "Displays current weather, compact hourly forecasts and optional daily forecast with provider consensus (Open-Meteo, SMHI, Yr/MET Norway, MET Nowcast, FMI, OpenWeatherMap, WeatherAPI). Supports shortcode, Gutenberg block, classic widget and local smart maps."
+msgid "Current weather and forecasts with smart maps, sun and moon information, forecast insights, layouts and style presets. Supports shortcodes, Gutenberg blocks and patterns, and classic widgets."
 msgstr ""
 
 #. Author of the plugin
@@ -2146,4 +2146,164 @@ msgstr ""
 
 #: admin/page-setup.php
 msgid "Get started"
+msgstr ""
+
+#: includes/map-diagnostics.php includes/class-renderer.php admin/page-performance.php
+msgid "Interactive map is unavailable or has not started. Use the location below."
+msgstr ""
+
+#: includes/map-diagnostics.php includes/class-renderer.php admin/page-performance.php
+msgid "Interactive map started."
+msgstr ""
+
+#: includes/map-diagnostics.php includes/class-renderer.php admin/page-performance.php
+msgid "The visible map has not reported startup. Scripts may be delayed, unavailable or blocked."
+msgstr ""
+
+#: includes/map-diagnostics.php includes/class-renderer.php admin/page-performance.php
+msgid "Last browser-reported engine"
+msgstr ""
+
+#: includes/map-diagnostics.php includes/class-renderer.php admin/page-performance.php
+msgid "Not reported"
+msgstr ""
+
+#: includes/map-diagnostics.php includes/class-renderer.php admin/page-performance.php
+msgid "Latest reported map error"
+msgstr ""
+
+#: includes/map-diagnostics.php includes/class-renderer.php admin/page-performance.php
+msgid "Latest browser report"
+msgstr ""
+
+#: includes/map-diagnostics.php includes/class-renderer.php admin/page-performance.php
+msgid "Reports come from administrator visits to the frontend, expire after seven days and may describe an instance-specific engine override. No report does not prove that maps work or fail. Cache or optimization rules may delay scripts; the exact blocking theme or plugin cannot be identified here."
+msgstr ""
+
+#: includes/class-panels.php:10
+msgid "Unavailable"
+msgstr ""
+
+#: includes/class-panels.php:16 includes/class-block.php:146 includes/Widget/class-widget.php:280 admin/page-shortcodes.php:55 blocks/spelhubben-weather/index.js:111
+msgid "Sun and moon"
+msgstr ""
+
+#: includes/class-panels.php:19
+msgid "Midnight sun: the sun does not set on this date."
+msgstr ""
+
+#: includes/class-panels.php:19
+msgid "Polar night: the sun does not rise on this date."
+msgstr ""
+
+#: includes/class-panels.php:21
+msgid "Sun data is unavailable for this location."
+msgstr ""
+
+#: includes/class-panels.php:24
+msgid "Sunrise"
+msgstr ""
+
+#: includes/class-panels.php:25
+msgid "Sunset"
+msgstr ""
+
+#: includes/class-panels.php:26
+msgid "Day length"
+msgstr ""
+
+#: includes/class-panels.php:28
+msgid "%1$d h %2$d min"
+msgstr ""
+
+#: includes/class-panels.php:30
+msgid "Moon phase"
+msgstr ""
+
+#: includes/class-panels.php:31
+msgid "Next major moon phase (approx.)"
+msgstr ""
+
+#: includes/class-panels.php:35
+msgid "Times use the site timezone: %s. Moon phase dates are estimates."
+msgstr ""
+
+#: includes/class-panels.php:47 includes/Widget/class-widget.php:280 admin/page-shortcodes.php:56 blocks/spelhubben-weather/index.js:116
+msgid "Forecast insights"
+msgstr ""
+
+#: includes/class-panels.php:50
+msgid "Not enough reliable hourly data to calculate an insight."
+msgstr ""
+
+#: includes/class-panels.php:54
+msgid "Longest mostly dry period in the forecast: %1$s–%2$s."
+msgstr ""
+
+#: includes/class-panels.php:57
+msgid "Strongest wind in the forecast: %1$s, about %2$s."
+msgstr ""
+
+#: includes/class-panels.php:60
+msgid "Rain is forecast later, from %s."
+msgstr ""
+
+#: includes/class-panels.php:63
+msgid "Based on the next available forecast hours, not a guarantee. Mostly dry means less than 0.1 mm per hour."
+msgstr ""
+
+#: includes/presets.php:14 includes/Widget/class-widget.php:267
+msgid "Default"
+msgstr ""
+
+#: includes/presets.php:15 blocks/spelhubben-weather/index.js:48
+msgid "Light"
+msgstr ""
+
+#: includes/presets.php:16 blocks/spelhubben-weather/index.js:49
+msgid "Dark"
+msgstr ""
+
+#: includes/presets.php:17 blocks/spelhubben-weather/index.js:50
+msgid "Neutral"
+msgstr ""
+
+#: includes/class-block.php:136
+msgid "Weather card"
+msgstr ""
+
+#: includes/class-block.php:141
+msgid "Forecast row"
+msgstr ""
+
+#: includes/class-renderer.php:414
+msgid "Hourly forecast, scroll for more hours"
+msgstr ""
+
+#: includes/Widget/class-widget.php:273 admin/page-shortcodes.php:236 blocks/spelhubben-weather/index.js:105
+msgid "Style preset"
+msgstr ""
+
+#: admin/page-shortcodes.php:343
+msgid "Comma-separated extra features. Supported: moon, moon_daily, tides, astro, insights"
+msgstr ""
+
+#: includes/reviews.php admin/page-settings.php
+msgid "Share your experience"
+msgstr ""
+
+#: includes/reviews.php admin/page-settings.php
+msgid "Have you tried Spelhubben Weather? We would appreciate an honest rating or review on WordPress.org. Your feedback helps us improve the plugin."
+msgstr ""
+
+#: includes/reviews.php admin/page-settings.php
+msgid "Leave a review"
+msgstr ""
+
+#: includes/reviews.php admin/page-settings.php
+msgid "No thanks — do not show again"
+msgstr ""
+
+#: includes/reviews.php admin/page-settings.php
+msgid "You do not have permission to dismiss this notice."
 msgstr ""

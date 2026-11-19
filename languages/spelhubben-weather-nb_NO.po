@@ -1,8 +1,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: Spelhubben Weather\n"
-"Report-Msgid-Bugs-To: https://wordpress.org/support/plugin/spelhubben-"
-"weather\n"
+"Report-Msgid-Bugs-To: https://wordpress.org/support/plugin/spelhubben-weather\n"
 "POT-Creation-Date: 2026-08-13T14:41:30+00:00\n"
 "PO-Revision-Date: 2026-05-03 10:28+0200\n"
 "Last-Translator: Kenta Mattsson <kenta@spelhubben.se>\n"
@@ -16,8 +15,7 @@ msgstr ""
 "X-Poedit-Flags-xgettext: --add-comments=translators:\n"
 "X-Poedit-WPHeader: spelhubben-weather.php\n"
 "X-Poedit-SourceCharset: UTF-8\n"
-"X-Poedit-KeywordsList: "
-"__;_e;_n:1,2;_x:1,2c;_ex:1,2c;_nx:4c,1,2;esc_attr__;esc_attr_e;esc_attr_x:1,2c;esc_html__;esc_html_e;esc_html_x:1,2c;_n_noop:1,2;_nx_noop:3c,1,2;__ngettext_noop:1,2\n"
+"X-Poedit-KeywordsList: __;_e;_n:1,2;_x:1,2c;_ex:1,2c;_nx:4c,1,2;esc_attr__;esc_attr_e;esc_attr_x:1,2c;esc_html__;esc_html_e;esc_html_x:1,2c;_n_noop:1,2;_nx_noop:3c,1,2;__ngettext_noop:1,2\n"
 "X-Poedit-SearchPath-0: .\n"
 "X-Poedit-SearchPathExcluded-0: *.min.js\n"
 "X-Poedit-SearchPathExcluded-1: assets/vendor\n"
@@ -28,20 +26,6 @@ msgstr ""
 #: includes/Widget/class-widget.php:19
 msgid "Spelhubben Weather"
 msgstr "Spelhubben Været"
-
-#. Description of the plugin
-#: spelhubben-weather.php
-#, fuzzy
-msgid ""
-"Displays current weather, compact hourly forecasts and optional daily "
-"forecast with provider consensus (Open-Meteo, SMHI, Yr/MET Norway, MET "
-"Nowcast, FMI, OpenWeatherMap, WeatherAPI). Supports shortcode, Gutenberg "
-"block, classic widget and local smart maps."
-msgstr ""
-"Viser gjeldende vær og en valgfri værmelding med en enkel konsensus på tvers "
-"av leverandører (Open-Meteo, SMHI, Yr/MET Norge). Støtter shortcode + "
-"Gutenberg-blokk + klassisk widget. Valgfritt brosjyrekart, diskré "
-"animasjoner, daglig værmelding og flere oppsett."
 
 #. Author of the plugin
 #: spelhubben-weather.php
@@ -307,12 +291,8 @@ msgid "Static fallback"
 msgstr "Statisk reserve"
 
 #: admin/admin.php:490
-msgid ""
-"Auto uses the new OpenLayers engine first and falls back to legacy Leaflet "
-"or a static map status if an engine is unavailable."
-msgstr ""
-"Auto bruker først den nye OpenLayers-motoren og faller tilbake til eldre "
-"Leaflet eller statisk kartstatus hvis en motor ikke er tilgjengelig."
+msgid "Auto uses the new OpenLayers engine first and falls back to legacy Leaflet or a static map status if an engine is unavailable."
+msgstr "Auto bruker først den nye OpenLayers-motoren og faller tilbake til eldre Leaflet eller statisk kartstatus hvis en motor ikke er tilgjengelig."
 
 #: admin/admin.php:496
 msgid "Classic"
@@ -339,14 +319,9 @@ msgid "Choose your preferred weather icon theme."
 msgstr "Velg ditt foretrukne værikontema."
 
 #: admin/admin.php:527
-#, fuzzy
-msgid ""
-"OpenWeatherMap and WeatherAPI require API keys and are disabled by default "
-"on fresh installs. Keys are stored server-side and never exposed to frontend "
-"visitors."
-msgstr ""
-"OpenWeatherMap og WeatherAPI krever API-nøkler. Nøklene lagres på "
-"serversiden og eksponeres aldri for besøkende på frontend."
+
+msgid "OpenWeatherMap and WeatherAPI require API keys and are disabled by default on fresh installs. Keys are stored server-side and never exposed to frontend visitors."
+msgstr "OpenWeatherMap og WeatherAPI krever API-nøkler og er deaktivert som standard ved nyinstallasjon. Nøklene lagres på serversiden og eksponeres aldri for besøkende."
 
 #: admin/admin.php:530
 msgid "OpenWeatherMap API key"
@@ -358,28 +333,19 @@ msgstr "WeatherAPI-nøkkel"
 
 #: admin/admin.php:546
 msgid "Recommended by MET Norway: include an email or URL in your User-Agent."
-msgstr ""
-"Anbefalt av MET Norge: inkluder en e-postadresse eller URL i brukeragenten "
-"din."
+msgstr "Anbefalt av MET Norge: inkluder en e-postadresse eller URL i brukeragenten din."
 
 #: admin/admin.php:555
 msgid "Enable tide data (experimental)."
 msgstr "Aktiver tidevannsdata (eksperimentelt)."
 
 #: admin/admin.php:557
-msgid ""
-"Tide data requires a provider or a custom API endpoint. Some providers may "
-"require an API key and/or paid plan."
-msgstr ""
-"Tidevannsdata krever en leverandør eller et tilpasset API-endepunkt. Noen "
-"leverandører kan kreve en API-nøkkel og/eller et betalt abonnement."
+msgid "Tide data requires a provider or a custom API endpoint. Some providers may require an API key and/or paid plan."
+msgstr "Tidevannsdata krever en leverandør eller et tilpasset API-endepunkt. Noen leverandører kan kreve en API-nøkkel og/eller et betalt abonnement."
 
 #: admin/admin.php:566
-msgid ""
-"Tide provider settings are hidden. Enable \"Tide admin UI\" to configure."
-msgstr ""
-"Innstillingene for tidevannsleverandøren er skjult. Aktiver «Tide admin UI» "
-"for å konfigurere."
+msgid "Tide provider settings are hidden. Enable \"Tide admin UI\" to configure."
+msgstr "Innstillingene for tidevannsleverandøren er skjult. Aktiver «Tide admin UI» for å konfigurere."
 
 #: admin/admin.php:572
 msgid "WorldTides (global, often paid)"
@@ -404,30 +370,16 @@ msgstr "API-nøkkel (hvis nødvendig)"
 #. translators: 1: WorldTides URL, 2: NOAA Tides & Currents API URL.
 #: admin/admin.php:589
 #, php-format
-msgid ""
-"Need an API key? See <a href=\"%1$s\" target=\"_blank\" rel=\"noopener "
-"noreferrer\">WorldTides</a> (commercial) or NOAA docs for US stations: <a "
-"href=\"%2$s\" target=\"_blank\" rel=\"noopener noreferrer\">NOAA Tides & "
-"Currents API</a>."
-msgstr ""
-"Trenger du en API-nøkkel? Se <a href=\"%1$s\" target=\"_blank\" rel=\"noopener "
-"noreferrer\">WorldTides</a> (kommersiell) eller NOAA-dokumentasjon for "
-"amerikanske stasjoner: <a href=\"%2$s\" target=\"_blank\" rel=\"noopener "
-"noreferrer\">NOAA Tides & Currents API</a>."
+msgid "Need an API key? See <a href=\"%1$s\" target=\"_blank\" rel=\"noopener noreferrer\">WorldTides</a> (commercial) or NOAA docs for US stations: <a href=\"%2$s\" target=\"_blank\" rel=\"noopener noreferrer\">NOAA Tides & Currents API</a>."
+msgstr "Trenger du en API-nøkkel? Se <a href=\"%1$s\" target=\"_blank\" rel=\"noopener noreferrer\">WorldTides</a> (kommersiell) eller NOAA-dokumentasjon for amerikanske stasjoner: <a href=\"%2$s\" target=\"_blank\" rel=\"noopener noreferrer\">NOAA Tides & Currents API</a>."
 
 #: admin/admin.php:601
 msgid "Show tide examples & notices in admin (for testing)"
-msgstr ""
-"Vis tidevannseksempler og varsler i administrasjonspanelet (for testing)"
+msgstr "Vis tidevannseksempler og varsler i administrasjonspanelet (for testing)"
 
 #: admin/admin.php:603
-msgid ""
-"Toggle visibility of experimental tide UI elements in the admin pages. "
-"Useful to hide notices/examples while testing with selected users."
-msgstr ""
-"Aktiver/deaktiver synligheten av eksperimentelle Tide UI-elementer på "
-"administratorsidene. Nyttig for å skjule varsler/eksempler under testing med "
-"utvalgte brukere."
+msgid "Toggle visibility of experimental tide UI elements in the admin pages. Useful to hide notices/examples while testing with selected users."
+msgstr "Aktiver/deaktiver synligheten av eksperimentelle Tide UI-elementer på administratorsidene. Nyttig for å skjule varsler/eksempler under testing med utvalgte brukere."
 
 #: admin/admin.php:609 includes/integrations/vc.php:53
 #: blocks/spelhubben-weather/index.js:17
@@ -492,13 +444,8 @@ msgid "How it works"
 msgstr "Hvordan det fungerer"
 
 #: admin/page-alerts.php:79
-msgid ""
-"The system monitors temperature, wind speed, and precipitation. If any value "
-"exceeds safety thresholds, an alert is triggered with a helpful "
-"recommendation."
-msgstr ""
-"Systemet overvåker temperatur, vindhastighet og nedbør. Hvis noen verdier "
-"overstiger sikkerhetsgrensene, utløses et varsel med en nyttig anbefaling."
+msgid "The system monitors temperature, wind speed, and precipitation. If any value exceeds safety thresholds, an alert is triggered with a helpful recommendation."
+msgstr "Systemet overvåker temperatur, vindhastighet og nedbør. Hvis noen verdier overstiger sikkerhetsgrensene, utløses et varsel med en nyttig anbefaling."
 
 #: admin/page-alerts.php:81
 msgid "Extreme Cold:"
@@ -611,24 +558,16 @@ msgid "Storm Warning"
 msgstr "Stormvarsel"
 
 #: admin/page-alerts.php:159 includes/format.php:294
-msgid ""
-"Storm force winds detected! Stay indoors if possible and secure loose "
-"objects."
-msgstr ""
-"Stormstyrke oppdaget! Hold deg innendørs hvis mulig og sikre løse "
-"gjenstander."
+msgid "Storm force winds detected! Stay indoors if possible and secure loose objects."
+msgstr "Stormstyrke oppdaget! Hold deg innendørs hvis mulig og sikre løse gjenstander."
 
 #: admin/page-alerts.php:164 includes/format.php:261
 msgid "Extreme Cold"
 msgstr "Ekstrem kulde"
 
 #: admin/page-alerts.php:165 includes/format.php:262
-msgid ""
-"It is freezing cold outside! Dress warmly, preferably in layers, or you "
-"might turn into an icicle."
-msgstr ""
-"Det er iskaldt ute! Kle deg varmt, helst i lag, ellers kan du bli til en "
-"istapp."
+msgid "It is freezing cold outside! Dress warmly, preferably in layers, or you might turn into an icicle."
+msgstr "Det er iskaldt ute! Kle deg varmt, helst i lag, ellers kan du bli til en istapp."
 
 #: admin/page-alerts.php:170 includes/format.php:300
 msgid "Strong Wind"
@@ -643,9 +582,7 @@ msgid "Heavy Rain"
 msgstr "Kraftig Regn"
 
 #: admin/page-alerts.php:177
-msgid ""
-"It is pouring down! Don't forget your umbrella or stay inside with a cup of "
-"coffee."
+msgid "It is pouring down! Don't forget your umbrella or stay inside with a cup of coffee."
 msgstr "Det øser ned! Ikke glem paraplyen eller bli inne med en kopp kaffe."
 
 #: admin/page-alerts.php:182
@@ -741,14 +678,8 @@ msgid "Leaflet legacy assets"
 msgstr "Eldre Leaflet-ressurser"
 
 #: admin/page-performance.php:107
-msgid ""
-"If a cache or optimization plugin delays scripts, set the map engine to "
-"Static fallback temporarily or exclude Spelhubben Weather map assets from "
-"delay/defer rules."
-msgstr ""
-"Hvis en hurtigbuffer eller optimaliseringsplugin forsinker skript, sett "
-"kartmotoren midlertidig til statisk reserve eller ekskluder Spelhubben "
-"Weather-kartressurser fra forsinkelses-/utsettelsesregler."
+msgid "If a cache or optimization plugin delays scripts, set the map engine to Static fallback temporarily or exclude Spelhubben Weather map assets from delay/defer rules."
+msgstr "Hvis en hurtigbuffer eller optimaliseringsplugin forsinker skript, sett kartmotoren midlertidig til statisk reserve eller ekskluder Spelhubben Weather-kartressurser fra forsinkelses-/utsettelsesregler."
 
 #: admin/page-performance.php:113
 msgid "Recent updates"
@@ -786,12 +717,8 @@ msgid "Spelhubben Weather – Settings"
 msgstr "Spelhubben Vær – Innstillinger"
 
 #: admin/page-settings.php:34
-msgid ""
-"Tune defaults, providers and formatting. Shortcodes now live on their own "
-"page."
-msgstr ""
-"Juster standardinnstillinger, leverandører og formatering. Kortkoder finnes "
-"nå på sin egen side."
+msgid "Tune defaults, providers and formatting. Shortcodes now live on their own page."
+msgstr "Juster standardinnstillinger, leverandører og formatering. Kortkoder finnes nå på sin egen side."
 
 #: admin/page-settings.php:42
 msgid "Export Settings"
@@ -855,24 +782,16 @@ msgid "Why locked?"
 msgstr "Hvorfor låst?"
 
 #: admin/page-settings.php:123
-msgid ""
-"To ensure proper crediting of data sources per ODbL and respective API "
-"policies."
-msgstr ""
-"For å sikre riktig kreditering av datakilder i henhold til ODbL og "
-"respektive API-policyer."
+msgid "To ensure proper crediting of data sources per ODbL and respective API policies."
+msgstr "For å sikre riktig kreditering av datakilder i henhold til ODbL og respektive API-policyer."
 
 #: admin/page-settings.php:132
 msgid "Tips"
 msgstr "Tips"
 
 #: admin/page-settings.php:134 admin/page-settings.php:150
-msgid ""
-"Use the Shortcodes page to quickly copy examples and see supported "
-"attributes."
-msgstr ""
-"Bruk siden med kortkoder for å raskt kopiere eksempler og se støttede "
-"attributter."
+msgid "Use the Shortcodes page to quickly copy examples and see supported attributes."
+msgstr "Bruk siden med kortkoder for å raskt kopiere eksempler og se støttede attributter."
 
 #: admin/page-settings.php:142
 msgid "Shortcode"
@@ -888,28 +807,16 @@ msgid "Smart map"
 msgstr "Smartkart"
 
 #: admin/page-settings.php:151
-msgid ""
-"Change icon style in Settings → Spelhubben Weather → Icon style to try "
-"different themes."
-msgstr ""
-"Ändra ikonstil i Inställningar → Spelhubben Väder → Ikonstil för att prova "
-"olika teman."
+msgid "Change icon style in Settings → Spelhubben Weather → Icon style to try different themes."
+msgstr "Ändra ikonstil i Inställningar → Spelhubben Väder → Ikonstil för att prova olika teman."
 
 #: admin/page-settings.php:152
-msgid ""
-"Enable the smart map to use OpenLayers first, Leaflet legacy when selected, "
-"or a static fallback if scripts are blocked."
-msgstr ""
-"Aktiver smartkartet til å bruke OpenLayers først, Leaflet-eldre når det er "
-"valgt, eller en statisk reserve hvis skript er blokkert."
+msgid "Enable the smart map to use OpenLayers first, Leaflet legacy when selected, or a static fallback if scripts are blocked."
+msgstr "Aktiver smartkartet til å bruke OpenLayers først, Leaflet-eldre når det er valgt, eller en statisk reserve hvis skript er blokkert."
 
 #: admin/page-settings.php:153
-msgid ""
-"Shortcodes support a `layout` attribute to switch between compact and "
-"detailed views."
-msgstr ""
-"Kortkoder stöder attributet `layout` för att växla mellan kompakta och "
-"detaljerade vyer."
+msgid "Shortcodes support a `layout` attribute to switch between compact and detailed views."
+msgstr "Kortkoder stöder attributet `layout` för att växla mellan kompakta och detaljerade vyer."
 
 #: admin/page-settings.php:175
 msgid "Loading other Spelhubben plugins…"
@@ -996,26 +903,16 @@ msgid "Spelhubben Weather – Shortcodes"
 msgstr "Spelhubben Vær – Kortkoder"
 
 #: admin/page-shortcodes.php:67
-msgid ""
-"Copy & paste ready-made snippets. Click “Copy” to put a shortcode on your "
-"clipboard."
-msgstr ""
-"Kopier og lim inn ferdige utdrag. Klikk på «Kopier» for å legge inn en "
-"kortkode på utklippstavlen."
+msgid "Copy & paste ready-made snippets. Click “Copy” to put a shortcode on your clipboard."
+msgstr "Kopier og lim inn ferdige utdrag. Klikk på «Kopier» for å legge inn en kortkode på utklippstavlen."
 
 #: admin/page-shortcodes.php:72 admin/page-shortcodes.php:273
 msgid "Tide data (experimental)"
 msgstr "Tidevannsdata (eksperimentell)"
 
 #: admin/page-shortcodes.php:72
-msgid ""
-"Tide support is experimental. Enable and configure under Settings → "
-"Spelhubben Weather → Tide provider. Use extras=\"tides\" or tides=\"1\" in "
-"shortcodes to display tide events."
-msgstr ""
-"Støtte for tidevann er eksperimentell. Aktiver og konfigurer under "
-"Innstillinger → Spelhubben Vær → Tidevannsleverandør. Bruk extras=\"tides\" "
-"eller tides=\"1\" i kortkoder for å vise tidevannshendelser."
+msgid "Tide support is experimental. Enable and configure under Settings → Spelhubben Weather → Tide provider. Use extras=\"tides\" or tides=\"1\" in shortcodes to display tide events."
+msgstr "Støtte for tidevann er eksperimentell. Aktiver og konfigurer under Innstillinger → Spelhubben Vær → Tidevannsleverandør. Bruk extras=\"tides\" eller tides=\"1\" i kortkoder for å vise tidevannshendelser."
 
 #: admin/page-shortcodes.php:80 admin/page-shortcodes.php:335
 msgid "Back to Settings"
@@ -1043,9 +940,7 @@ msgstr "Forhåndsvisning"
 
 #: admin/page-shortcodes.php:148
 msgid "Click a snippet to send it here. You can edit, copy or expand the box."
-msgstr ""
-"Klikk på et utdrag for å sende det hit. Du kan redigere, kopiere eller "
-"utvide boksen."
+msgstr "Klikk på et utdrag for å sende det hit. Du kan redigere, kopiere eller utvide boksen."
 
 #: admin/page-shortcodes.php:156 includes/i18n.php:47
 msgid "Clear"
@@ -1117,9 +1012,8 @@ msgid "Moon (daily forecast)"
 msgstr "Månen (daglig værmelding)"
 
 #: admin/page-shortcodes.php:207
-#, fuzzy
 msgid "Hours:"
-msgstr "Timer"
+msgstr "Timer:"
 
 #: admin/page-shortcodes.php:211
 msgid "Providers:"
@@ -1162,13 +1056,8 @@ msgid "Attributes – overview"
 msgstr "Attributter – oversikt"
 
 #: admin/page-shortcodes.php:274
-msgid ""
-"Enable tide data in Settings → Spelhubben Weather. Supported providers: "
-"WorldTides (global), NOAA (US only) or a custom endpoint."
-msgstr ""
-"Aktiver tidevannsdata i Innstillinger → Spelhubben Vær. Støttede "
-"leverandører: WorldTides (global), NOAA (kun USA) eller et tilpasset "
-"endepunkt."
+msgid "Enable tide data in Settings → Spelhubben Weather. Supported providers: WorldTides (global), NOAA (US only) or a custom endpoint."
+msgstr "Aktiver tidevannsdata i Innstillinger → Spelhubben Vær. Støttede leverandører: WorldTides (global), NOAA (kun USA) eller et tilpasset endepunkt."
 
 #: admin/page-shortcodes.php:275
 msgid "Shortcode examples:"
@@ -1187,14 +1076,8 @@ msgid "Combine tides with forecast and moon extras."
 msgstr "Kombiner tidevann med prognoser og månetillegg."
 
 #: admin/page-shortcodes.php:281
-msgid ""
-"Tide responses are cached; if nothing appears verify provider settings and "
-"API key. NOAA is US-only; prefer WorldTides or a custom endpoint for non-US "
-"locations."
-msgstr ""
-"Tidevannsresponser lagres i mellomlagre. Hvis ingenting vises, bekreft "
-"leverandørinnstillingene og API-nøkkelen. NOAA er kun for USA. Foretrekk "
-"WorldTides eller et tilpasset endepunkt for steder utenfor USA."
+msgid "Tide responses are cached; if nothing appears verify provider settings and API key. NOAA is US-only; prefer WorldTides or a custom endpoint for non-US locations."
+msgstr "Tidevannsresponser lagres i mellomlagre. Hvis ingenting vises, bekreft leverandørinnstillingene og API-nøkkelen. NOAA er kun for USA. Foretrekk WorldTides eller et tilpasset endepunkt for steder utenfor USA."
 
 #: admin/page-shortcodes.php:286 blocks/spelhubben-weather/index.js:61
 msgid "Location"
@@ -1218,8 +1101,7 @@ msgstr "Eksempel"
 
 #: admin/page-shortcodes.php:302
 msgid "Place name to geocode (used if lat/lon are missing)."
-msgstr ""
-"Stedsnavn som skal geokodes (brukes hvis breddegrad/lengdegrad mangler)."
+msgstr "Stedsnavn som skal geokodes (brukes hvis breddegrad/lengdegrad mangler)."
 
 #: admin/page-shortcodes.php:303
 msgid "Coordinates take precedence over place."
@@ -1249,9 +1131,7 @@ msgstr "auto | openlayers | leaflet | static"
 #: admin/page-shortcodes.php:311
 #, php-format
 msgid "%s (comma-separated). Quick Builder checkboxes below use the same list."
-msgstr ""
-"%s (kommaseparert). Avmerkingsboksene i Quick Builder nedenfor bruker samme "
-"liste."
+msgstr "%s (kommaseparert). Avmerkingsboksene i Quick Builder nedenfor bruker samme liste."
 
 #: admin/page-shortcodes.php:312
 msgid "1/0 – subtle animations"
@@ -1298,22 +1178,16 @@ msgid "Forecast date label (PHP date)"
 msgstr "Prognose-datoetikett (PHP-dato)"
 
 #: admin/page-shortcodes.php:325
-msgid ""
-"auto | light | dark — force display theme (auto uses site/browser preference)"
-msgstr ""
-"auto | lys | mørk — tving frem visningstema (automatisk bruker nettsted-/"
-"nettleserpreferanser)"
+msgid "auto | light | dark — force display theme (auto uses site/browser preference)"
+msgstr "auto | lys | mørk — tving frem visningstema (automatisk bruker nettsted-/nettleserpreferanser)"
 
 #: admin/page-shortcodes.php:326
 msgid "Comma-separated extra features. Supported: moon, moon_daily, tides"
 msgstr "Kommaseparerte ekstrafunksjoner. Støttet: moon, moon_daily, tidevann"
 
 #: admin/page-shortcodes.php:327
-msgid ""
-"Legacy boolean to show moon in meta area (1/0). Use extras=\"moon\" instead."
-msgstr ""
-"Eldre boolsk verdi for å vise månen i metaområdet (1/0). Bruk "
-"extras=\"moon\" i stedet."
+msgid "Legacy boolean to show moon in meta area (1/0). Use extras=\"moon\" instead."
+msgstr "Eldre boolsk verdi for å vise månen i metaområdet (1/0). Bruk extras=\"moon\" i stedet."
 
 #: includes/class-block.php:97
 msgid "Spelhubben Weather (legacy)"
@@ -1414,23 +1288,15 @@ msgstr "Sky:"
 
 #: includes/class-renderer.php:512
 msgid "This provider did not return usable data for the current request."
-msgstr ""
-"Denne leverandøren returnerte ikke brukbare data for den gjeldende "
-"forespørselen."
+msgstr "Denne leverandøren returnerte ikke brukbare data for den gjeldende forespørselen."
 
 #: includes/class-renderer.php:520
 msgid "Note:"
 msgstr "Note:"
 
 #: includes/class-renderer.php:521
-msgid ""
-"Each provider may report different values due to different measuring "
-"stations or calculation methods. Use this view to compare accuracy and "
-"availability."
-msgstr ""
-"Hver leverandør kan rapportere forskjellige verdier på grunn av forskjellige "
-"målestasjoner eller beregningsmetoder. Bruk denne visningen til å "
-"sammenligne nøyaktighet og tilgjengelighet."
+msgid "Each provider may report different values due to different measuring stations or calculation methods. Use this view to compare accuracy and availability."
+msgstr "Hver leverandør kan rapportere forskjellige verdier på grunn av forskjellige målestasjoner eller beregningsmetoder. Bruk denne visningen til å sammenligne nøyaktighet og tilgjengelighet."
 
 #: includes/class-sv-vader.php:53
 msgid "Could not fetch weather data from the selected providers."
@@ -1549,20 +1415,15 @@ msgid "Extreme Heat"
 msgstr "Ekstrem varme"
 
 #: includes/format.php:276
-msgid ""
-"Phew! It is really hot. Drink plenty of water and stay in the shade if you "
-"can."
-msgstr ""
-"Puh! Det er skikkelig varmt. Drikk rikelig med vann og hold deg i skyggen "
-"hvis du kan."
+msgid "Phew! It is really hot. Drink plenty of water and stay in the shade if you can."
+msgstr "Puh! Det er skikkelig varmt. Drikk rikelig med vann og hold deg i skyggen hvis du kan."
 
 #: includes/format.php:310
 msgid "Heavy Precipitation"
 msgstr "Kraftig nedbør"
 
 #: includes/format.php:311
-msgid ""
-"It looks like it will rain or snow quite a bit. Don't forget your umbrella!"
+msgid "It looks like it will rain or snow quite a bit. Don't forget your umbrella!"
 msgstr "Det ser ut til å bli en god del regn eller snø. Ikke glem paraplyen!"
 
 #: includes/i18n.php:48 includes/providers.php:499
@@ -1926,9 +1787,8 @@ msgid "Hours (3–24):"
 msgstr "Timer (3–24):"
 
 #: includes/Widget/class-widget.php:325
-#, fuzzy
 msgid "Show tides"
-msgstr "Vis felt"
+msgstr "Vis tidevann"
 
 #: includes/Widget/class-widget.php:331 blocks/spelhubben-weather/index.js:145
 msgid "Show weather alerts"
@@ -2003,12 +1863,8 @@ msgid "Show tides (tidvatten)"
 msgstr "Vis tidevann"
 
 #: blocks/spelhubben-weather/index.js:154
-msgid ""
-"Requires tide support enabled in plugin settings. Provider and API key are "
-"configured under Settings → Spelhubben Weather."
-msgstr ""
-"Krever at tidevannsstøtte er aktivert i plugin-innstillingene. Leverandør og "
-"API-nøkkel konfigureres under Innstillinger → Spelhubben Vær."
+msgid "Requires tide support enabled in plugin settings. Provider and API key are configured under Settings → Spelhubben Weather."
+msgstr "Krever at tidevannsstøtte er aktivert i plugin-innstillingene. Leverandør og API-nøkkel konfigureres under Innstillinger → Spelhubben Vær."
 
 #: blocks/spelhubben-weather/index.js:176
 msgid "Date format (PHP date)"
@@ -2031,55 +1887,241 @@ msgid "Days"
 msgstr "Dager"
 
 #: blocks/spelhubben-weather/index.js:221
-msgid ""
-"Spelhubben Weather preview (ServerSideRender unavailable). Save/update to "
-"view."
-msgstr ""
-"Forhåndsvisning av Spelhubben-vær (ServerSideRender utilgjengelig). Lagre/"
-"oppdater for visning."
+msgid "Spelhubben Weather preview (ServerSideRender unavailable). Save/update to view."
+msgstr "Forhåndsvisning av Spelhubben-vær (ServerSideRender utilgjengelig). Lagre/oppdater for visning."
 
 #: blocks/spelhubben-weather/block.json
-#, fuzzy
 msgctxt "block title"
 msgid "Spelhubben Weather"
-msgstr "Spelhubben Været"
+msgstr "Spelhubben Weather"
 
 #: blocks/spelhubben-weather/block.json
 msgctxt "block description"
-msgid ""
-"Current weather and optional daily forecast with map, subtle animations, and "
-"multiple layouts."
-msgstr ""
+msgid "Current weather and optional daily forecast with map, subtle animations, and multiple layouts."
+msgstr "Gjeldende vær og valgfritt dagsvarsel med kart, diskrete animasjoner og flere oppsett."
 
 #: blocks/spelhubben-weather/block.json
-#, fuzzy
 msgctxt "block keyword"
 msgid "weather"
-msgstr "Værikon"
+msgstr "vær"
 
 #: blocks/spelhubben-weather/block.json
-#, fuzzy
 msgctxt "block keyword"
 msgid "forecast"
-msgstr "Prognose"
+msgstr "varsel"
 
 #: blocks/spelhubben-weather/block.json
-#, fuzzy
 msgctxt "block keyword"
 msgid "map"
-msgstr "Kart"
+msgstr "kart"
 
-#~ msgid ""
-#~ "Enable the Leaflet map to show station locations and interactive maps."
-#~ msgstr ""
-#~ "Aktivera broschyrkartan för att visa stationsplatser och interaktiva "
-#~ "kartor."
+#: includes/class-assets.php
+msgid "Map location"
+msgstr "Kartposisjon"
+
+#: includes/class-assets.php
+msgid "Map coordinates are missing or invalid."
+msgstr "Kartkoordinatene mangler eller er ugyldige."
+
+#: includes/class-assets.php
+msgid "Interactive map is disabled for this weather block."
+msgstr "Interaktivt kart er deaktivert for denne værblokken."
+
+#: includes/class-assets.php
+msgid "OpenLayers could not initialize on this page."
+msgstr "OpenLayers kunne ikke starte på denne siden."
+
+#: includes/class-assets.php
+msgid "Leaflet could not initialize on this page."
+msgstr "Leaflet kunne ikke starte på denne siden."
+
+#: includes/class-assets.php
+msgid "No local interactive map engine was available."
+msgstr "Ingen lokal motor for interaktive kart var tilgjengelig."
+
+#: includes/map-diagnostics.php includes/class-renderer.php
+#: admin/page-performance.php
+msgid "Interactive map is unavailable or has not started. Use the location below."
+msgstr "Det interaktive kartet er utilgjengelig eller har ikke startet. Bruk stedsinformasjonen nedenfor."
+
+#: includes/map-diagnostics.php includes/class-renderer.php
+#: admin/page-performance.php
+msgid "Interactive map started."
+msgstr "Interaktivt kart har startet."
+
+#: includes/map-diagnostics.php includes/class-renderer.php
+#: admin/page-performance.php
+msgid "The visible map has not reported startup. Scripts may be delayed, unavailable or blocked."
+msgstr "Det synlige kartet har ikke rapportert oppstart. Skript kan være forsinket, utilgjengelige eller blokkert."
+
+#: includes/map-diagnostics.php includes/class-renderer.php
+#: admin/page-performance.php
+msgid "Last browser-reported engine"
+msgstr "Sist rapporterte motor fra nettleseren"
+
+#: includes/map-diagnostics.php includes/class-renderer.php
+#: admin/page-performance.php
+msgid "Not reported"
+msgstr "Ikke rapportert"
+
+#: includes/map-diagnostics.php includes/class-renderer.php
+#: admin/page-performance.php
+msgid "Latest reported map error"
+msgstr "Sist rapporterte kartfeil"
+
+#: includes/map-diagnostics.php includes/class-renderer.php
+#: admin/page-performance.php
+msgid "Latest browser report"
+msgstr "Siste nettleserrapport"
+
+#: includes/map-diagnostics.php includes/class-renderer.php
+#: admin/page-performance.php
+msgid "Reports come from administrator visits to the frontend, expire after seven days and may describe an instance-specific engine override. No report does not prove that maps work or fail. Cache or optimization rules may delay scripts; the exact blocking theme or plugin cannot be identified here."
+msgstr "Rapporter kommer fra administratorbesøk på nettstedet, utløper etter sju dager og kan gjelde et motorvalg for et enkelt kart. En manglende rapport beviser ikke at kart fungerer eller feiler. Hurtigbuffer- eller optimaliseringsregler kan forsinke skript; nøyaktig hvilket tema eller tillegg som blokkerer dem kan ikke identifiseres her."
+
+#: includes/class-panels.php:10
+msgid "Unavailable"
+msgstr "Ikke tilgjengelig"
+
+#: includes/class-panels.php:16 includes/class-block.php:146
+#: includes/Widget/class-widget.php:280 admin/page-shortcodes.php:55
+#: blocks/spelhubben-weather/index.js:111
+msgid "Sun and moon"
+msgstr "Sol og måne"
+
+#: includes/class-panels.php:19
+msgid "Midnight sun: the sun does not set on this date."
+msgstr "Midnattssol: solen går ikke ned denne datoen."
+
+#: includes/class-panels.php:19
+msgid "Polar night: the sun does not rise on this date."
+msgstr "Polarnatt: solen står ikke opp denne datoen."
+
+#: includes/class-panels.php:21
+msgid "Sun data is unavailable for this location."
+msgstr "Soldata er ikke tilgjengelige for dette stedet."
+
+#: includes/class-panels.php:24
+msgid "Sunrise"
+msgstr "Soloppgang"
+
+#: includes/class-panels.php:25
+msgid "Sunset"
+msgstr "Solnedgang"
+
+#: includes/class-panels.php:26
+msgid "Day length"
+msgstr "Daglengde"
+
+#: includes/class-panels.php:28
+msgid "%1$d h %2$d min"
+msgstr "%1$d t %2$d min"
+
+#: includes/class-panels.php:30
+msgid "Moon phase"
+msgstr "Månefase"
+
+#: includes/class-panels.php:31
+msgid "Next major moon phase (approx.)"
+msgstr "Neste hovedmånefase (omtrentlig)"
+
+#: includes/class-panels.php:35
+msgid "Times use the site timezone: %s. Moon phase dates are estimates."
+msgstr "Tidene vises i nettstedets tidssone: %s. Datoer for månefaser er anslag."
+
+#: includes/class-panels.php:47 includes/Widget/class-widget.php:280
+#: admin/page-shortcodes.php:56 blocks/spelhubben-weather/index.js:116
+msgid "Forecast insights"
+msgstr "Værinnsikt"
+
+#: includes/class-panels.php:50
+msgid "Not enough reliable hourly data to calculate an insight."
+msgstr "Det finnes ikke nok pålitelige timedata til å beregne værinnsikt."
+
+#: includes/class-panels.php:54
+msgid "Longest mostly dry period in the forecast: %1$s–%2$s."
+msgstr "Lengste for det meste tørre periode i varselet: %1$s–%2$s."
+
+#: includes/class-panels.php:57
+msgid "Strongest wind in the forecast: %1$s, about %2$s."
+msgstr "Sterkest vind i varselet: %1$s, omtrent %2$s."
+
+#: includes/class-panels.php:60
+msgid "Rain is forecast later, from %s."
+msgstr "Regn er varslet senere, fra %s."
+
+#: includes/class-panels.php:63
+msgid "Based on the next available forecast hours, not a guarantee. Mostly dry means less than 0.1 mm per hour."
+msgstr "Basert på de neste tilgjengelige varseltimene, ingen garanti. For det meste tørt betyr mindre enn 0,1 mm per time."
+
+#: includes/presets.php:14 includes/Widget/class-widget.php:267
+msgid "Default"
+msgstr "Standard"
+
+#: includes/presets.php:15 blocks/spelhubben-weather/index.js:48
+msgid "Light"
+msgstr "Lys"
+
+#: includes/presets.php:16 blocks/spelhubben-weather/index.js:49
+msgid "Dark"
+msgstr "Mørk"
+
+#: includes/presets.php:17 blocks/spelhubben-weather/index.js:50
+msgid "Neutral"
+msgstr "Nøytral"
+
+#: includes/class-block.php:136
+msgid "Weather card"
+msgstr "Værkort"
+
+#: includes/class-block.php:141
+msgid "Forecast row"
+msgstr "Varselrad"
+
+#: includes/class-renderer.php:414
+msgid "Hourly forecast, scroll for more hours"
+msgstr "Timevarsel, rull for flere timer"
+
+#: includes/Widget/class-widget.php:273 admin/page-shortcodes.php:236
+#: blocks/spelhubben-weather/index.js:105
+msgid "Style preset"
+msgstr "Stilprofil"
+
+#: admin/page-shortcodes.php:343
+msgid "Comma-separated extra features. Supported: moon, moon_daily, tides, astro, insights"
+msgstr "Kommaseparerte ekstrafunksjoner. Støttes: moon, moon_daily, tides, astro, insights"
+
+#: includes/reviews.php admin/page-settings.php
+msgid "Current weather and forecasts with smart maps, sun and moon information, forecast insights, layouts and style presets. Supports shortcodes, Gutenberg blocks and patterns, and classic widgets."
+msgstr "Gjeldende vær og varsler med smarte kart, sol- og måneinformasjon, værinnsikt, oppsett og stilprofiler. Støtter kortkoder, Gutenberg-blokker og blokkmønstre samt klassiske widgeter."
+
+#: includes/reviews.php admin/page-settings.php
+msgid "Share your experience"
+msgstr "Del din opplevelse"
+
+#: includes/reviews.php admin/page-settings.php
+msgid "Have you tried Spelhubben Weather? We would appreciate an honest rating or review on WordPress.org. Your feedback helps us improve the plugin."
+msgstr "Har du prøvd Spelhubben Weather? Vi setter pris på en ærlig vurdering eller omtale på WordPress.org. Tilbakemeldingen din hjelper oss å forbedre utvidelsen."
+
+#: includes/reviews.php admin/page-settings.php
+msgid "Leave a review"
+msgstr "Skriv en omtale"
+
+#: includes/reviews.php admin/page-settings.php
+msgid "No thanks — do not show again"
+msgstr "Nei takk – ikke vis igjen"
+
+#: includes/reviews.php admin/page-settings.php
+msgid "You do not have permission to dismiss this notice."
+msgstr "Du har ikke tilgang til å lukke denne meldingen."
+
+#~ msgid "Enable the Leaflet map to show station locations and interactive maps."
+#~ msgstr "Aktivera broschyrkartan för att visa stationsplatser och interaktiva kartor."
 
 #~ msgid "openmeteo,smhi,yr,metno_nowcast (comma-separated)"
 #~ msgstr "openmeteo,smhi,yr,metno_nowcast (kommaseparert)"
 
-#~ msgid ""
-#~ "The attribution is locked to comply with OpenStreetMap/ODbL requirements."
+#~ msgid "The attribution is locked to comply with OpenStreetMap/ODbL requirements."
 #~ msgstr "Attribusjonen er låst for å overholde OpenStreetMap/ODbL-kravene."
 
 #~ msgid "Comma-separated: temp,wind,icon"
@@ -2109,26 +2151,118 @@ msgstr "Kart"
 #~ msgid "legacy"
 #~ msgstr "legacy"
 
-#: includes/class-assets.php
-msgid "Map location"
-msgstr "Kartposisjon"
+#: admin/page-setup.php
+msgid "%s needs an API key"
+msgstr "%s trenger en API-nøkkel"
 
-#: includes/class-assets.php
-msgid "Map coordinates are missing or invalid."
-msgstr "Kartkoordinatene mangler eller er ugyldige."
+#: admin/page-setup.php
+msgid "At least one weather provider is enabled"
+msgstr "Minst én værleverandør er aktivert"
 
-#: includes/class-assets.php
-msgid "Interactive map is disabled for this weather block."
-msgstr "Interaktivt kart er deaktivert for denne værblokken."
+#: admin/page-setup.php
+msgid "Block: edit a page, click Add block and search for \"Spelhubben Weather\"."
+msgstr "Blokk: rediger en side, klikk på Legg til blokk og søk etter «Spelhubben Weather»."
 
-#: includes/class-assets.php
-msgid "OpenLayers could not initialize on this page."
-msgstr "OpenLayers kunne ikke starte på denne siden."
+#: admin/page-setup.php
+msgid "Contact for Yr / MET Norway is empty"
+msgstr "Kontaktinformasjon for Yr / MET Norge er tom"
 
-#: includes/class-assets.php
-msgid "Leaflet could not initialize on this page."
-msgstr "Leaflet kunne ikke starte på denne siden."
+#: admin/page-setup.php
+msgid "Enable a provider under Providers below. Open-Meteo, SMHI and Yr need no API key."
+msgstr "Aktiver en leverandør under Leverandører nedenfor. Open-Meteo, SMHI og Yr trenger ingen API-nøkkel."
 
-#: includes/class-assets.php
-msgid "No local interactive map engine was available."
-msgstr "Ingen lokal motor for interaktive kart var tilgjengelig."
+#: admin/page-setup.php
+msgid "Everything the plugin needs is in place."
+msgstr "Alt utvidelsen trenger er på plass."
+
+#: admin/page-setup.php
+msgid "Fix the items marked below so the weather can be shown."
+msgstr "Rett punktene som er merket nedenfor, slik at været kan vises."
+
+#: admin/page-setup.php
+msgid "Get started"
+msgstr "Kom i gang"
+
+#: admin/page-setup.php
+msgid "Getting started & requirements"
+msgstr "Kom i gang og krav"
+
+#: admin/page-setup.php
+msgid "Good to know: maps need no API key, but visitors load map tiles from OpenStreetMap. If you use a caching or optimization plugin, clear its cache after changing settings. Your theme must call wp_footer() for scripts to load."
+msgstr "Greit å vite: kart trenger ingen API-nøkkel, men besøkende laster kartfliser fra OpenStreetMap. Hvis du bruker en hurtigbuffer- eller optimaliseringsutvidelse, tøm hurtigbufferen etter at du har endret innstillinger. Temaet må kalle wp_footer() for at skript skal lastes."
+
+#: admin/page-setup.php
+msgid "MET Norway asks API users to identify themselves. Enter an email or website URL in \"Yr contact\" to avoid being rate limited."
+msgstr "MET Norge ber API-brukere om å identifisere seg. Oppgi en e-postadresse eller nettadresse i «Yr-kontakt» for å unngå begrensning av antall forespørsler."
+
+#: admin/page-setup.php
+msgid "No default place set"
+msgstr "Ingen standardplass er angitt"
+
+#: admin/page-setup.php
+msgid "Open the settings to check the requirements, pick your place and providers, and see how to add the weather to your site."
+msgstr "Åpne innstillingene for å kontrollere kravene, velge sted og leverandører og se hvordan du legger til været på nettstedet."
+
+#: admin/page-setup.php
+msgid "Open-Meteo, SMHI, Yr, MET Nowcast and FMI need no API key."
+msgstr "Open-Meteo, SMHI, Yr, MET Nowcast og FMI trenger ingen API-nøkkel."
+
+#: admin/page-setup.php
+msgid "PHP %s"
+msgstr "PHP %s"
+
+#: admin/page-setup.php
+msgid "Requires PHP 7.4 or newer."
+msgstr "Krever PHP 7.4 eller nyere."
+
+#: admin/page-setup.php
+msgid "Requires WordPress 6.8 or newer."
+msgstr "Krever WordPress 6.8 eller nyere."
+
+#: admin/page-setup.php
+msgid "Server can reach weather services"
+msgstr "Serveren kan nå værtjenester"
+
+#: admin/page-setup.php
+msgid "Set a default place, or always give place or lat/lon in the block, shortcode or widget."
+msgstr "Angi et standardsted, eller oppgi alltid sted eller lat/lon i blokken, kortkoden eller widgeten."
+
+#: admin/page-setup.php
+msgid "Shortcode: paste <code>[spelhubben_weather place=\"Stockholm\"]</code> in a page, post or text widget."
+msgstr "Kortkode: lim inn <code>[spelhubben_weather place=\"Stockholm\"]</code> på en side, i et innlegg eller i en tekstwidget."
+
+#: admin/page-setup.php
+msgid "Show the weather on your site"
+msgstr "Vis været på nettstedet ditt"
+
+#: admin/page-setup.php
+msgid "Spelhubben Weather is installed."
+msgstr "Spelhubben Weather er installert."
+
+#: admin/page-setup.php
+msgid "The plugin requires PHP 7.4 or newer. Ask your host to upgrade PHP."
+msgstr "Utvidelsen krever PHP 7.4 eller nyere. Be vertstjenesten oppgradere PHP."
+
+#: admin/page-setup.php
+msgid "The plugin requires WordPress 6.8 or newer."
+msgstr "Utvidelsen krever WordPress 6.8 eller nyere."
+
+#: admin/page-setup.php
+msgid "The provider is enabled but no API key is saved, so it is skipped. Add the key or disable the provider."
+msgstr "Leverandøren er aktivert, men ingen API-nøkkel er lagret, så den hoppes over. Legg til nøkkelen eller deaktiver leverandøren."
+
+#: admin/page-setup.php
+msgid "WP_HTTP_BLOCK_EXTERNAL is enabled, which blocks all weather requests. Allow the provider hosts via WP_ACCESSIBLE_HOSTS or disable the block."
+msgstr "WP_HTTP_BLOCK_EXTERNAL er aktivert og blokkerer alle værforespørsler. Tillat leverandørenes verter via WP_ACCESSIBLE_HOSTS, eller deaktiver blokkeringen."
+
+#: admin/page-setup.php
+msgid "Weather data is fetched from your server, so it needs outgoing HTTPS access (firewalls may block it)."
+msgstr "Værdata hentes fra serveren din, som derfor trenger utgående HTTPS-tilgang (brannmurer kan blokkere den)."
+
+#: admin/page-setup.php
+msgid "Widget: go to Appearance → Widgets and add \"Spelhubben Weather\" to a sidebar."
+msgstr "Widget: gå til Utseende → Widgeter og legg til «Spelhubben Weather» i et sidefelt."
+
+#: admin/page-setup.php
+msgid "WordPress %s"
+msgstr "WordPress %s"

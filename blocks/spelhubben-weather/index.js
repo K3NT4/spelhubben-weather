@@ -43,6 +43,15 @@
     { label: __( 'Forecast strip', 'spelhubben-weather' ), value: 'forecast-strip' },
   ];
 
+  const STYLE_PRESETS = [
+    { label: __( '(none)', 'spelhubben-weather' ), value: '' },
+    { label: __( 'Light', 'spelhubben-weather' ), value: 'light' },
+    { label: __( 'Dark', 'spelhubben-weather' ), value: 'dark' },
+    { label: __( 'Neutral', 'spelhubben-weather' ), value: 'neutral' },
+    { label: __( 'Spelhubben', 'spelhubben-weather' ), value: 'spelhubben' },
+    { label: __( 'Compact', 'spelhubben-weather' ), value: 'compact' },
+  ];
+
   registerBlockType( 'spelhubben-weather/spelhubben-weather', {
     edit: ( props ) => {
       const { attributes, setAttributes } = props;
@@ -91,6 +100,22 @@
               value: attributes.preset || '',
               options: PRESETS,
               onChange: ( v ) => setAttributes( { preset: v } ),
+            } ),
+            el( SelectControl, {
+              label: __( 'Style preset', 'spelhubben-weather' ),
+              value: attributes.stylePreset || '',
+              options: STYLE_PRESETS,
+              onChange: ( v ) => setAttributes( { stylePreset: v } ),
+            } ),
+            el( ToggleControl, {
+              label: __( 'Sun and moon', 'spelhubben-weather' ),
+              checked: !! attributes.astro,
+              onChange: ( v ) => setAttributes( { astro: !! v } ),
+            } ),
+            el( ToggleControl, {
+              label: __( 'Forecast insights', 'spelhubben-weather' ),
+              checked: !! attributes.insights,
+              onChange: ( v ) => setAttributes( { insights: !! v } ),
             } ),
             el( 'div', { style: { marginBottom: '16px' } },
               el( 'label', { style: { display: 'block', marginBottom: '8px', fontWeight: '600' } }, __( 'Show fields', 'spelhubben-weather' ) ),

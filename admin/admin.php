@@ -92,14 +92,14 @@ if ( ! function_exists( 'sv_vader_admin_enqueue' ) ) {
 
 			'assets' => array(
 				'css' => array(
-					trailingslashit( SV_VADER_URL ) . 'assets/style.css',
-					trailingslashit( SV_VADER_URL ) . 'assets/vendor/leaflet/leaflet.css',
-					trailingslashit( SV_VADER_URL ) . 'assets/openlayers.css',
+					trailingslashit( SV_VADER_URL ) . 'assets/style.css?ver=' . rawurlencode(SV_VADER_VER),
+					trailingslashit( SV_VADER_URL ) . 'assets/vendor/leaflet/leaflet.css?ver=' . rawurlencode(SV_VADER_VER),
+					trailingslashit( SV_VADER_URL ) . 'assets/openlayers.css?ver=' . rawurlencode(SV_VADER_VER),
 				),
 				'js'  => array(
-					trailingslashit( SV_VADER_URL ) . 'assets/openlayers.js',
-					trailingslashit( SV_VADER_URL ) . 'assets/vendor/leaflet/leaflet.js',
-					trailingslashit( SV_VADER_URL ) . 'assets/map.js',
+					trailingslashit( SV_VADER_URL ) . 'assets/openlayers.js?ver=' . rawurlencode(SV_VADER_VER),
+					trailingslashit( SV_VADER_URL ) . 'assets/vendor/leaflet/leaflet.js?ver=' . rawurlencode(SV_VADER_VER),
+					trailingslashit( SV_VADER_URL ) . 'assets/map.js?ver=' . rawurlencode(SV_VADER_VER),
 				),
 				'svv' => array(
 					'iconBase' => trailingslashit( SV_VADER_URL ) . 'assets/vendor/leaflet/images/',

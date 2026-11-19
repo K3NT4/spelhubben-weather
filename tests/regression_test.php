@@ -66,6 +66,10 @@ if (!function_exists('esc_textarea')) {
 	}
 }
 
+function apply_filters($hook, $value, ...$args) { return $value; }
+function esc_attr_e($text, $domain = null) { echo htmlspecialchars($text, ENT_QUOTES, 'UTF-8'); }
+function wp_date($format, $timestamp, $timezone = null) { return (new DateTimeImmutable('@' . $timestamp))->setTimezone($timezone ?? new DateTimeZone('UTC'))->format($format); }
+
 if (!function_exists('get_option')) {
 	function get_option($name, $default = false) {
 		if ($name === 'sv_vader_options' && isset($GLOBALS['svv_test_options']) && is_array($GLOBALS['svv_test_options'])) {
@@ -107,6 +111,7 @@ if (!function_exists('do_action')) {
 if (!function_exists('wp_remote_get')) {
 	function wp_remote_get($url, $args = []) {
 		$GLOBALS['svv_last_http_args'] = $args;
+		$GLOBALS['svv_last_http_url'] = $url;
 		if (!empty($GLOBALS['svv_remote_responses'])) {
 			return array_shift($GLOBALS['svv_remote_responses']);
 		}
@@ -223,9 +228,11 @@ if (!class_exists('SV_Vader_API')) {
 		}
 
 		public function get_hourly_forecast($ort = '', $lat = '', $lon = '', $hours = 24) {
+			$GLOBALS['svv_test_hourly_hours'] = $hours;
+			if (isset($GLOBALS['svv_test_hourly'])) return $GLOBALS['svv_test_hourly'];
 			return [
 				[
-					'time' => '2026-05-03T12:00',
+					'time' => '2026-05-03T12:00:00+00:00',
 					'temp' => 8.2,
 					'wind' => 4.1,
 					'precip' => 0.3,
@@ -272,6 +279,10 @@ if (!function_exists('sv_vader_stats_miss')) {
 require_once __DIR__ . '/../includes/i18n.php';
 require_once __DIR__ . '/../includes/options.php';
 require_once __DIR__ . '/../includes/format.php';
+require_once __DIR__ . '/../includes/presets.php';
+require_once __DIR__ . '/../includes/class-astro.php';
+require_once __DIR__ . '/../includes/class-insights.php';
+require_once __DIR__ . '/../includes/class-panels.php';
 require_once __DIR__ . '/../includes/providers.php';
 require_once __DIR__ . '/../includes/class-renderer.php';
 require_once __DIR__ . '/../includes/class-assets.php';
@@ -423,7 +434,7 @@ $html_hourly_sv = $renderer->render_shortcode([
 	'hours' => '24',
 	'show' => 'temp,wind,icon',
 ]);
-assert_true(strpos($html_hourly_sv, '<div class="svv-hour-time">12:00</div>') !== false, 'hourly forecast uses locale-appropriate 24-hour time for Swedish');
+assert_true(preg_match('/<time class="svv-hour-time"[^>]*>12:00<\/time>/', $html_hourly_sv) === 1, 'hourly forecast uses locale-appropriate 24-hour time for Swedish');
 assert_true(strpos($html_hourly_sv, '12:00 pm') === false && strpos($html_hourly_sv, '12:00 f m') === false, 'hourly forecast avoids 12-hour meridiem for Swedish');
 unset($GLOBALS['svv_test_locale'], $GLOBALS['svv_test_wp_options']);
 
@@ -739,5 +750,105 @@ $setup_warns = svv_check_labels($setup_keys, 'warn');
 assert_true(in_array('OpenWeatherMap needs an API key', $setup_warns, true), 'setup checklist warns when an enabled provider lacks its API key');
 assert_true(in_array('Contact for Yr / MET Norway is empty', $setup_warns, true), 'setup checklist warns when Yr is enabled without contact details');
 assert_true(in_array('No default place set', svv_check_labels(sv_vader_setup_checks(['prov_openmeteo' => 1]), 'warn'), true), 'setup checklist warns when no default place is set');
+
+$GLOBALS['svv_test_options'] = ['map_engine' => 'static'];
+svv_reset_enqueues();
+$assets = new SV_Vader_Assets();
+$assets->enqueue_block_content_assets();
+assert_true(in_array('svv-openlayers-js', $GLOBALS['svv_enqueued_scripts'], true) && in_array('svv-leaflet-js', $GLOBALS['svv_enqueued_scripts'], true), 'editor can preview per-block engine overrides regardless of global engine');
+
+// Optional feature wiring, default compatibility and renderer safety.
+$default_html = $renderer->render_shortcode(['map' => '0']);
+assert_true(strpos($default_html, 'class="svv-astro"') === false && strpos($default_html, 'class="svv-insights"') === false, 'new panels remain opt-in');
+foreach (array_keys(sv_vader_layout_presets()) as $preset) {
+	$html = $renderer->render_shortcode(['map' => '0', 'preset' => $preset]);
+	assert_true(strpos($html, 'svv-preset-' . $preset) !== false, 'existing layout preset preserved: ' . $preset);
+}
+foreach (['light','dark','neutral','spelhubben','compact'] as $style) {
+	$html = $renderer->render_shortcode(['map' => '0', 'style_preset' => $style]);
+	assert_true(strpos($html, 'svv-style-' . $style) !== false, 'style preset rendered: ' . $style);
+}
+$html = $renderer->render_shortcode(['map' => '0', 'style_preset' => 'dark', 'theme' => 'light']);
+assert_true(strpos($html, 'data-svv-theme="light"') !== false, 'explicit theme overrides style preset');
+$html = $renderer->render_shortcode(['map' => '0', 'style_preset' => ['bad']]);
+assert_true(strpos($html, 'svv-style-') === false, 'invalid style input ignored safely');
+$html = $renderer->render_shortcode(['map' => '0', 'astro' => '1', 'extras' => 'moon']);
+assert_true(strpos($html, 'class="svv-astro"') !== false && strpos($html, 'class="svv-moon"') !== false, 'astro coexists with legacy moon extras');
+$html = $renderer->render_shortcode(['map' => '0', 'insights' => '1']);
+assert_true(strpos($html, 'Not enough reliable hourly data') !== false, 'insights provide fallback for insufficient data');
+$GLOBALS['svv_test_hourly'] = [];
+$start = (int)(floor(time() / 3600) * 3600 + 3600);
+for ($i = 0; $i < 24; $i++) $GLOBALS['svv_test_hourly'][] = ['time'=>gmdate('c', $start + $i*3600), 'temp'=>8, 'wind'=>3+$i, 'precip'=>$i<4 ? 0 : 0.3, 'code'=>0];
+$html = $renderer->render_shortcode(['map'=>'0', 'insights'=>'1', 'hours'=>'3']);
+assert_true(strpos($html, 'Longest mostly dry period') !== false && strpos($html, 'Strongest wind') !== false && strpos($html, 'Rain is forecast later') !== false, 'renderer shows validated forecast insights');
+assert_true($GLOBALS['svv_test_hourly_hours'] === 24 && strpos($html, 'class="svv-hourly"') === false, 'insights fetch full horizon without forcing hourly display');
+$html = $renderer->render_shortcode(['map'=>'0', 'insights'=>'1', 'hourly'=>'1', 'hours'=>'3']);
+assert_true(substr_count($html, 'class="svv-hour"') === 3, 'display hour limit preserved with full insight horizon');
+unset($GLOBALS['svv_test_hourly']);
+$callback(['astro'=>true, 'insights'=>true, 'stylePreset'=>'neutral', 'preset'=>'hero']);
+assert_true($capturing_renderer->atts['astro'] === '1' && $capturing_renderer->atts['insights'] === '1' && $capturing_renderer->atts['style_preset'] === 'neutral', 'block forwards new optional features');
+
+// Diagnostic helper is independent of map libraries and limited to administrators.
+function current_user_can($cap) { return $cap === 'manage_options' && !empty($GLOBALS['svv_test_admin']); }
+function admin_url($path) { return '/wp-admin/' . $path; }
+function wp_create_nonce($action) { return 'test-nonce'; }
+$GLOBALS['svv_test_admin'] = false;
+svv_reset_enqueues();
+$assets = new SV_Vader_Assets();
+$assets->enqueue_on_render(true, 'auto');
+assert_true(!in_array('svv-map-status', $GLOBALS['svv_enqueued_scripts'], true), 'guests do not load diagnostic reporter');
+$GLOBALS['svv_test_admin'] = true;
+svv_reset_enqueues();
+$assets = new SV_Vader_Assets();
+$assets->enqueue_on_render(false, 'auto');
+assert_true(!in_array('svv-map-status', $GLOBALS['svv_enqueued_scripts'], true), 'map-less administrator output does not load reporter');
+$assets->enqueue_on_render(true, 'static');
+$assets->apply_map_assets();
+assert_true(in_array('svv-map-status', $GLOBALS['svv_enqueued_scripts'], true), 'administrator gets reporter even for static map');
+assert_true(!in_array('sv-vader-map', $GLOBALS['svv_enqueued_scripts'], true), 'static diagnostic reporting does not load map runtime');
+$GLOBALS['svv_test_admin'] = false;
+
+// Fallback is present in HTML before any script runs, for every map mode.
+foreach (['auto','openlayers','leaflet','static'] as $engine) {
+	$html = $renderer->render_shortcode(['map' => '1', 'map_engine' => $engine, 'lat' => '0', 'lon' => '0']);
+	assert_true(strpos($html, 'class="svv-map-fallback" role="status"') !== false, $engine . ' renders fallback without JavaScript');
+	assert_true(strpos($html, '>0, 0</small>') !== false && strpos($html, 'mlat=0') !== false, $engine . ' preserves zero coordinates and OSM link');
+}
+foreach (['91','abc','59junk','Infinity','0x10',null] as $lat) {
+	$html = $renderer->render_shortcode(['map' => '1', 'lat' => $lat, 'lon' => '18']);
+	assert_true(strpos($html, 'SVV_MAP_INVALID_COORDS') !== false && strpos($html, 'mlat=') === false, 'invalid latitude produces useful fallback without invalid OSM link: ' . $lat);
+}
+$html = $renderer->render_shortcode(['map' => '1', 'layout' => 'inline']);
+assert_true(strpos($html, 'class="svv-map"') === false, 'inline layout still omits maps');
+
+// Provider contract: UTC timestamps, explicit m/s and missing measurements retained.
+$GLOBALS['svv_remote_responses'] = [['response'=>['code'=>200], 'body'=>json_encode(['hourly'=>[
+	'time'=>[1782043200,1782046800,1782050400,1782054000], 'temperature_2m'=>[0,null,'invalid'],
+	'wind_speed_10m'=>[3,0,null], 'precipitation'=>[99,0,null,0.4], 'weather_code'=>[0,61,0],
+]])]];
+$provider_hours = sv_vader_openmeteo_hourly(0, 0, 3);
+parse_str(parse_url($GLOBALS['svv_last_http_url'], PHP_URL_QUERY), $hour_query);
+assert_true($hour_query['timezone'] === 'UTC' && $hour_query['timeformat'] === 'unixtime' && $hour_query['wind_speed_unit'] === 'ms' && (int)$hour_query['forecast_hours'] === 4, 'hourly provider requests unambiguous times and units');
+assert_true($provider_hours[0]['time'] === '2026-06-21T12:00:00+00:00' && $provider_hours[0]['wind'] === 3.0, 'hourly provider normalizes UTC without changing m/s');
+assert_true($provider_hours[0]['temp'] === 0.0 && $provider_hours[1]['precip'] === null && $provider_hours[2]['temp'] === null, 'hourly provider preserves zeros and unknown measurements');
+
+assert_true($provider_hours[0]['precip'] === 0.0 && $provider_hours[2]['precip'] === 0.4, 'precipitation is aligned with upcoming hour rather than preceding hour');
+$GLOBALS['svv_remote_responses'] = [['response'=>['code'=>200], 'body'=>json_encode(['current'=>['temperature_2m'=>1,'wind_speed_10m'=>3]])]];
+$current = sv_vader_openmeteo_current(0, 0);
+parse_str(parse_url($GLOBALS['svv_last_http_url'], PHP_URL_QUERY), $current_query);
+assert_true($current_query['wind_speed_unit'] === 'ms' && $current['wind'] === 3.0, 'current conditions share the same m/s base as hourly forecasts');
+
+// Patterns are registered outside wp-admin as required for editor REST requests.
+function register_block_pattern_category($name, $args) {}
+function register_block_pattern($slug, $args) { $GLOBALS['svv_test_patterns'][$slug] = $args; }
+$block->register_patterns();
+foreach (['weather-card','forecast-row','weather-map','astro-panel'] as $name) {
+	assert_true(isset($GLOBALS['svv_test_patterns']['spelhubben-weather/' . $name]), 'required block pattern registered: ' . $name);
+}
+require_once __DIR__ . '/../includes/class-plugin.php';
+$alias = (new ReflectionClass('SV_Vader_Plugin'))->newInstanceWithoutConstructor();
+$alias->renderer = $capturing_renderer;
+$alias->render_shortcode_alias(['astro'=>'yes','insights'=>'1','style_preset'=>'neutral','preset'=>'hero']);
+assert_true($capturing_renderer->atts['astro'] === '1' && $capturing_renderer->atts['insights'] === '1' && $capturing_renderer->atts['style_preset'] === 'neutral' && $capturing_renderer->atts['preset'] === 'hero', 'public shortcode alias forwards all new options');
 
 echo "All regression checks passed.\n";

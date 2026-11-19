@@ -36,6 +36,8 @@ if ( ! function_exists( 'sv_vader_render_shortcodes_page' ) ) {
 		$nx_tides = '[spelhubben_weather extras="tides"]';
 		$nx_hourly = '[spelhubben_weather hourly="1" hours="24" layout="compact"]';
 		$nx_map_engine = '[spelhubben_weather map="1" map_engine="openlayers"]';
+		$nx_astro = '[spelhubben_weather astro="1" style_preset="neutral"]';
+		$nx_insights = '[spelhubben_weather insights="1" hourly="1" hours="24"]';
 		$nx_preset = '[spelhubben_weather preset="dashboard" hourly="1" map="1"]';
 
 		$new_examples = array(
@@ -50,6 +52,8 @@ if ( ! function_exists( 'sv_vader_render_shortcodes_page' ) ) {
 			array( 'label' => __( 'Show moon in daily forecast (example)', 'spelhubben-weather' ), 'code' => $nx_moon_daily ),
 			array( 'label' => __( 'Hourly forecast (24h)', 'spelhubben-weather' ), 'code' => $nx_hourly ),
 			array( 'label' => __( 'OpenLayers map engine', 'spelhubben-weather' ), 'code' => $nx_map_engine ),
+			array( 'label' => __( 'Sun and moon', 'spelhubben-weather' ), 'code' => $nx_astro ),
+			array( 'label' => __( 'Forecast insights', 'spelhubben-weather' ), 'code' => $nx_insights ),
 			array( 'label' => __( 'Dashboard preset', 'spelhubben-weather' ), 'code' => $nx_preset ),
 			array( 'label' => __( 'Provider comparison mode', 'spelhubben-weather' ), 'code' => $nx6 ),
 			array( 'label' => __( 'With weather alerts enabled', 'spelhubben-weather' ), 'code' => $nx7 ),
@@ -197,6 +201,8 @@ if ( ! function_exists( 'sv_vader_render_shortcodes_page' ) ) {
 									<div class="svv-builder-options">
 										<label><input type="checkbox" class="svv-b-map" value="1"> <?php esc_html_e( 'Map', 'spelhubben-weather' ); ?></label>
 										<label><input type="checkbox" class="svv-b-animate" value="1" checked> <?php esc_html_e( 'Animate', 'spelhubben-weather' ); ?></label>
+										<label><input type="checkbox" class="svv-b-astro" value="1"> <?php esc_html_e('Sun and moon', 'spelhubben-weather'); ?></label>
+										<label><input type="checkbox" class="svv-b-insights" value="1"> <?php esc_html_e('Forecast insights', 'spelhubben-weather'); ?></label>
 										<label><input type="checkbox" class="svv-b-hourly" value="1"> <?php esc_html_e( 'Hourly forecast', 'spelhubben-weather' ); ?></label>
 										<label><input type="checkbox" class="svv-b-tides" value="1"> <?php esc_html_e( 'Tides', 'spelhubben-weather' ); ?></label>
 										<label><input type="checkbox" class="svv-b-moon" value="moon"> <?php esc_html_e( 'Moon (meta)', 'spelhubben-weather' ); ?></label>
@@ -224,6 +230,14 @@ if ( ! function_exists( 'sv_vader_render_shortcodes_page' ) ) {
 										<option value="sidebar">sidebar</option>
 										<option value="dashboard">dashboard</option>
 										<option value="forecast-strip">forecast-strip</option>
+									</select>
+								</div>
+								<div class="svv-builder-group">
+									<strong><?php esc_html_e('Style preset', 'spelhubben-weather'); ?></strong><br>
+									<select class="svv-b-style-preset">
+										<?php foreach (sv_vader_style_presets() as $value => $label): ?>
+										<option value="<?php echo esc_attr($value); ?>"><?php echo esc_html($label); ?></option>
+										<?php endforeach; ?>
 									</select>
 								</div>
 								<div class="svv-builder-group">
@@ -310,6 +324,9 @@ if ( ! function_exists( 'sv_vader_render_shortcodes_page' ) ) {
 									<?php /* translators: %s: comma-separated provider identifiers. */ ?>
 									<tr data-group="disp"><td><code>providers</code></td><td><?php echo esc_html( sprintf( __( '%s (comma-separated). Quick Builder checkboxes below use the same list.', 'spelhubben-weather' ), $provider_csv ) ); ?></td><td><code>providers="smhi,yr,metno_nowcast,fmi"</code></td></tr>
 									<tr data-group="disp"><td><code>animate</code></td><td><?php esc_html_e( '1/0 – subtle animations', 'spelhubben-weather' ); ?></td><td><code>animate="1"</code></td></tr>
+									<tr data-group="disp"><td><code>style_preset</code></td><td>light | dark | neutral | spelhubben | compact</td><td><code>style_preset="neutral"</code></td></tr>
+									<tr data-group="disp"><td><code>astro</code></td><td><?php esc_html_e('Sun and moon', 'spelhubben-weather'); ?> (1/0)</td><td><code>astro="1"</code></td></tr>
+									<tr data-group="fc"><td><code>insights</code></td><td><?php esc_html_e('Forecast insights', 'spelhubben-weather'); ?> (1/0)</td><td><code>insights="1"</code></td></tr>
 									<tr data-group="disp"><td><code>preset</code></td><td><?php esc_html_e( 'mini | hero | sidebar | dashboard | forecast-strip', 'spelhubben-weather' ); ?></td><td><code>preset="dashboard"</code></td></tr>
 
 									<tr data-group="fc"><td><code>forecast</code></td><td><?php esc_html_e( 'none | daily', 'spelhubben-weather' ); ?></td><td><code>forecast="daily"</code></td></tr>
@@ -323,7 +340,7 @@ if ( ! function_exists( 'sv_vader_render_shortcodes_page' ) ) {
 									<tr data-group="uf"><td><code>precip_unit</code></td><td><?php esc_html_e( 'Override precipitation unit', 'spelhubben-weather' ); ?></td><td><code>precip_unit="in"</code></td></tr>
 									<tr data-group="uf"><td><code>date_format</code></td><td><?php esc_html_e( 'Forecast date label (PHP date)', 'spelhubben-weather' ); ?></td><td><code>date_format="D j/n"</code></td></tr>
 									<tr data-group="disp"><td><code>theme</code></td><td><?php esc_html_e( 'auto | light | dark — force display theme (auto uses site/browser preference)', 'spelhubben-weather' ); ?></td><td><code>theme="dark"</code></td></tr>
-									<tr data-group="disp"><td><code>extras</code></td><td><?php esc_html_e( 'Comma-separated extra features. Supported: moon, moon_daily, tides', 'spelhubben-weather' ); ?></td><td><code>extras="moon,moon_daily"</code></td></tr>
+									<tr data-group="disp"><td><code>extras</code></td><td><?php esc_html_e( 'Comma-separated extra features. Supported: moon, moon_daily, tides, astro, insights', 'spelhubben-weather' ); ?></td><td><code>extras="moon,moon_daily"</code></td></tr>
 									<tr data-group="disp"><td><code>show_moon</code></td><td><?php esc_html_e( 'Legacy boolean to show moon in meta area (1/0). Use extras="moon" instead.', 'spelhubben-weather' ); ?></td><td><code>show_moon="1"</code></td></tr>
 								</tbody>
 							</table>

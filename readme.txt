@@ -4,9 +4,8 @@ Tags: weather, forecast, widget, shortcode, blocks
 Requires at least: 6.8
 Tested up to: 7.1
 Requires PHP: 7.4
-Stable tag: 2.1.7
+Stable tag: 2.2.0
 Donate link: https://www.paypal.com/donate/?hosted_button_id=CV74CEXY5XEAU
-
 License: GPLv3 or later
 License URI: https://www.gnu.org/licenses/gpl-3.0.html
 
@@ -26,11 +25,46 @@ For Roadmap: https://github.com/users/K3NT4/projects/2
 Weather widget & block with optional map and daily forecast. Can combine Open-Meteo, SMHI, Yr/MET, MET Norway Nowcast, FMI, OpenWeatherMap, and WeatherAPI.com data.
 
 == Description ==
-This plugin displays current weather and an optional forecast. It can aggregate data from free global weather providers (Open-Meteo, SMHI, Yr/MET Norway, MET Norway Nowcast, FMI, OpenWeatherMap, and WeatherAPI.com) and compute a simple consensus. Works worldwide with excellent coverage in Europe and beyond.
+
+Local 2.2.0 development candidate — UNRELEASED. This file prepares listing metadata; no publication is implied. Local validation environment: WordPress 7.1.5 / PHP 8.5.
+
+This plugin displays current weather and an optional forecast. It can aggregate data from weather providers (Open-Meteo, SMHI, Yr/MET Norway, MET Norway Nowcast, FMI, OpenWeatherMap, and WeatherAPI.com) and compute a simple consensus. Coverage and availability depend on the provider and location.
 
 **PHP compatibility:** Supports PHP 7.4 through PHP 8.5. The code passes PHP lint and the plugin's regression test suite on PHP 8.5 with all deprecation notices enabled, and it uses no deprecated or removed PHP features. Running the latest patched PHP release is recommended.
 
+**Features**
+- **Shortcode** `[spelhubben_weather]`, **Gutenberg block**, and **classic widget**
+- **7 Weather Providers:** Open-Meteo, SMHI, Yr (MET Norway), MET Norway Nowcast, FMI, OpenWeatherMap, WeatherAPI.com — enable any combination
+- **Icon Themes:** Classic, Modern Flat, Modern Gradient, Modern 2026, Modern 3D (selectable in admin settings)
+- **Multiple Layouts:** `inline`, `compact`, `card`, `detailed`
+- **Daily Forecast:** 3–10 days customizable
+- **Provider Comparison:** Side-by-side data from all enabled providers
+- **Smart Map:** OpenLayers by default, Leaflet legacy mode, static fallback and OpenStreetMap attribution (ODbL)
+- **Hourly Forecast:** compact 3–24 hour timeline powered by Open-Meteo with locale-aware time labels
+- **Wind direction display:** Rotated arrow with cardinal labels (optional via `show=wind_dir`)
+- **Local Icons:** SVG icons (no CDN dependency), responsive scaling
+- **Performance:** 6-30x faster settings page, lazy-loaded plugin showcase, optimized caching
+- **Privacy:** No plugin cookies or tracking; interactive maps request third-party OpenStreetMap tiles
+- **Translation-Ready:** English base strings, Swedish and Norwegian Bokmål translations included
+
+*Not affiliated with Open-Meteo, SMHI, Yr/MET Norway, MET Norway Nowcast, FMI, OpenLayers, Leaflet, or OpenStreetMap. Names are used for descriptive purposes only. Map data © OpenStreetMap contributors (ODbL).*
+
 == Changelog ==
+
+= 2.2.0 =
+UNRELEASED — local development candidate.
+
+- Added: Voluntary review link and permanently dismissible admin reminder after 14 days; no tracking or frontend popup.
+
+- Added: Optional sun/moon panel with sunrise, sunset, day length, polar conditions and estimated next main moon phase.
+- Added: Conservative hourly forecast insights with an explanatory fallback when reliable data is insufficient.
+- Added: Separate Light, Dark, Neutral, Spelhubben and Compact style presets across shortcode, block, widget and admin preview.
+- Improved: Existing Mini, Hero, Sidebar, Dashboard and Forecast strip layouts; responsive labelled hourly timeline with keyboard scrolling.
+- Added: Weather card, forecast row and astro block patterns; existing patterns retained and available in editor REST requests.
+- Fixed: Explicit m/s in current/hourly Open-Meteo data, UTC hourly timestamps and correctly aligned precipitation with new cache schemas; existing moon extras, layouts and hour limits preserved.
+- Fixed: Server-rendered map fallback works without map.js, with strict coordinates and readable dark styling.
+- Added: Administrator-only map diagnostics with latest status/error, minimal data and rate limits.
+- Maintenance: Updated Swedish/Norwegian translations, tests and isolated release builds.
 
 = 2.1.7 =
 - Fixed: The weather widget lost its styling, icon, wind arrow and map on pages where it is placed outside the page content (theme sidebar, widget area or template). Assets are now also loaded at render time, so the widget looks the same on every page.
@@ -118,23 +152,6 @@ This plugin displays current weather and an optional forecast. It can aggregate 
 - Improved: Documentation updates and metadata cleaned up for the new release.
 
 
-**Features**
-- **Shortcode** `[spelhubben_weather]`, **Gutenberg block**, and **classic widget**
-- **7 Weather Providers:** Open-Meteo, SMHI, Yr (MET Norway), MET Norway Nowcast, FMI, OpenWeatherMap, WeatherAPI.com — enable any combination
-- **Icon Themes:** Classic, Modern Flat, Modern Gradient, Modern 2026, Modern 3D (selectable in admin settings)
-- **Multiple Layouts:** `inline`, `compact`, `card`, `detailed`
-- **Daily Forecast:** 3–10 days customizable
-- **Provider Comparison:** Side-by-side data from all enabled providers
-- **Smart Map:** OpenLayers by default, Leaflet legacy mode, static fallback and OpenStreetMap attribution (ODbL)
-- **Hourly Forecast:** compact 3–24 hour timeline powered by Open-Meteo with locale-aware time labels
-- **Wind direction display:** Rotated arrow with cardinal labels (optional via `show=wind_dir`)
-- **Local Icons:** SVG icons (no CDN dependency), responsive scaling
-- **Performance:** 6-30x faster settings page, lazy-loaded plugin showcase, optimized caching
-- **Fully GDPR Compliant:** No cookies, no tracking, no personal data collection
-- **Translation-Ready:** English base strings, Swedish and Norwegian Bokmål translations included
-
-*Not affiliated with Open-Meteo, SMHI, Yr/MET Norway, MET Norway Nowcast, FMI, OpenLayers, Leaflet, or OpenStreetMap. Names are used for descriptive purposes only. Map data © OpenStreetMap contributors (ODbL).*
-
 == Requirements ==
 - WordPress 6.8 or newer and PHP 7.4 or newer (PHP 8.5 verified).
 - Your server must be able to make outgoing HTTPS requests; all weather data is fetched server-side. Hosts that block outgoing connections, or `WP_HTTP_BLOCK_EXTERNAL`, will stop the weather from loading.
@@ -147,9 +164,10 @@ This plugin displays current weather and an optional forecast. It can aggregate 
 After activation the settings page shows a "Getting started & requirements" checklist that flags anything missing.
 
 == Installation ==
-1. Upload/activate the plugin.
+1. Upload the plugin ZIP via Plugins → Add New → Upload Plugin, or upload its folder to `/wp-content/plugins/`, then activate it.
 2. Go to **Settings → Spelhubben Weather** and set defaults (place, shown fields, layout, providers, cache time, units/format).
-3. Add weather to your site in any of these ways:
+3. Use the Shortcodes page Quick Builder to preview and copy a shortcode, or add a block/widget below. New astro/insights panels and style presets are opt-in; default appearance is unchanged.
+4. Clear page/optimization caches after updates and verify output on a public page.
 
 = Block (Gutenberg) =
 - Edit a page/post → click **Add block** → search for **“Spelhubben Weather”**.
@@ -173,6 +191,21 @@ After activation the settings page shows a "Getting started & requirements" chec
 
 == Frequently Asked Questions ==
 
+= What is new in 2.2? =
+Use `[spelhubben_weather astro="1" insights="1" style_preset="neutral"]`. Block/widget controls and the copyable admin preview expose these options. Layout presets (`preset`) remain mini, hero, sidebar, dashboard and forecast-strip. Independent style presets are light, dark, neutral, spelhubben and compact. Explicit light/dark theme overrides conflicting style; empty/invalid style preserves the default. Inline omits optional panels. Patterns include weather-card, forecast-row, weather-map and astro-panel alongside existing patterns.
+
+= What timezone and accuracy does astronomy use? =
+The sun/moon panel uses the WordPress site timezone, explicitly shown in the panel, rather than automatically selecting the location’s timezone. Sunrise, sunset and day length belong to the same solar cycle; event dates clarify adjacent-day events. Polar day/night are handled explicitly. Moon phases and the next main phase use an approximation, not precision astronomical predictions. Existing `extras="moon"` and `extras="moon_daily"` remain supported; `phase` and `illumination` are not `show` fields.
+
+= How are forecast insights calculated? =
+Insights use complete future hourly forecasts within the next 24 hours, requiring at least six consecutive complete hours with wind in m/s and precipitation in mm. Missing, invalid, gapped or stale data produces an explanatory fallback. A mostly dry period requires less than 0.1 mm per hour for at least two consecutive hours; rain later requires at least 0.2 mm in an hour at least two hours ahead after two initially dry forecast hours. Wind peaks are relative to the available forecast. These summaries provide no probabilities or guarantees and are not weather warnings. Enabling insights alone does not display the hourly timeline.
+
+= What do map diagnostics mean? =
+The static map fallback is included in the server-rendered HTML, even when JavaScript is blocked or never loads. With valid coordinates it includes an OpenStreetMap link. Performance shows administrator-only, rate-limited map diagnostics: the latest status and a separate latest error, retained for up to seven days. Reports store fixed status codes, engine names and timestamps, not visitor identities or raw browser errors. Guests do not report. This is not live monitoring and cannot identify the exact plugin blocking a script.
+
+= How do support and review reminders work? =
+Support and bug reports: https://github.com/K3NT4/spelhubben-weather/issues. Reviews are voluntary: https://wordpress.org/plugins/spelhubben-weather/#reviews. A discreet settings link and a reminder 14 days after the first administrator visit after installation (or upgrading from a version without the reminder) appear only on the plugin’s own admin pages. Choose “No thanks” to permanently dismiss the reminder for the whole site, including after updates; the optional settings link remains. There is no frontend popup, tracking or background request for reviews; reviewing or dismissing has no effect on plugin functionality.
+
 = Where does the data come from? =
 From public APIs such as Open-Meteo, SMHI, Yr/MET Norway, MET Norway Nowcast, **FMI** (Finnish Meteorological Institute), OpenWeatherMap, and WeatherAPI.com. You choose providers under **Settings → Spelhubben Weather** or per block/shortcode/widget via the `providers` attribute.
 
@@ -184,6 +217,8 @@ All three render the same UI. Use the **block** in the block editor, the **short
 
 = How do place and coordinates work? =
 
+If `lat` and `lon` are provided they take precedence. Otherwise the plugin geocodes the `place` string (e.g. `place="Umeå"`). Set a global default place in settings.
+
 = Tide (experimental) =
 
 If you're testing experimental tide support:
@@ -192,8 +227,6 @@ If you're testing experimental tide support:
 - **Shortcode:** Use `extras="tides"` or `tides="1"` to show tide events, e.g. `[spelhubben_weather place="Gothenburg" extras="tides"]`.
 - **Providers:** WorldTides (global, commercial), NOAA Tides & Currents (US only), or supply a custom endpoint that returns JSON with `events`/`extremes`/`data` arrays (items should include `time`, and optionally `type` and `height`).
 - **Troubleshooting:** Use `tests/tide_test.php` to validate provider responses and caching. Ensure provider settings and API key are correct; tide results are cached according to the configured TTL.
-
-If `lat` and `lon` are provided they take precedence. Otherwise the plugin geocodes the `place` string (e.g. `place="Umeå"`). Set a global default place in settings.
 
 = What fields can I show/hide? =
 Use `show="temp,wind,icon"` (comma separated). Defaults are set in settings. Add `wind_dir` to show wind direction arrow and label.
@@ -247,9 +280,9 @@ The plugin does not set cookies by itself. If you enable the map, OpenStreetMap 
 - Rate limiting: reduce refreshes or increase cache TTL.
 == Translations ==
 
-The plugin is **fully translatable** and includes built-in translations for **Swedish (sv_SE)** and **Norwegian Bokmål (nb_NO)**.
+English (`en_US`) is the source language. The plugin is **fully translatable** and includes built-in translations for **Swedish (sv_SE)** and **Norwegian Bokmål (nb_NO)**.
 
-=== How to translate the plugin ===
+= How to translate the plugin =
 
 **Option 1: Contribute to translate.wordpress.org (recommended)**
 - Visit [translate.wordpress.org](https://translate.wordpress.org/projects/wp-plugins/spelhubben-weather/)
@@ -312,8 +345,11 @@ languages/
 - Check that translated UI aligns properly in your language (RTL vs LTR)
 
 == Screenshots ==
-1. Frontend examples: inline, compact, card, detailed, with optional map.
-2. Frontend example: New look and wind direction
+
+Existing screenshots show earlier interfaces, not the new 2.2 panels or controls.
+
+1. Frontend weather examples with maps and daily forecast.
+2. Frontend weather card: wind direction, map and daily forecast.
 3. Settings page: defaults, providers, cache, units & format.
 4. Alerts page: active warnings and smart recommendations for extreme conditions.
 5. Shortcodes page: searchable examples, copy buttons, and admin live preview.
@@ -328,23 +364,23 @@ languages/
 = 1.9.9 =
 * FIX: Leaflet/map is now displayed correctly even for guests and special pages where $post is not set (fallback to get_queried_object()).
 
-- = 1.9.8 =
+= 1.9.8 =
 - **Fixed:** Fixed an issue where the Leaflet map could fail to load on live/optimized sites due to script handle conflicts with themes or other plugins.
 - **Improved:** Renamed Leaflet asset handles to unique, plugin-specific names to prevent collisions and ensure correct dependency resolution.
 - **Improved:** Removed forced defer handling for Leaflet/map scripts to avoid broken load order when caching/optimization plugins are active.
 - **Improved:** Improved map initialization logic to prevent infinite retry loops and reduce console spam when Leaflet isn’t available.
 - **Improved:** Kept Leaflet/map assets conditionally loaded only on pages where the widget/block/shortcode is actually rendered.
 
-- = 1.9.7 =
+= 1.9.7 =
 - **Experimental:** Tide support added for testing — opt-in feature. Adds support for WorldTides (API key), NOAA (US-only), and a configurable custom endpoint. Shortcode support via `extras="tides"` or `tides="1"`. Admin visibility can be toggled while rolling out to selected users. Responses are cached; configure TTL in Settings.
 
-- = 1.9.5 =
+= 1.9.5 =
 - **New:** Moon phase support via `extras="moon"` and daily moon information via `extras="moon_daily"`.
 
-- = 1.9.4 =
+= 1.9.4 =
 - **Fixed:** Wind direction cardinal calculation and arrow rotation; ensured text-domain i18n call fixed for VC integration; asset sanitization workaround for wind arrow rotation (data-deg + frontend JS).
 
-- = 1.9.3 =
+= 1.9.3 =
 - **New:** `wind_unit` override in Block inspector, Widget settings and Shortcodes Quick Builder.
 - **Improved:** `metric_knt` preset for metric display with knots.
 - **Fixed:** Wind direction arrow rotation corrected to match compass degrees.
@@ -352,14 +388,14 @@ languages/
 - **Fixed:** Alert threshold comparisons now converted into display units to avoid false alerts.
 - **Fixed:** PHP parse error in admin page resolved.
 - **Changed:** Plugin version bumped to 1.9.3; readme stable tag updated.
-- = 1.9.2 =
+= 1.9.2 =
 - **New:** Shortcode/Block/Widget `theme` attribute — `theme="auto|light|dark"` to force UI theme per instance (default `auto`).
 - **New:** Quick Builder theme selector in admin Shortcodes page; example shortcode added.
 - **Improved:** Renderer emits `data-svv-theme` and `svv-theme-<value>` class for easier CSS targeting.
 - **Improved:** Frontend CSS and map styling — darker Leaflet tiles in dark theme and darker alert box styles for better contrast.
 - **Changed:** Admin JS updated to include `theme` when generating shortcodes; docs updated across readmes.
 
-- = 1.9.0 =
+= 1.9.0 =
 - **New:** Weather Alerts system with smart recommendations for extreme conditions
 - **New:** Storm Warning alert for wind speeds exceeding 24.5 m/s
 - **New:** Settings Export & Import feature for easy configuration management
@@ -458,6 +494,9 @@ languages/
 
 
 == Upgrade Notice ==
+= 2.2.0 =
+Adds optional sun/moon panels, forecast insights, styles and block patterns. Improves hourly forecasts and map fallback/diagnostics. Existing defaults remain unchanged. Clear page caches after updating.
+
 = 2.1.7 =
 Fixes missing styling and map for weather shown in sidebars/widget areas on pages other than the one with the shortcode, loads map scripts only when needed, and adds a getting-started checklist. Clear any page cache after updating.
 
