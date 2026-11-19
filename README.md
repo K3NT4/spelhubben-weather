@@ -4,9 +4,9 @@ WordPress weather plugin displaying current conditions, compact hourly forecasts
 
 For common questions and troubleshooting see the FAQ: [Docs/FAQ.md](Docs/FAQ.md)
 
-**Version:** 2.2.0 (local release candidate; not published)
+**Version:** 2.2.0
 
-**Release status:** The 2.2.0 work is prepared locally. No release tag or WordPress.org publication has been made. Clear page caches when installing the new assets.
+**Update note:** Clear page caches after updating to 2.2.0 so the new scripts and styles are loaded. New panels and style presets remain opt-in.
 
 ## Requirements
 
@@ -26,7 +26,7 @@ Support and bug reports: https://github.com/K3NT4/spelhubben-weather/issues. Rev
 
 ## Changelog
 
-### 2.2.0 (unreleased)
+### 2.2.0 (2026-11-19)
 - **Added:** Voluntary review link and dismissible reminder on the plugin’s admin pages after 14 days; no tracking or frontend popup.
 - **Added:** Optional sun/moon panel with sunrise, sunset, day length, polar day/night and estimated next main moon phase. Existing moon extras remain supported.
 - **Added:** Conservative forecast insights for mostly dry periods, strongest forecast wind and rain later, with a fallback when hourly data is insufficient.

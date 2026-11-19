@@ -1,6 +1,6 @@
-# 2.2.0 local verification
+# 2.2.0 release verification
 
-Status: release candidate prepared for GitHub review, not published to WordPress.org. No release tag, GitHub issue update or project-board change is part of this work. Branch pushes and a draft pull request are used to run CI; merging readme changes into main also triggers the separate WordPress.org asset/readme workflow.
+Validation record for 2.2.0. GitHub issue and project-board state are unchanged. WordPress.org plugin publication is triggered by an explicitly pushed release tag; readme/assets updates run separately on eligible main-branch changes.
 
 ## Scope
 
@@ -29,7 +29,7 @@ Local WordPress 7.1.5, PHP 8.5, and the Paseo browser were used.
 
 ## Limits and follow-up
 
-- PHP 7.4–8.5 checks are configured in CI; this local run used PHP 8.5 only. Re-run the full matrix before publication.
+- Local checks used PHP 8.5. GitHub Actions also passed lint and regressions on PHP 7.4, 8.1, 8.2, 8.3, 8.4 and 8.5, plus translation compatibility on WordPress 6.8/latest and the asset/release checks: [verified run](https://github.com/K3NT4/spelhubben-weather/actions/runs/44490813522).
 - Plugin Check was static; it does not prove absence of all defects or replace testing with other themes/plugins.
 - Moon dates are approximate. Insights require sufficient complete future data and provide summaries, not weather guarantees or probabilities.
 - The dependency audit still reports the pre-existing moderate advisory in the indirect development dependency `fflate`; dependencies were not upgraded in this feature work.
