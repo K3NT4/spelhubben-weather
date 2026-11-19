@@ -26,8 +26,6 @@ Weather widget & block with optional map and daily forecast. Can combine Open-Me
 
 == Description ==
 
-Local 2.2.0 development candidate — UNRELEASED. This file prepares listing metadata; no publication is implied. Local validation environment: WordPress 7.1.5 / PHP 8.5.
-
 This plugin displays current weather and an optional forecast. It can aggregate data from weather providers (Open-Meteo, SMHI, Yr/MET Norway, MET Norway Nowcast, FMI, OpenWeatherMap, and WeatherAPI.com) and compute a simple consensus. Coverage and availability depend on the provider and location.
 
 **PHP compatibility:** Supports PHP 7.4 through PHP 8.5. The code passes PHP lint and the plugin's regression test suite on PHP 8.5 with all deprecation notices enabled, and it uses no deprecated or removed PHP features. Running the latest patched PHP release is recommended.
@@ -52,8 +50,6 @@ This plugin displays current weather and an optional forecast. It can aggregate 
 == Changelog ==
 
 = 2.2.0 =
-UNRELEASED — local development candidate.
-
 - Added: Voluntary review link and permanently dismissible admin reminder after 14 days; no tracking or frontend popup.
 
 - Added: Optional sun/moon panel with sunrise, sunset, day length, polar conditions and estimated next main moon phase.
