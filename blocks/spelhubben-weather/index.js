@@ -128,6 +128,7 @@
                 const currentShow = ( attributes.show || '' ).split( ',' ).map( s => s.trim() );
                 const isChecked = currentShow.includes( item.key );
                 return el( ToggleControl, {
+                  key: item.key,
                   label: item.label,
                   checked: isChecked,
                   onChange: ( checked ) => {

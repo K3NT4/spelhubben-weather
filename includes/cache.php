@@ -34,8 +34,10 @@ if (!function_exists('sv_vader_cache_delete')) {
 if (!function_exists('sv_vader_cache_invalidate_all')) {
     function sv_vader_cache_invalidate_all() : void {
         // Rotate salt to effectively invalidate all cached keys without touching DB directly.
-        $opts = get_option('sv_vader_options', []);
-        if (!is_array($opts)) $opts = [];
+        // Start from the merged options: the stored option of an older install may
+        // lack newer keys, and the sanitizer would turn those missing checkboxes
+        // (providers, map default) into 0.
+        $opts = sv_vader_get_options();
         $opts['cache_salt'] = (string) time();
         update_option('sv_vader_options', $opts, false);
     }

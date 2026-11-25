@@ -183,44 +183,65 @@ if (!function_exists('sv_vader_openmeteo_current')) {
 
 if (!function_exists('sv_vader_smhi_current')) {
     function sv_vader_smhi_current($lat, $lon) {
+        // SMHI retired the pmp3g/version/2 point forecast (it now returns 404);
+        // snow1g/version/1 is the replacement.
         $url = sprintf(
-            'https://opendata.smhi.se/meteorological/forecast/api/category/pmp3g/version/2/geotype/point/lon/%s/lat/%s/data.json',
-            rawurlencode($lon), rawurlencode($lat)
+            'https://opendata-download-metfcst.smhi.se/api/category/snow1g/version/1/geotype/point/lon/%s/lat/%s/data.json',
+            rawurlencode(sv_vader_coord_string($lon)), rawurlencode(sv_vader_coord_string($lat))
         );
-        $res = sv_vader_http_get($url, [
-            'user-agent' => 'Spelhubben-Weather/1.0'
-        ]);
-        $remote_status = sv_vader_remote_error_status($res, 200);
-        if ($remote_status !== '') return ['_status' => $remote_status];
+        $res = sv_vader_http_get($url, []);
+        if (is_wp_error($res)) return ['_status' => 'request_failed'];
+        $code = wp_remote_retrieve_response_code($res);
+        if ($code === 404) return ['_status' => 'no_coverage']; // Point outside SMHI's grid.
+        if ($code !== 200) return ['_status' => 'request_failed'];
         $j = json_decode(wp_remote_retrieve_body($res), true);
-        if (empty($j['timeSeries'][0])) return ['_status' => 'no_data'];
+        return sv_vader_smhi_parse_snow1g($j, current_time('timestamp', true));
+    }
+}
 
-        $now = current_time('timestamp', true);
+if (!function_exists('sv_vader_coord_string')) {
+    /** Format a coordinate for URL paths: plain decimal, at most 6 decimals, never exponent notation. */
+    function sv_vader_coord_string($value) {
+        $s = rtrim(rtrim(sprintf('%.6F', (float) $value), '0'), '.');
+        return ($s === '-0' || $s === '') ? '0' : $s;
+    }
+}
+
+if (!function_exists('sv_vader_smhi_parse_snow1g')) {
+    /**
+     * Normalize an SMHI snow1g point forecast to the shared provider shape,
+     * using the time step nearest to $now (UTC timestamp).
+     */
+    function sv_vader_smhi_parse_snow1g($j, $now) {
+        if (!is_array($j) || empty($j['timeSeries']) || !is_array($j['timeSeries'])) return ['_status' => 'no_data'];
+
         $nearest = null; $mindiff = PHP_INT_MAX;
         foreach ($j['timeSeries'] as $ts) {
-            $t = strtotime($ts['validTime']);
+            $t = strtotime((string)($ts['time'] ?? ''));
+            if (!$t) continue;
             $diff = abs($t - $now);
             if ($diff < $mindiff) { $mindiff = $diff; $nearest = $ts; }
         }
-        if (!$nearest || empty($nearest['parameters'])) return ['_status' => 'no_data'];
+        $d = (is_array($nearest) && isset($nearest['data']) && is_array($nearest['data'])) ? $nearest['data'] : null;
+        if (!$d) return ['_status' => 'no_data'];
 
-        $map = [];
-        foreach ($nearest['parameters'] as $p) {
-            $map[$p['name']] = $p['values'][0];
-        }
-
-        // SMHI total cloud cover (oktas 0..8) → percent
-        $cloud_pct = isset($map['tcc']) ? intval(round(($map['tcc'] / 8) * 100)) : null;
-
-        return [
-            'temp'     => isset($map['t']) ? floatval($map['t']) : null,
-            'wind'     => isset($map['ws']) ? floatval($map['ws']) : null,
-            'wind_dir' => isset($map['wd']) ? floatval($map['wd']) : null,
-            'precip'   => isset($map['pmean']) ? floatval($map['pmean']) : null,
-            'cloud'    => $cloud_pct,
+        $num = static function ($key) use ($d) {
+            return (isset($d[$key]) && is_numeric($d[$key])) ? floatval($d[$key]) : null;
+        };
+        // SMHI cloud cover is given in oktas (0..8) → percent.
+        $oktas = $num('cloud_area_fraction');
+        $out = [
+            'temp'     => $num('air_temperature'),
+            'wind'     => $num('wind_speed'),
+            'wind_dir' => $num('wind_from_direction'),
+            'precip'   => $num('precipitation_amount_mean'),
+            'cloud'    => $oktas !== null ? intval(round((max(0, min(8, $oktas)) / 8) * 100)) : null,
             'code'     => null,
             'desc'     => null,
         ];
+        return ($out['temp'] === null && $out['wind'] === null && $out['wind_dir'] === null && $out['precip'] === null && $out['cloud'] === null)
+            ? ['_status' => 'no_data']
+            : $out;
     }
 }
 
@@ -597,7 +618,8 @@ if (!function_exists('sv_vader_openmeteo_daily')) {
             'latitude'      => $lat,
             'longitude'     => $lon,
             'daily'         => 'weather_code,temperature_2m_max,temperature_2m_min',
-            'timezone'      => 'Europe/Stockholm',
+            // Day boundaries must follow the forecast location, not Sweden.
+            'timezone'      => 'auto',
             'forecast_days' => $days,
             'lang'          => $locale
         ], 'https://api.open-meteo.com/v1/forecast');

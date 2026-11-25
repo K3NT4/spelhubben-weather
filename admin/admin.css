@@ -15,20 +15,6 @@
   --svv-text: #1d2327;
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --svv-bg: #101113;
-    --svv-card: #1e1e1e;
-    --svv-border: #3c434a;
-    --svv-accent: #72aee6;
-    --svv-muted: #a7aaad;
-    --svv-text: #f0f0f1;
-    --svv-shadow-1: 0 1px 2px rgba(0,0,0,.2);
-    --svv-shadow-2: 0 6px 18px rgba(0,0,0,.3);
-    --svv-badge-bg: #2c3338;
-    --svv-badge-fg: #72aee6;
-  }
-}
 
 .svv-admin-wrap{ max-width:1180px; color: var(--svv-text); }
 .svv-page-title{ margin:0 0 6px; letter-spacing:.2px; color: var(--svv-text); }
@@ -154,9 +140,6 @@ button.svv-copy-btn.is-copied, .svv-preview-copy.is-copied{ border-color:var(--s
   .svv-builder-group--wide { grid-column: span 1; }
 }
 
-@media (prefers-color-scheme: dark) {
-  .svv-badge.is-active { background: #064e3b; color: #a7f3d0; border-color: #065f46; }
-}
 
 .svv-attr-legend{ display:flex; flex-wrap:wrap; gap:8px; margin-bottom:10px; }
 .svv-chiprow{ display:flex; gap:8px; align-items:center; }
@@ -243,22 +226,6 @@ button.svv-copy-btn.is-copied, .svv-preview-copy.is-copied{ border-color:var(--s
 .svv-alert-item.is-info .svv-alert-icon { background: #dbeafe; color: #1e40af; }
 .svv-alert-item.is-info h3 { color: #1e40af; }
 
-@media (prefers-color-scheme: dark) {
-  .svv-alert-item.is-danger { border-color: #7f1d1d; background: #450a0a; }
-  .svv-alert-item.is-danger .svv-alert-icon { background: #7f1d1d; color: #fecaca; }
-  .svv-alert-item.is-danger h3 { color: #fecaca; }
-  .svv-alert-item.is-danger .svv-alert-content p { color: #fca5a5; }
-
-  .svv-alert-item.is-warning { border-color: #78350f; background: #451a03; }
-  .svv-alert-item.is-warning .svv-alert-icon { background: #78350f; color: #fde68a; }
-  .svv-alert-item.is-warning h3 { color: #fde68a; }
-  .svv-alert-item.is-warning .svv-alert-content p { color: #fcd34d; }
-
-  .svv-alert-item.is-info { border-color: #1e3a8a; background: #172554; }
-  .svv-alert-item.is-info .svv-alert-icon { background: #1e3a8a; color: #bfdbfe; }
-  .svv-alert-item.is-info h3 { color: #bfdbfe; }
-  .svv-alert-item.is-info .svv-alert-content p { color: #93c5fd; }
-}
 
 /* Settings Form in Alerts */
 .svv-settings-group h3 { margin: 0 0 12px; font-size: 14px; border-bottom: 1px solid var(--svv-border); padding-bottom: 6px; }

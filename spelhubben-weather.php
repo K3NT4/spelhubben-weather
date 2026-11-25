@@ -2,7 +2,7 @@
 /**
  * Plugin Name: Spelhubben Weather
  * Description: Current weather and forecasts with smart maps, sun and moon information, forecast insights, layouts and style presets. Supports shortcodes, Gutenberg blocks and patterns, and classic widgets.
- * Version: 2.2.0
+ * Version: 2.2.5
  * Author: Spelhubben
  * Text Domain: spelhubben-weather
  * Domain Path: /languages
@@ -29,7 +29,7 @@ if ( ! defined( 'SV_VADER_PATH' ) ) {
 	define( 'SV_VADER_PATH', plugin_dir_path( __FILE__ ) );
 }
 if ( ! defined( 'SV_VADER_VER' ) ) {
-	define( 'SV_VADER_VER', '2.2.0' );
+	define( 'SV_VADER_VER', '2.2.5' );
 }
 if ( ! defined( 'SV_VADER_DIR' ) ) {
 	define( 'SV_VADER_DIR', SV_VADER_PATH );

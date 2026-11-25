@@ -129,7 +129,9 @@ if (!function_exists('sv_vader_sanitize_options')) {
 		$out['date_format'] = sanitize_text_field($in['date_format'] ?? $def['date_format']);
 
 		// Preserve/initialize cache salt
-		$out['cache_salt'] = sanitize_text_field($in['cache_salt'] ?? $def['cache_salt']);
+		// The settings form has no salt field: keep the current salt so saving
+		// settings never resurrects cache entries invalidated by "Clear cache".
+		$out['cache_salt'] = sanitize_text_field($in['cache_salt'] ?? $current['cache_salt']);
 
 		// Alert Thresholds
 		// Alert settings are edited on a separate admin page. Preserve them when

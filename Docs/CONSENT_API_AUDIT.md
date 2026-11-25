@@ -72,9 +72,9 @@ The plugin can call **7 external weather providers**. All calls are **read-only*
 
 #### SMHI (Swedish Meteorological Institute)
 ```php
-// includes/providers.php, line 45
-// URL: https://opendata.smhi.se/meteorological/forecast/...
-// User-Agent: "Spelhubben-Weather/1.0"
+// includes/providers.php, sv_vader_smhi_current()
+// URL: https://opendata-download-metfcst.smhi.se/api/category/snow1g/version/1/...
+// User-Agent: "Spelhubben-Weather/<version>"
 // Data sent: Geographic coordinates only
 // Privacy: Public data endpoint
 ```

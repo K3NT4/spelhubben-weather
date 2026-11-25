@@ -65,8 +65,9 @@ $sv_vader_option_prefixes = array(
     // New
     'spelhubben_weather_',
     'spelhubben-weather_',
-    // New cache wrapper prefix
-    'spelhubben_',
+    // Note: no bare 'spelhubben_' prefix. The cache wrapper only stores
+    // transients (covered below), and a bare prefix would also delete options
+    // that belong to other Spelhubben plugins.
     // Transients (single-site)
     '_transient_sv_vader_',
     '_transient_timeout_sv_vader_',

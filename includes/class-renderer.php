@@ -153,6 +153,8 @@ class SV_Vader_Renderer {
 			$opts = sv_vader_get_options();
 			if (!empty($opts['tides_enabled'])) {
 				$tide_data = $api->get_tides($a['ort'], $a['lat'], $a['lon']);
+				// get_tides() returns WP_Error when geocoding fails; never index into it.
+				if (!is_array($tide_data)) $tide_data = null;
 			}
 		}
 

@@ -4,13 +4,13 @@ WordPress weather plugin displaying current conditions, compact hourly forecasts
 
 For common questions and troubleshooting see the FAQ: [Docs/FAQ.md](Docs/FAQ.md)
 
-**Version:** 2.2.0
+**Version:** 2.2.5
 
-**Update note:** Clear page caches after updating to 2.2.0 so the new scripts and styles are loaded. New panels and style presets remain opt-in.
+**Update note:** Clear page caches after updating to 2.2.5 so the updated scripts and styles are loaded. 2.2.5 is a maintenance release; settings are kept and no new options are enabled.
 
 ## Requirements
 
-- WordPress 6.8+ and PHP 7.4+ (PHP 8.5 verified). Local validation environment: WordPress 7.1.5 / PHP 8.5.
+- WordPress 6.8+ and PHP 7.4+ (PHP 8.6 verified). Local validation environment: WordPress 7.2 RC3 / PHP 8.5, plus PHP 8.6.
 - The server must be able to make outgoing HTTPS requests; all weather data is fetched server-side. Hosts that block outgoing connections, or `WP_HTTP_BLOCK_EXTERNAL`, stop the weather from loading.
 - No API key is needed for Open-Meteo, SMHI, Yr/MET Norway, MET Norway Nowcast or FMI. OpenWeatherMap and WeatherAPI.com are off by default and need your own key.
 - Recommended: enter an email or URL under **Yr contact** (MET Norway asks API users to identify themselves).
@@ -25,6 +25,22 @@ After activation, **Spelhubben Weather → Settings** shows a "Getting started &
 Support and bug reports: https://github.com/K3NT4/spelhubben-weather/issues. Reviews are voluntary: https://wordpress.org/plugins/spelhubben-weather/#reviews. A discreet settings link and a reminder 14 days after the first administrator visit after installation (or upgrading from a version without the reminder) appear only on the plugin’s own admin pages. Choose “No thanks” to permanently dismiss the reminder for the whole site, including after updates; the optional settings link remains. There is no frontend popup, tracking or background request for reviews; reviewing or dismissing has no effect on plugin functionality.
 
 ## Changelog
+
+### 2.2.5 (2026-11-25)
+- **Fixed:** SMHI weather data loads again. SMHI retired the `pmp3g` forecast API (it now returns 404), so SMHI contributed no data. The provider now uses SMHI's `snow1g/version/1` point forecast; points outside SMHI's grid report "No coverage".
+- **Fixed:** The documented shortcode attributes `units`, `temp_unit`, `wind_unit`, `precip_unit` and `date_format` were dropped by the shortcode handler. They are now forwarded, as is `show_moon_daily`.
+- **Fixed:** Daily Open-Meteo forecasts use the location's timezone (`timezone=auto`) instead of `Europe/Stockholm`, so day boundaries are correct outside Sweden.
+- **Fixed:** Classic widgets without a per-widget wind unit follow the global wind unit setting.
+- **Fixed:** "Clear cache" saved the raw stored option through the settings sanitizer, which could switch off FMI, MET Norway Nowcast and the default map on sites whose saved settings predated those options. Saving the settings form also reset the cache salt and could resurrect cleared cache entries.
+- **Fixed:** Possible fatal error when tides were enabled and geocoding failed (`WP_Error` was read as an array).
+- **Fixed:** Admin pages followed the operating system's dark mode while wp-admin stays light, making headings and field labels unreadable. Admin pages now use the light wp-admin palette.
+- **Fixed:** React "unique key" warning from the block's "Show fields" toggles.
+- **Fixed:** Uninstall no longer deletes every option starting with `spelhubben_`, which could include options from other Spelhubben plugins.
+- **Improved:** Cache hit/miss statistics are buffered and written once per request on `shutdown` instead of one option update per cached lookup. Unknown places (1 hour) and geocoding failures (2 minutes) are cached.
+- **Compatibility:** Tested with WordPress 7.2 RC3: iframed block editor with server-side preview, inspector controls, patterns, shortcode, classic widget, OpenLayers/Leaflet/static maps and all admin pages, plus WordPress Plugin Check (no findings). No changes were needed for the 7.2 editor component, admin SVG icon, REST API, Interactivity API or jQuery Migrate updates.
+- **Compatibility:** Verified PHP 8.6: lint, all test suites and a WordPress 7.2 bootstrap rendering every output type with all deprecation notices enabled.
+- **Maintenance:** CI lints and tests on PHP 8.6 as well. New network-free `tests/maintenance_test.php` covers the real service layer. Development dependency `fflate` updated to 0.8.3 (indirect via `ol`; not part of the built assets, which are byte-identical).
+- **Documentation:** `Tested up to` updated to WordPress 7.2.
 
 ### 2.2.0 (2026-11-19)
 - **Added:** Voluntary review link and dismissible reminder on the plugin’s admin pages after 14 days; no tracking or frontend popup.
@@ -341,8 +357,8 @@ All themes include icons for: sun, partly-cloudy (including an alternate), cloud
 
 ## Development
 - **Minimum Requirements:** PHP 7.4+, WordPress 6.8+
-- **PHP Compatibility:** Supports PHP 7.4 through PHP 8.5. The full codebase passes PHP lint and the regression test suite on PHP 8.5 with all deprecation notices enabled, and it uses no deprecated or removed PHP features. Updating to the latest patched PHP release is recommended.
-- **Tested Up To:** WordPress 7.1
+- **PHP Compatibility:** Supports PHP 7.4 through PHP 8.6. The full codebase passes PHP lint and the test suites on PHP 8.6 with all deprecation notices enabled, and it uses no deprecated or removed PHP features. Updating to the latest patched PHP release is recommended.
+- **Tested Up To:** WordPress 7.2
 - **Text Domain:** `spelhubben-weather`
 - **Translations:** English (base), Swedish (sv_SE), Norwegian Bokmål (nb_NO)
 

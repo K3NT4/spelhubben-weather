@@ -2,9 +2,9 @@
 Contributors: spelhubben
 Tags: weather, forecast, widget, shortcode, blocks
 Requires at least: 6.8
-Tested up to: 7.1
+Tested up to: 7.2
 Requires PHP: 7.4
-Stable tag: 2.2.0
+Stable tag: 2.2.5
 Donate link: https://www.paypal.com/donate/?hosted_button_id=CV74CEXY5XEAU
 License: GPLv3 or later
 License URI: https://www.gnu.org/licenses/gpl-3.0.html
@@ -28,7 +28,7 @@ Weather widget & block with optional map and daily forecast. Can combine Open-Me
 
 This plugin displays current weather and an optional forecast. It can aggregate data from weather providers (Open-Meteo, SMHI, Yr/MET Norway, MET Norway Nowcast, FMI, OpenWeatherMap, and WeatherAPI.com) and compute a simple consensus. Coverage and availability depend on the provider and location.
 
-**PHP compatibility:** Supports PHP 7.4 through PHP 8.5. The code passes PHP lint and the plugin's regression test suite on PHP 8.5 with all deprecation notices enabled, and it uses no deprecated or removed PHP features. Running the latest patched PHP release is recommended.
+**PHP compatibility:** Supports PHP 7.4 through PHP 8.6. The code passes PHP lint and the plugin's test suites on PHP 8.6 with all deprecation notices enabled, and it uses no deprecated or removed PHP features. Running the latest patched PHP release is recommended.
 
 **Features**
 - **Shortcode** `[spelhubben_weather]`, **Gutenberg block**, and **classic widget**
@@ -48,6 +48,22 @@ This plugin displays current weather and an optional forecast. It can aggregate 
 *Not affiliated with Open-Meteo, SMHI, Yr/MET Norway, MET Norway Nowcast, FMI, OpenLayers, Leaflet, or OpenStreetMap. Names are used for descriptive purposes only. Map data © OpenStreetMap contributors (ODbL).*
 
 == Changelog ==
+
+= 2.2.5 =
+- Fixed: SMHI weather data loads again. SMHI retired the forecast API the plugin used (it now returns "not found"), so SMHI contributed no data. The plugin now uses SMHI's current snow1g forecast API; points outside SMHI's area are reported as "No coverage".
+- Fixed: The documented shortcode attributes `units`, `temp_unit`, `wind_unit`, `precip_unit` and `date_format` were ignored. They now work, as does `show_moon_daily`.
+- Fixed: Daily forecasts use the forecast location's own timezone, so day boundaries are correct outside Sweden.
+- Fixed: Classic widgets without their own wind unit now follow the global wind unit setting.
+- Fixed: "Clear cache" could switch off FMI, MET Norway Nowcast and the default map on sites whose saved settings were older than those options. Saving the settings page no longer undoes a cache clear.
+- Fixed: Possible fatal error when tides were enabled and the place could not be geocoded.
+- Fixed: Admin pages were hard to read when the computer used dark mode (headings and field labels matched the background). Admin pages now follow the light WordPress admin colours.
+- Fixed: React "unique key" warning from the block's "Show fields" toggles in the editor.
+- Fixed: Uninstalling no longer deletes options of other plugins whose names start with `spelhubben_`.
+- Improved: Cache statistics are written once per page view instead of on every cached weather lookup, and unknown places or geocoding failures are cached briefly instead of being looked up again on every page view.
+- Compatibility: Tested with WordPress 7.2 RC3: block editor (server-side preview, settings panels, patterns), shortcode, classic widget, maps and all admin pages. WordPress Plugin Check reports no findings. No changes were needed for the 7.2 editor component, admin SVG icon, REST API, Interactivity API or jQuery Migrate updates.
+- Compatibility: Verified PHP 8.6 (lint, test suites and a WordPress 7.2 bootstrap with all deprecation notices enabled).
+- Maintenance: CI also runs on PHP 8.6. New network-free tests for the weather service layer. Development dependency fflate updated to 0.8.3 (build tooling only; not included in the plugin).
+- Documentation: Tested up to WordPress 7.2.
 
 = 2.2.0 =
 - Added: Voluntary review link and permanently dismissible admin reminder after 14 days; no tracking or frontend popup.
@@ -490,6 +506,8 @@ Existing screenshots show earlier interfaces, not the new 2.2 panels or controls
 
 
 == Upgrade Notice ==
+= 2.2.5 =
+Maintenance release: restores SMHI weather data, makes the documented unit/format shortcode attributes work, fixes daily forecast dates outside Sweden and admin readability in dark mode. Tested with WordPress 7.2 and PHP 8.6. Clear page caches after updating.
 = 2.2.0 =
 Adds optional sun/moon panels, forecast insights, styles and block patterns. Improves hourly forecasts and map fallback/diagnostics. Existing defaults remain unchanged. Clear page caches after updating.
 

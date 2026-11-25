@@ -662,6 +662,7 @@ assert_true(strpos($shortcodes_page, 'svv-grid--shortcodes') !== false, 'shortco
 assert_true(strpos($performance_page, 'svv-grid--performance') !== false, 'performance page uses performance grid');
 assert_true(strpos($admin_css, '.svv-grid--settings') !== false && strpos($admin_css, 'minmax(620px, 1fr)') !== false, 'admin CSS keeps settings form column wide enough');
 assert_true(strpos($admin_css, '.svv-form .form-table') !== false && strpos($admin_css, 'table-layout:fixed') !== false, 'admin CSS constrains settings form table layout');
+assert_true(strpos($admin_css, 'prefers-color-scheme') === false, 'admin CSS follows the light wp-admin palette instead of the OS dark mode (core headings, labels and links stay readable)');
 assert_true(strpos($main_plugin, 'load_plugin_textdomain') !== false && strpos($main_plugin, "dirname( plugin_basename( __FILE__ ) ) . '/languages'") !== false, 'plugin loads bundled text domain');
 assert_true(strpos($main_plugin, "add_action( 'init', 'sv_vader_load_plugin_textdomain', 0 )") !== false, 'plugin defers bundled text domain setup until init');
 assert_true(strpos($plugin_class_php, "add_action('admin_menu', 'sv_vader_register_admin_menu')") === false, 'plugin does not register the admin menu twice');
@@ -850,5 +851,22 @@ $alias = (new ReflectionClass('SV_Vader_Plugin'))->newInstanceWithoutConstructor
 $alias->renderer = $capturing_renderer;
 $alias->render_shortcode_alias(['astro'=>'yes','insights'=>'1','style_preset'=>'neutral','preset'=>'hero']);
 assert_true($capturing_renderer->atts['astro'] === '1' && $capturing_renderer->atts['insights'] === '1' && $capturing_renderer->atts['style_preset'] === 'neutral' && $capturing_renderer->atts['preset'] === 'hero', 'public shortcode alias forwards all new options');
+$alias->render_shortcode_alias(['units'=>'imperial','temp_unit'=>'F','wind_unit'=>'kmh','precip_unit'=>'in','date_format'=>'j M','show_moon_daily'=>'yes']);
+assert_true(
+	($capturing_renderer->atts['units'] ?? '') === 'imperial' && ($capturing_renderer->atts['temp_unit'] ?? '') === 'F'
+	&& ($capturing_renderer->atts['wind_unit'] ?? '') === 'kmh' && ($capturing_renderer->atts['precip_unit'] ?? '') === 'in'
+	&& ($capturing_renderer->atts['date_format'] ?? '') === 'j M' && ($capturing_renderer->atts['show_moon_daily'] ?? '') === '1',
+	'public shortcode alias forwards documented units, format and daily moon attributes'
+);
+
+$renderer_src = file_get_contents(__DIR__ . '/../includes/class-renderer.php');
+assert_true(strpos($renderer_src, "if (!is_array(\$tide_data)) \$tide_data = null;") !== false, 'renderer never indexes into a WP_Error returned by get_tides()');
+$widget_src = file_get_contents(__DIR__ . '/../includes/Widget/class-widget.php');
+assert_true(strpos($widget_src, "(string) (\$instance['wind_unit'] ?? '') !== '' ? \$instance['wind_unit'] : (\$opts['wind_unit'] ?? '')") !== false, 'widget falls back to the global wind unit when its own override is empty');
+
+$GLOBALS['svv_test_options'] = ['cache_salt' => '1764000000'];
+$saved_settings = sv_vader_sanitize_options(['default_ort' => 'Lund']);
+assert_true($saved_settings['cache_salt'] === '1764000000', 'saving the settings form keeps the current cache salt');
+unset($GLOBALS['svv_test_options']);
 
 echo "All regression checks passed.\n";

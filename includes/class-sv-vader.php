@@ -285,6 +285,11 @@ class SV_Vader_API {
 
 		// Check cache first
 		$cached = sv_vader_cache_get($geocode_cache_key);
+		if (is_array($cached) && isset($cached['_geocode_error'])) {
+			return $cached['_geocode_error'] === 'not_found'
+				? new WP_Error('sv_vader_geocode', __('Could not find the place.', 'spelhubben-weather'))
+				: new WP_Error('sv_vader_geocode_failed', __('Could not fetch weather data from the selected providers.', 'spelhubben-weather'));
+		}
 		if ($cached !== false) return $cached;
 
 		$url = add_query_arg([
@@ -294,11 +299,17 @@ class SV_Vader_API {
 			'format'   => 'json'
 		], 'https://geocoding-api.open-meteo.com/v1/search');
 
+		// Failures are cached briefly so an unknown place or an unreachable
+		// geocoder does not trigger new remote requests on every page view.
 		$res = sv_vader_http_get($url, []);
-		if (is_wp_error($res)) return $res;
+		if (is_wp_error($res) || wp_remote_retrieve_response_code($res) !== 200) {
+			sv_vader_cache_set($geocode_cache_key, ['_geocode_error' => 'request_failed'], 2 * MINUTE_IN_SECONDS);
+			return is_wp_error($res) ? $res : new WP_Error('sv_vader_geocode_failed', __('Could not fetch weather data from the selected providers.', 'spelhubben-weather'));
+		}
 
 		$data = json_decode(wp_remote_retrieve_body($res), true);
-		if (empty($data['results'][0])) {
+		if (empty($data['results'][0]) || !isset($data['results'][0]['latitude'], $data['results'][0]['longitude'])) {
+			sv_vader_cache_set($geocode_cache_key, ['_geocode_error' => 'not_found'], HOUR_IN_SECONDS);
 			return new WP_Error('sv_vader_geocode', __('Could not find the place.', 'spelhubben-weather'));
 		}
 
@@ -425,43 +436,82 @@ if ( ! function_exists( 'sv_vader_stats_prune_days' ) ) {
 	}
 }
 
-if ( ! function_exists( 'sv_vader_stats_hit' ) ) {
-	function sv_vader_stats_hit() : void {
+/*
+ * Hits and misses are buffered per request and written once on shutdown.
+ * Writing the option on every cache hit cost one database UPDATE per weather
+ * instance on every front-end page view.
+ */
+if ( ! function_exists( 'sv_vader_stats_buffer' ) ) {
+	function &sv_vader_stats_buffer() : array {
+		static $buffer = [ 'hits' => 0, 'misses' => 0, 'api_calls' => 0, 'recent' => [] ];
+		return $buffer;
+	}
+}
+
+if ( ! function_exists( 'sv_vader_stats_flush' ) ) {
+	function sv_vader_stats_flush() : void {
+		$buffer = &sv_vader_stats_buffer();
+		if ( 0 === $buffer['hits'] + $buffer['misses'] ) {
+			return;
+		}
 		$stats = sv_vader_stats_get();
 		$today = gmdate( 'Y-m-d' );
-		$stats['hits']++;
+		$stats['hits']      = (int) $stats['hits'] + $buffer['hits'];
+		$stats['misses']    = (int) $stats['misses'] + $buffer['misses'];
+		$stats['api_calls'] = (int) $stats['api_calls'] + $buffer['api_calls'];
+		$stats['per_day']   = is_array( $stats['per_day'] ) ? $stats['per_day'] : [];
 		if ( ! isset( $stats['per_day'][ $today ] ) ) {
 			$stats['per_day'][ $today ] = [ 'hits' => 0, 'misses' => 0, 'api_calls' => 0 ];
 		}
-		$stats['per_day'][ $today ]['hits']++;
+		$stats['per_day'][ $today ]['hits']      += $buffer['hits'];
+		$stats['per_day'][ $today ]['misses']    += $buffer['misses'];
+		$stats['per_day'][ $today ]['api_calls'] += $buffer['api_calls'];
 		$stats['per_day'] = sv_vader_stats_prune_days( $stats['per_day'] );
+
+		$stats['recent'] = is_array( $stats['recent'] ) ? $stats['recent'] : [];
+		$stats['recent'] = array_slice( array_merge( $buffer['recent'], $stats['recent'] ), 0, 5 );
+
+		$buffer = [ 'hits' => 0, 'misses' => 0, 'api_calls' => 0, 'recent' => [] ];
 		sv_vader_stats_save( $stats );
+	}
+}
+
+if ( ! function_exists( 'sv_vader_stats_schedule_flush' ) ) {
+	function sv_vader_stats_schedule_flush() : void {
+		static $scheduled = false;
+		if ( $scheduled ) {
+			return;
+		}
+		$scheduled = true;
+		if ( function_exists( 'add_action' ) ) {
+			add_action( 'shutdown', 'sv_vader_stats_flush' );
+		} else {
+			register_shutdown_function( 'sv_vader_stats_flush' );
+		}
+	}
+}
+
+if ( ! function_exists( 'sv_vader_stats_hit' ) ) {
+	function sv_vader_stats_hit() : void {
+		$buffer = &sv_vader_stats_buffer();
+		$buffer['hits']++;
+		sv_vader_stats_schedule_flush();
 	}
 }
 
 if ( ! function_exists( 'sv_vader_stats_miss' ) ) {
 	function sv_vader_stats_miss( int $providers_count = 0, string $place = '', string $lat = '', string $lon = '' ) : void {
-		$stats = sv_vader_stats_get();
-		$today = gmdate( 'Y-m-d' );
-		$stats['misses']++;
-		$stats['api_calls'] += max( 1, $providers_count );
-		if ( ! isset( $stats['per_day'][ $today ] ) ) {
-			$stats['per_day'][ $today ] = [ 'hits' => 0, 'misses' => 0, 'api_calls' => 0 ];
-		}
-		$stats['per_day'][ $today ]['misses']++;
-		$stats['per_day'][ $today ]['api_calls'] += max( 1, $providers_count );
-		$stats['per_day'] = sv_vader_stats_prune_days( $stats['per_day'] );
-
-		$stats['recent'] = is_array( $stats['recent'] ) ? $stats['recent'] : [];
-		array_unshift( $stats['recent'], [
+		$buffer = &sv_vader_stats_buffer();
+		$buffer['misses']++;
+		$buffer['api_calls'] += max( 1, $providers_count );
+		array_unshift( $buffer['recent'], [
 			'place' => $place,
 			'lat'   => $lat,
 			'lon'   => $lon,
 			'time'  => time(),
 		] );
-		$stats['recent'] = array_slice( $stats['recent'], 0, 5 );
-
-		sv_vader_stats_save( $stats );
+		$buffer['recent'] = array_slice( $buffer['recent'], 0, 5 );
+		sv_vader_stats_schedule_flush();
 	}
 }
 

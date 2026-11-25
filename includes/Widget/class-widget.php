@@ -120,7 +120,8 @@ class SV_Vader_Widget extends WP_Widget {
                 'style_preset' => sv_vader_normalize_style_preset($instance['style_preset'] ?? ''),
                 'astro'       => !empty($instance['astro']) ? '1' : '0',
                 'insights'    => !empty($instance['insights']) ? '1' : '0',
-                'wind_unit'   => $instance['wind_unit'] ?? ($opts['wind_unit'] ?? ''),
+                // An empty per-widget value means "use the global wind unit setting".
+                'wind_unit'   => (string) ($instance['wind_unit'] ?? '') !== '' ? $instance['wind_unit'] : ($opts['wind_unit'] ?? ''),
             ]);
 
             echo wp_kses_post($html);
